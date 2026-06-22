@@ -1,0 +1,73 @@
+================================================================================
+  CYBER-RIDE PORTFOLIO  |  Software Engineer Resume
+================================================================================
+
+NAME:     [Your Name]
+EMAIL:    yourname@example.com
+GITHUB:   https://github.com/yourusername
+LINKEDIN: https://linkedin.com/in/yourusername
+LOCATION: Remote / Global
+
+────────────────────────────────────────────────────────────────────────────────
+SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+
+Full-stack engineer specializing in immersive web experiences, 3D graphics,
+and scalable distributed systems. Passionate about building tools that bridge
+the gap between engineering excellence and delightful user experience.
+
+────────────────────────────────────────────────────────────────────────────────
+SKILLS
+────────────────────────────────────────────────────────────────────────────────
+
+Languages:     TypeScript, JavaScript (ES2022+), Python, SQL, Rust
+Frontend:      React, Next.js, React Three Fiber, Three.js, Framer Motion
+Backend:       Node.js, FastAPI, Express, GraphQL, REST APIs
+3D / Graphics: WebGL, GLSL, Three.js, Blender, React Three Fiber
+Data & DB:     PostgreSQL, MongoDB, Redis, Supabase
+DevOps:        Docker, GitHub Actions, Vercel, AWS (EC2, S3, Lambda)
+Web3:          Ethers.js, Solidity (basic), IPFS
+
+────────────────────────────────────────────────────────────────────────────────
+PROJECTS
+────────────────────────────────────────────────────────────────────────────────
+
+DeFi Nexus
+  Multi-chain DeFi dashboard aggregating staking pools and yield optimizers.
+  Tech: React · TypeScript · Ethers.js · Chart.js · WebSockets
+
+Synapse AI
+  Visual AI pipeline builder for chaining generative models (text/image/speech).
+  Tech: Next.js · FastAPI · OpenAI API · Hugging Face
+
+Voxel Verse
+  Real-time multiplayer voxel sandbox with procedural terrain generation.
+  Tech: React Three Fiber · Socket.io · Node.js · MongoDB
+
+OmniCart 3D
+  Immersive 3D product configurator with cinematic checkout flow.
+  Tech: React · Three.js · Stripe API · Redux Toolkit
+
+────────────────────────────────────────────────────────────────────────────────
+EXPERIENCE
+────────────────────────────────────────────────────────────────────────────────
+
+Senior Frontend Engineer — [Company Name]               2022 – Present
+  • Architected microfrontend system serving 2M+ monthly users
+  • Built real-time data visualization dashboards using WebSockets + D3.js
+  • Led migration from CRA to Vite, reducing build time by 78%
+
+Full-Stack Engineer — [Previous Company]                2020 – 2022
+  • Designed and implemented GraphQL API serving 500K+ requests/day
+  • Developed React Native mobile app with 50K+ downloads
+
+────────────────────────────────────────────────────────────────────────────────
+EDUCATION
+────────────────────────────────────────────────────────────────────────────────
+
+B.Sc. Computer Science — [University Name]              2016 – 2020
+  GPA: 3.8 / 4.0 | Specialization: Human-Computer Interaction
+
+================================================================================
+  You can replace this file at public/resume.txt with your actual resume PDF.
+================================================================================

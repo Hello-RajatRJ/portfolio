@@ -1,0 +1,374 @@
+/* =============================================
+   HUD.css – Glassmorphic Neon Cyberpunk HUD
+   ============================================= */
+
+/* --- Zone Banner (Top Left) --- */
+.zone-banner {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(4, 4, 15, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 240, 255, 0.5);
+  border-radius: 4px;
+  padding: 8px 24px;
+  animation: bannerIn 0.3s ease forwards;
+  z-index: 10;
+}
+
+@keyframes bannerIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.zone-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #00f0ff;
+  text-shadow: 0 0 10px #00f0ff, 0 0 20px rgba(0, 240, 255, 0.4);
+  animation: blink 1.6s step-start infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* --- Bottom Left Speed Panel --- */
+.hud-bottom-left {
+  position: absolute;
+  bottom: 80px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.speed-display {
+  background: rgba(4, 4, 15, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.1), inset 0 0 15px rgba(0, 240, 255, 0.04);
+}
+
+.speed-arc-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speed-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+#speed-number {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #00f0ff;
+  text-shadow: 0 0 12px #00f0ff;
+  min-width: 42px;
+  text-align: right;
+}
+
+.speed-unit {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  color: rgba(0, 240, 255, 0.6);
+  letter-spacing: 0.1em;
+}
+
+/* Drift Meter */
+.drift-meter {
+  background: rgba(4, 4, 15, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: driftAppear 0.2s ease;
+}
+
+@keyframes driftAppear {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.drift-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  color: #ff8c00;
+}
+
+.drift-bar-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(255, 140, 0, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.drift-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff8c00, #ff4500);
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(255, 140, 0, 0.6);
+  transition: width 0.05s linear;
+}
+
+.drift-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  color: #ff8c00;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* --- Bottom Right: Minimap --- */
+.hud-minimap {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  background: rgba(4, 4, 15, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 0 24px rgba(0, 240, 255, 0.15), inset 0 0 20px rgba(0, 240, 255, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.minimap-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.3em;
+  color: rgba(0, 240, 255, 0.7);
+}
+
+.minimap-canvas {
+  border-radius: 6px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  display: block;
+}
+
+.minimap-legend {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.42rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+/* --- Top Right: Achievements --- */
+.hud-achievements {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(4, 4, 15, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 0, 127, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+  box-shadow: 0 0 20px rgba(255, 0, 127, 0.1);
+}
+
+.achievement-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 0, 127, 0.25);
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+}
+
+.achievement-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ach-icon {
+  font-size: 0.65rem;
+}
+
+.ach-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  flex: 1;
+}
+
+.ach-value {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.05em;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.ach-value.complete {
+  color: #00f0ff;
+  text-shadow: 0 0 8px #00f0ff;
+}
+
+/* --- Bottom Center: Controls --- */
+.hud-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  background: rgba(4, 4, 15, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 30px;
+  padding: 8px 20px;
+}
+
+.hud-controls span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hud-controls kbd {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: #00f0ff;
+  letter-spacing: 0.05em;
+}
+
+/* --- Mobile Touch Controls --- */
+.mobile-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  pointer-events: none;
+}
+
+.mobile-dpad {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  pointer-events: all;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  background: rgba(4, 4, 15, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 8px;
+  color: #00f0ff;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.dpad-btn:active { background: rgba(0, 240, 255, 0.25); }
+
+.dpad-up    { top: 0;   left: 43px; }
+.dpad-left  { top: 43px; left: 0; }
+.dpad-down  { top: 86px; left: 43px; }
+.dpad-right { top: 43px; left: 86px; }
+
+.mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: flex-end;
+  pointer-events: all;
+}
+
+.mobile-action-btn {
+  width: 64px;
+  height: 44px;
+  border-radius: 8px;
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.drift-btn {
+  background: rgba(255, 140, 0, 0.15);
+  border: 1px solid rgba(255, 140, 0, 0.5);
+  color: #ff8c00;
+}
+
+.interact-btn {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  color: #00f0ff;
+}
+
+/* Scanline overlay for CRT vibe */
+.hud-overlay::before {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  z-index: 9999;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .hud-achievements { display: none; }
+  .hud-controls { display: none; }
+  .hud-minimap { bottom: 160px; right: 10px; }
+  .hud-bottom-left { bottom: 160px; left: 10px; }
+}

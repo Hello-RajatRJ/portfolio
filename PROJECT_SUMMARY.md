@@ -35,21 +35,26 @@ Tracks the active UI tab, vehicle state (speed, position, collision flags), curr
 - **Scores**: Saves personal best times for checkpoint races in `localStorage`.
 
 ### 2. High-Performance Input handling (`src/hooks/useInput.ts`)
-Listens to `keydown` and `keyup` events, mapping inputs like `w`, `a`, `s`, `d`, `Arrow Keys`, and `Space`. It holds them in a local mutable reference object to avoid causing React component re-renders on every keyboard tap inside the 3D loop.
+Listens to `keydown` and `keyup` events, mapping inputs like `w`, `a`, `s`, `d`, `Arrow Keys`, `Shift` (Wheelie), `H` (Horn), and `Space` (Drift/Brake). It holds them in a local mutable reference object to avoid causing React component re-renders on every keyboard tap inside the 3D loop.
+- **Controls Modal (`src/components/ControlsModal.tsx`)**: A responsive UI overlay that detects whether the user is on mobile (touch) or desktop (keyboard) and presents device-specific controls upon loading the game.
 
 ### 3. Custom Physics & Driving Loop (`src/components/Car.tsx`)
-Updates the car on every single tick inside `@react-three/fiber`'s `useFrame` hook using pure vector mathematics:
-*   Calculates acceleration, drag, braking, and steering.
+Updates the car on every single tick inside `@react-three/fiber`'s `useFrame` hook using pure vector mathematics and framerate-independent spring dampening (`Math.exp` interpolation):
+*   Calculates acceleration, drag, braking, and responsive tight steering.
+*   **Models (`src/components/VehicleModel.tsx`)**: Renders custom massive `.glb` models like the Cyberpunk Car, utilizing automatic scaling and hidden shadow planes.
 *   **Drifting Mode**: Holding `SPACE` reduces lateral tire friction and activates a dynamic tire smoke particle system (`TireSmoke` component).
-*   **Procedural Web Audio Engine**: Generates real-time engine sounds by piping a custom synthesizer node frequency to match the car’s current speed.
+*   **Dynamic Audio Engine**: Loads a real BMW engine sound (`mizanstock-bmw-xm-car-sound`) and a horn (`floraphonic-car-horn`), mapping the HTML5 Audio `playbackRate` directly to the car's simulated transmission and speed to mimic actual revving and gear shifting.
 
 ### 4. Compact 3D Environment Map (`src/components/World.tsx` & `src/components/world/`)
-Coordinates are compressed within 18 units to keep exploration distances fast and minimal:
-*   `Terrain.tsx`: Creates a soft, light-gray landscape heightmap with a central lake.
-*   `Water.tsx`: Sets up a transparent purple-blue lake.
+Coordinates are compressed within 22 units to keep exploration distances fast and minimal:
+*   `Terrain.tsx` & `Water.tsx`: Creates a soft, light-gray landscape heightmap with a central transparent purple-blue lake.
 *   `Roads.tsx`: Renders the road network connecting all building nodes.
-*   `Buildings.tsx`: Generates 8 unique buildings representing each portfolio project, complete with glowing interaction rings.
+*   `Buildings.tsx`: Generates unique buildings representing each portfolio project, complete with glowing interaction rings.
 *   `MiniGames.tsx`: Orchestrates the triggers and reward loops for the three mini-games (Coin Challenge, Checkpoint Race, Drift Arena).
+*   **Resume Zone**: Features a glowing pedestal where the user can pick up and download the customized `RajatAmbedkar_CV.docx`.
+
+### 5. Dynamic Portfolio Data (`src/data/personalInfo.ts`)
+Houses the developer's experience, project data, and a categorized skills list that dynamically generates a styled grid (Frontend, Backend, Languages, DevOps, Styling, etc.) on the React landing page (`src/pages/landing/Skills.tsx`).
 
 ---
 

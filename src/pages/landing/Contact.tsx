@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Send, CheckCircle, Mail, MapPin } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { personal } from '../../data/personalInfo';
 
 export const Contact: React.FC = () => {
@@ -24,10 +25,45 @@ export const Contact: React.FC = () => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+    
     setErrors({});
     setStatus('sending');
-    await new Promise((r) => setTimeout(r, 1500));
-    setStatus('sent');
+
+    try {
+      // Setup EmailJS using Vite Environment Variables
+      // User must add these to a .env file in the root folder:
+      // VITE_EMAILJS_SERVICE_ID=...
+      // VITE_EMAILJS_TEMPLATE_ID=...
+      // VITE_EMAILJS_PUBLIC_KEY=...
+      
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID';
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY';
+
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: name,
+          from_email: email,
+          message: message,
+          to_email: personal.email, // This is just for reference in the template if needed
+        },
+        publicKey
+      );
+      
+      setStatus('sent');
+      setName('');
+      setEmail('');
+      setMessage('');
+      
+      // Reset form status after 3 seconds
+      setTimeout(() => setStatus('idle'), 3000);
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setStatus('idle');
+      alert('Failed to send message. Please make sure EmailJS is configured correctly in your .env file.');
+    }
   };
 
   const socials = [
@@ -35,7 +71,7 @@ export const Contact: React.FC = () => {
     { label: 'GitHub', href: personal.github, color: '#ffffff', emoji: '⌨️' },
     { label: 'Twitter', href: personal.twitter, color: '#1DA1F2', emoji: '🐦' },
     { label: 'Email', href: `mailto:${personal.email}`, color: '#6366f1', emoji: '✉️' },
-  ];
+  ].filter(s => !!s.href); // Only keep socials that actually have a URL string
 
   return (
     <section id="contact" ref={ref} className="py-20 sm:py-32 bg-white relative overflow-hidden">

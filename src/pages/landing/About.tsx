@@ -44,12 +44,12 @@ export const About: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">01. ABOUT ME</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">
             Who I <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Am</span>
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           {/* Text side */}
           <motion.div
             variants={fadeUp}
@@ -105,7 +105,7 @@ export const About: React.FC = () => {
                 <span className="ml-3 font-mono text-xs text-slate-500">developer.ts</span>
               </div>
               {/* Code */}
-              <pre className="p-6 text-sm font-mono overflow-x-auto">
+              <pre className="p-4 sm:p-6 text-xs sm:text-sm font-mono overflow-x-auto">
                 <code className="text-slate-800 whitespace-pre">
                   {codeSnippet.split('\n').map((line, i) => (
                     <div key={i} className="flex">

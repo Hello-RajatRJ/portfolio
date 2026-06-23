@@ -10,14 +10,14 @@ export const ResumeSection: React.FC = () => {
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = personal.resume;
-    link.download = 'Rajat_Ambedkar_Resume.txt';
+    link.download = 'RajatAmbedkar_CV.docx';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <section id="resume" ref={ref} className="py-32 bg-dark-800 relative overflow-hidden">
+    <section id="resume" ref={ref} className="py-20 sm:py-32 bg-dark-800 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-radial from-violet-500/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,12 +28,12 @@ export const ResumeSection: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">05. RESUME</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">
             Download <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Resume</span>
           </h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-8 items-center">
           {/* Resume preview card */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}

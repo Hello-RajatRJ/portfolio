@@ -13,31 +13,44 @@ export const personal = {
   linkedin: 'https://linkedin.com/in/rajat',  // TODO: Replace
   github: 'https://github.com/rajat',         // TODO: Replace
   twitter: 'https://twitter.com/rajat',       // TODO: Replace (optional)
-  resume: '/resume.txt',
+  resume: '/cv/RajatAmbedkar_CV.docx',
   yearsOfExperience: 4,
   availableForWork: true,
 };
 
 export const skills = [
-  // Frontend
+  // Frontend & Languages
   { name: 'React.js', level: 95, category: 'Frontend', icon: '⚛️' },
-  { name: 'TypeScript', level: 92, category: 'Frontend', icon: '🔷' },
   { name: 'Next.js', level: 88, category: 'Frontend', icon: '▲' },
+  { name: 'Vue.js / Nuxt.js', level: 80, category: 'Frontend', icon: '🟩' },
+  { name: 'JavaScript', level: 75, category: 'Languages', icon: '🟨' },
+  { name: 'TypeScript', level: 75, category: 'Languages', icon: '🔷' },
   { name: 'Three.js / R3F', level: 85, category: '3D / WebGL', icon: '🎮' },
-  { name: 'Tailwind CSS', level: 90, category: 'Frontend', icon: '🎨' },
-  { name: 'Framer Motion', level: 80, category: 'Frontend', icon: '✨' },
-  // Backend
-  { name: 'Node.js', level: 88, category: 'Backend', icon: '🟢' },
-  { name: 'Python', level: 78, category: 'Backend', icon: '🐍' },
-  { name: 'PostgreSQL', level: 80, category: 'Backend', icon: '🐘' },
-  { name: 'MongoDB', level: 78, category: 'Backend', icon: '🍃' },
-  { name: 'REST APIs', level: 92, category: 'Backend', icon: '🔗' },
-  { name: 'GraphQL', level: 75, category: 'Backend', icon: '◉' },
-  // DevOps & Tools
-  { name: 'Git / GitHub', level: 90, category: 'Tools', icon: '🐙' },
-  { name: 'Docker', level: 72, category: 'Tools', icon: '🐳' },
-  { name: 'AWS', level: 68, category: 'Tools', icon: '☁️' },
-  { name: 'Vite', level: 88, category: 'Tools', icon: '⚡' },
+  
+  // Styling & State Management
+  { name: 'Tailwind CSS', level: 90, category: 'Styling', icon: '🎨' },
+  { name: 'Bootstrap / MUI', level: 85, category: 'Styling', icon: '📐' },
+  { name: 'Redux / Zustand', level: 88, category: 'State Management', icon: '📦' },
+  
+  // Backend & Databases
+  { name: 'Node.js', level: 50, category: 'Backend', icon: '🟢' },
+  { name: 'NestJS', level: 50, category: 'Backend', icon: '🦁' },
+  { name: 'PostgreSQL / SQL', level: 50, category: 'Databases', icon: '🐘' },
+  { name: 'MongoDB', level: 60, category: 'Databases', icon: '🍃' },
+  { name: 'MySQL', level: 50, category: 'Databases', icon: '🐬' },
+  
+  // DevOps, Cloud & Tools
+  { name: 'Git / GitHub', level: 80, category: 'Tools', icon: '🐙' },
+  { name: 'Vite / Webpack', level: 88, category: 'Tools', icon: '⚡' },
+  { name: 'Docker', level: 75, category: 'DevOps', icon: '🐳' },
+  { name: 'AWS / Azure', level: 50, category: 'Cloud', icon: '☁️' },
+  { name: 'CI/CD', level: 50, category: 'DevOps', icon: '🔄' },
+  
+  // Integrations & Additional
+  { name: 'JWT Auth', level: 70, category: 'Auth', icon: '🔐' },
+  { name: 'Socket.io', level: 70, category: 'Integrations', icon: '🔌' },
+  { name: 'Agile / Scrum', level: 70, category: 'Additional', icon: '🏃' },
+  { name: 'AI Tools / Chatbots', level: 85, category: 'Additional', icon: '🤖' },
 ];
 
 export const experience = [

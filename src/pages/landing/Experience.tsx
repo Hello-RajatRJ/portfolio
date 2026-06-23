@@ -7,7 +7,7 @@ export const Experience: React.FC = () => {
   const inView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section id="experience" ref={ref} className="py-32 bg-dark-800 relative overflow-hidden">
+    <section id="experience" ref={ref} className="py-20 sm:py-32 bg-dark-800 relative overflow-hidden">
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,7 +18,7 @@ export const Experience: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">03. EXPERIENCE</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">
             Work <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">History</span>
           </h2>
         </motion.div>
@@ -40,7 +40,9 @@ export const Experience: React.FC = () => {
               initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: i * 0.2 + 0.3, duration: 0.7 }}
-              className={`relative flex flex-col md:flex-row gap-8 mb-16 ${i % 2 === 0 ? 'md:flex-row-reverse' : ''}`}
+              className={`relative flex flex-col md:flex-row gap-4 md:gap-8 mb-10 md:mb-16 ${
+                i % 2 === 0 ? 'md:flex-row-reverse' : ''
+              }`}
             >
               {/* Content card */}
               <div className="flex-1 md:max-w-[calc(50%-2rem)]">

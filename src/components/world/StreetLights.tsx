@@ -62,7 +62,8 @@ export const StreetLights: React.FC = () => {
     const intensity = y < 5 ? Math.min(1, (5 - y) / 10) : 0;
     
     if (bulbRef.current && bulbRef.current.material) {
-      (bulbRef.current.material as any).emissiveIntensity = intensity * 2;
+      const material = bulbRef.current.material as MeshStandardMaterial;
+      material.emissiveIntensity = intensity * 2;
     }
   });
 

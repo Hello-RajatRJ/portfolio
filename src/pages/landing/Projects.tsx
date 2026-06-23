@@ -92,7 +92,7 @@ const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = 
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
-    className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/50 backdrop-blur-md"
+    className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-md"
     onClick={onClose}
   >
     <motion.div
@@ -100,11 +100,11 @@ const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = 
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.9, opacity: 0, y: 20 }}
       transition={{ type: 'spring', damping: 25 }}
-      className="bg-white border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+      className="bg-white border rounded-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl"
       style={{ borderColor: `${project.color}50`, borderTopWidth: '3px', borderTopColor: project.color }}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="p-8">
+      <div className="p-5 sm:p-8">
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
@@ -172,7 +172,7 @@ export const Projects: React.FC = () => {
   const [selected, setSelected] = useState<Project | null>(null);
 
   return (
-    <section id="projects" ref={ref} className="py-32 bg-dark-900 relative overflow-hidden">
+    <section id="projects" ref={ref} className="py-20 sm:py-32 bg-dark-900 relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
         style={{
           backgroundImage: 'radial-gradient(circle at 1px 1px, black 1px, transparent 0)',
@@ -188,7 +188,7 @@ export const Projects: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">04. PROJECTS</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900 mb-4">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">
             Featured <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Work</span>
           </h2>
           <p className="font-inter text-slate-650 max-w-xl mx-auto">
@@ -196,7 +196,7 @@ export const Projects: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
           {projectsData.map((project, i) => (
             <ProjectCard
               key={project.id}

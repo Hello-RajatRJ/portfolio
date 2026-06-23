@@ -3,7 +3,8 @@ import { useFrame } from '@react-three/fiber';
 import { Grid, Text } from '@react-three/drei';
 import { Vector3, Group } from 'three';
 import { NeonPillar } from './Obstacles';
-import { ZONES, skillCubesList } from './Car';
+import { ZONES, skillCubesList } from './CarState';
+import type { SkillCubeState } from './CarState';
 import { Terrain } from './world/Terrain';
 import { Water } from './world/Water';
 import { Roads } from './world/Roads';
@@ -55,7 +56,7 @@ export const World: React.FC<WorldProps> = ({ projects, activeProjectZoneId, cur
     const dt = Math.min(delta, 0.1);
     
     // 1. Animate skill cubes physics
-    skillCubesList.forEach((cube) => {
+    skillCubesList.forEach((cube: SkillCubeState) => {
       // Update position with velocity
       cube.pos.x += cube.vel.x * dt;
       cube.pos.y += cube.vel.y * dt;
@@ -88,8 +89,8 @@ export const World: React.FC<WorldProps> = ({ projects, activeProjectZoneId, cur
       cube.rot.y += cube.rotVel.y * dt;
       cube.rot.z += cube.rotVel.z * dt;
  
-      // Map boundary checks for cubes
-      const limit = 16.5;
+      // Map boundary checks for cubes — expanded for larger playground
+      const limit = 21.5;
       if (cube.pos.x > limit) { cube.pos.x = limit; cube.vel.x = -cube.vel.x * 0.5; }
       if (cube.pos.x < -limit) { cube.pos.x = -limit; cube.vel.x = -cube.vel.x * 0.5; }
       if (cube.pos.z > limit) { cube.pos.z = limit; cube.vel.z = -cube.vel.z * 0.5; }
@@ -109,17 +110,17 @@ export const World: React.FC<WorldProps> = ({ projects, activeProjectZoneId, cur
 
   return (
     <group>
-      {/* 1. Neon Floor Grid */}
+      {/* 1. Neon Floor Grid - expanded for larger map */}
       <Grid
         position={[0, -0.01, 0]}
-        args={[40, 40]}
+        args={[55, 55]}
         cellSize={1.5}
         cellThickness={1.0}
         cellColor="#e5e7eb"
         sectionSize={6}
         sectionThickness={1.5}
         sectionColor="#a855f7"
-        fadeDistance={25}
+        fadeDistance={30}
         infiniteGrid
       />
 
@@ -132,19 +133,19 @@ export const World: React.FC<WorldProps> = ({ projects, activeProjectZoneId, cur
       <Signboards />
       <MiniGames />
 
-      {/* 2. Map Boundaries - Neon Pillars */}
+      {/* 2. Map Boundaries - Neon Pillars (expanded for larger map) */}
       {/* North & South walls */}
-      {[-18, -12, -6, 0, 6, 12, 18].map((coord) => (
+      {[-22, -16, -10, -4, 0, 4, 10, 16, 22].map((coord) => (
         <React.Fragment key={`bound-${coord}`}>
-          <NeonPillar id={`pillar-n-${coord}`} position={[coord, 0, -18]} color="#a855f7" />
-          <NeonPillar id={`pillar-s-${coord}`} position={[coord, 0, 18]} color="#a855f7" />
+          <NeonPillar id={`pillar-n-${coord}`} position={[coord, 0, -22]} color="#a855f7" />
+          <NeonPillar id={`pillar-s-${coord}`} position={[coord, 0, 22]} color="#a855f7" />
         </React.Fragment>
       ))}
       {/* East & West walls */}
-      {[-12, -6, 0, 6, 12].map((coord) => (
+      {[-16, -10, -4, 0, 4, 10, 16].map((coord) => (
         <React.Fragment key={`bound-ew-${coord}`}>
-          <NeonPillar id={`pillar-w-${coord}`} position={[-18, 0, coord]} color="#a855f7" />
-          <NeonPillar id={`pillar-e-${coord}`} position={[18, 0, coord]} color="#a855f7" />
+          <NeonPillar id={`pillar-w-${coord}`} position={[-22, 0, coord]} color="#a855f7" />
+          <NeonPillar id={`pillar-e-${coord}`} position={[22, 0, coord]} color="#a855f7" />
         </React.Fragment>
       ))}
 
@@ -234,7 +235,7 @@ export const World: React.FC<WorldProps> = ({ projects, activeProjectZoneId, cur
         </Text>
 
         {/* Dynamic Skill Cubes */}
-        {skillCubesList.map((cube, index) => (
+        {skillCubesList.map((cube: SkillCubeState, index: number) => (
           <SkillCube key={cube.id} index={index} name={cube.name} size={cube.size} />
         ))}
       </group>

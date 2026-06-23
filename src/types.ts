@@ -46,4 +46,6 @@ export interface Keys {
   right: boolean;
   handbrake: boolean;
   interact: boolean;
+  wheelie: boolean;
+  horn: boolean;
 }

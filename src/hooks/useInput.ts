@@ -9,6 +9,8 @@ export const inputState: Keys = {
   right: false,
   handbrake: false,
   interact: false,
+  wheelie: false,
+  horn: false,
 };
 
 export const useInput = () => {
@@ -35,8 +37,15 @@ export const useInput = () => {
           inputState.handbrake = true;
           e.preventDefault();
           break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          inputState.wheelie = true;
+          break;
         case 'Enter':
           inputState.interact = true;
+          break;
+        case 'KeyH':
+          inputState.horn = true;
           break;
       }
     };
@@ -62,8 +71,15 @@ export const useInput = () => {
         case 'Space':
           inputState.handbrake = false;
           break;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          inputState.wheelie = false;
+          break;
         case 'Enter':
           inputState.interact = false;
+          break;
+        case 'KeyH':
+          inputState.horn = false;
           break;
       }
     };

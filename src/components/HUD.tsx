@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import type { GameState } from '../types';
-import { carGlobalPosition, carGlobalAngle, ZONES, PROJECT_BILLBOARDS } from './Car';
+import { carGlobalPosition, carGlobalAngle, ZONES, PROJECT_BILLBOARDS } from './CarState';
 import { useStore } from '../store/useStore';
 import './HUD.css';
 
@@ -11,9 +11,9 @@ interface HUDProps {
 
 // Map world coordinates to minimap canvas coordinates
 const worldToMap = (wx: number, wz: number, canvasSize: number) => {
-  const mapScale = canvasSize / 64; // world is ~64 units wide
-  const cx = (wx + 32) * mapScale;
-  const cy = (wz + 32) * mapScale;
+  const mapScale = canvasSize / 88; // world is now ~88 units wide (±22 + padding)
+  const cx = (wx + 44) * mapScale;
+  const cy = (wz + 44) * mapScale;
   return { cx, cy };
 };
 
@@ -23,7 +23,7 @@ export const HUD: React.FC<HUDProps> = ({ gameState, totalProjects }) => {
   const animRef = useRef<number>(0);
   const timeOfDay = useStore((s) => s.timeOfDay);
 
-  const drawMinimap = useCallback(() => {
+  const drawMinimap = useCallback(function draw() {
     // Update compass
     if (compassRef.current) {
       let angleDeg = Math.round((carGlobalAngle.value * 180) / Math.PI) % 360;
@@ -95,7 +95,7 @@ export const HUD: React.FC<HUDProps> = ({ gameState, totalProjects }) => {
     });
 
     // Project billboard dots
-    PROJECT_BILLBOARDS.forEach((bb) => {
+    PROJECT_BILLBOARDS.forEach((bb: { x: number; z: number }) => {
       const { cx, cy } = worldToMap(bb.x, bb.z, size);
       ctx.beginPath();
       ctx.arc(cx, cy, 2, 0, Math.PI * 2);
@@ -103,9 +103,9 @@ export const HUD: React.FC<HUDProps> = ({ gameState, totalProjects }) => {
       ctx.fill();
     });
 
-    // Map boundary
-    const { cx: bx1, cy: by1 } = worldToMap(-30, -30, size);
-    const { cx: bx2, cy: by2 } = worldToMap(30, 30, size);
+    // Map boundary — now ±22 units
+    const { cx: bx1, cy: by1 } = worldToMap(-22, -22, size);
+    const { cx: bx2, cy: by2 } = worldToMap(22, 22, size);
     ctx.strokeStyle = 'rgba(255, 0, 127, 0.5)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(bx1, by1, bx2 - bx1, by2 - by1);
@@ -136,7 +136,7 @@ export const HUD: React.FC<HUDProps> = ({ gameState, totalProjects }) => {
     ctx.fill();
     ctx.restore();
 
-    animRef.current = requestAnimationFrame(drawMinimap);
+    animRef.current = requestAnimationFrame(draw);
   }, []);
 
   useEffect(() => {
@@ -264,57 +264,101 @@ export const HUD: React.FC<HUDProps> = ({ gameState, totalProjects }) => {
   );
 };
 
-// Mobile touch virtual joystick overlay
+// ─── Mobile Touch Controls ──────────────────────────────────────────────────
 import { inputState } from '../hooks/useInput';
 
 const MobileTouchControls: React.FC = () => {
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   if (!isTouchDevice) return null;
 
-  const setKey = (key: keyof typeof inputState, val: boolean) => {
-    inputState[key] = val;
+  const press   = (key: keyof typeof inputState) => { inputState[key] = true; };
+  const release = (key: keyof typeof inputState) => { inputState[key] = false; };
+  const tap     = (key: keyof typeof inputState) => {
+    inputState[key] = true;
+    setTimeout(() => { inputState[key] = false; }, 180);
   };
 
   return (
-    <div className="mobile-controls" id="mobile-controls">
-      <div className="mobile-dpad">
+    <div className="mobile-controls-wrap" id="mobile-controls">
+      {/* ── LEFT CLUSTER: Accelerate / Brake ───────────────────── */}
+      <div className="mc-left">
         <button
-          className="dpad-btn dpad-up"
-          onTouchStart={() => setKey('forward', true)}
-          onTouchEnd={() => setKey('forward', false)}
-          aria-label="Drive Forward"
-        >▲</button>
+          className="mc-btn mc-gas"
+          onTouchStart={() => press('forward')}
+          onTouchEnd={() => release('forward')}
+          onTouchCancel={() => release('forward')}
+          aria-label="Accelerate"
+        >
+          <span className="mc-icon">▲</span>
+          <span className="mc-label">GAS</span>
+        </button>
         <button
-          className="dpad-btn dpad-left"
-          onTouchStart={() => setKey('left', true)}
-          onTouchEnd={() => setKey('left', false)}
-          aria-label="Turn Left"
-        >◀</button>
-        <button
-          className="dpad-btn dpad-down"
-          onTouchStart={() => setKey('backward', true)}
-          onTouchEnd={() => setKey('backward', false)}
-          aria-label="Drive Backward"
-        >▼</button>
-        <button
-          className="dpad-btn dpad-right"
-          onTouchStart={() => setKey('right', true)}
-          onTouchEnd={() => setKey('right', false)}
-          aria-label="Turn Right"
-        >▶</button>
+          className="mc-btn mc-brake"
+          onTouchStart={() => press('backward')}
+          onTouchEnd={() => release('backward')}
+          onTouchCancel={() => release('backward')}
+          aria-label="Brake / Reverse"
+        >
+          <span className="mc-icon">▼</span>
+          <span className="mc-label">BRK</span>
+        </button>
       </div>
-      <div className="mobile-actions">
-        <button
-          className="mobile-action-btn drift-btn"
-          onTouchStart={() => setKey('handbrake', true)}
-          onTouchEnd={() => setKey('handbrake', false)}
-          aria-label="Drift"
-        >DRIFT</button>
-        <button
-          className="mobile-action-btn interact-btn"
-          onTouchStart={() => { setKey('interact', true); setTimeout(() => setKey('interact', false), 200); }}
-          aria-label="Interact"
-        >ENTER</button>
+
+      {/* ── RIGHT CLUSTER: Steer + Actions ─────────────────────── */}
+      <div className="mc-right">
+        {/* Steer row */}
+        <div className="mc-steer-row">
+          <button
+            className="mc-btn mc-steer"
+            onTouchStart={() => press('left')}
+            onTouchEnd={() => release('left')}
+            onTouchCancel={() => release('left')}
+            aria-label="Turn Left"
+          >
+            <span className="mc-icon">◀</span>
+          </button>
+          <button
+            className="mc-btn mc-steer"
+            onTouchStart={() => press('right')}
+            onTouchEnd={() => release('right')}
+            onTouchCancel={() => release('right')}
+            aria-label="Turn Right"
+          >
+            <span className="mc-icon">▶</span>
+          </button>
+        </div>
+
+        {/* Action row */}
+        <div className="mc-action-row">
+          <button
+            className="mc-btn mc-drift"
+            onTouchStart={() => press('handbrake')}
+            onTouchEnd={() => release('handbrake')}
+            onTouchCancel={() => release('handbrake')}
+            aria-label="Drift"
+          >
+            <span className="mc-icon">🔥</span>
+            <span className="mc-label">DRIFT</span>
+          </button>
+          <button
+            className="mc-btn mc-wheelie"
+            onTouchStart={() => press('wheelie')}
+            onTouchEnd={() => release('wheelie')}
+            onTouchCancel={() => release('wheelie')}
+            aria-label="Wheelie"
+          >
+            <span className="mc-icon">⚡</span>
+            <span className="mc-label">WHLY</span>
+          </button>
+          <button
+            className="mc-btn mc-enter"
+            onTouchStart={() => tap('interact')}
+            aria-label="Interact"
+          >
+            <span className="mc-icon">✓</span>
+            <span className="mc-label">ENTER</span>
+          </button>
+        </div>
       </div>
     </div>
   );

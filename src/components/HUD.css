@@ -272,82 +272,155 @@
   letter-spacing: 0.05em;
 }
 
-/* --- Mobile Touch Controls --- */
-.mobile-controls {
+/* ─── Mobile Controls (Split Layout) ────────────────────────────────────── */
+/* Wrapper: fills bottom of screen, split left/right */
+.mobile-controls-wrap {
   position: absolute;
-  bottom: 20px;
+  bottom: 0;
   left: 0;
   right: 0;
+  height: 160px;
   display: flex;
+  align-items: flex-end;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 16px 16px;
   pointer-events: none;
 }
 
-.mobile-dpad {
+/* ── Shared button base ── */
+.mc-btn {
   position: relative;
-  width: 130px;
-  height: 130px;
-  pointer-events: all;
-}
-
-.dpad-btn {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  background: rgba(4, 4, 15, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 240, 255, 0.4);
-  border-radius: 8px;
-  color: #00f0ff;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.1s;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-
-.dpad-btn:active { background: rgba(0, 240, 255, 0.25); }
-
-.dpad-up    { top: 0;   left: 43px; }
-.dpad-left  { top: 43px; left: 0; }
-.dpad-down  { top: 86px; left: 43px; }
-.dpad-right { top: 43px; left: 86px; }
-
-.mobile-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  justify-content: flex-end;
-  pointer-events: all;
-}
-
-.mobile-action-btn {
+  align-items: center;
+  justify-content: center;
   width: 64px;
-  height: 44px;
-  border-radius: 8px;
-  font-family: 'Orbitron', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.1em;
+  height: 64px;
+  background: rgba(4, 4, 20, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 14px;
+  border: 1px solid rgba(0, 240, 255, 0.35);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  pointer-events: all;
+  transition: background 0.08s, box-shadow 0.08s, border-color 0.08s;
+  gap: 2px;
 }
 
-.drift-btn {
-  background: rgba(255, 140, 0, 0.15);
-  border: 1px solid rgba(255, 140, 0, 0.5);
-  color: #ff8c00;
+.mc-btn:active,
+.mc-btn.pressed {
+  background: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  border-color: #00f0ff;
 }
 
-.interact-btn {
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.4);
+.mc-icon {
+  font-size: 1.25rem;
+  line-height: 1;
   color: #00f0ff;
+  text-shadow: 0 0 8px #00f0ff;
 }
+
+.mc-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.38rem;
+  letter-spacing: 0.1em;
+  color: rgba(0, 240, 255, 0.6);
+  text-transform: uppercase;
+}
+
+/* ── Left cluster: GAS + BRAKE ── */
+.mc-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.mc-gas {
+  border-color: rgba(0, 255, 120, 0.4);
+}
+.mc-gas .mc-icon { color: #00ff88; text-shadow: 0 0 8px #00ff88; }
+.mc-gas .mc-label { color: rgba(0, 255, 120, 0.6); }
+.mc-gas:active {
+  background: rgba(0, 255, 120, 0.2);
+  box-shadow: 0 0 12px rgba(0, 255, 120, 0.5);
+  border-color: #00ff88;
+}
+
+.mc-brake {
+  border-color: rgba(255, 60, 60, 0.4);
+}
+.mc-brake .mc-icon { color: #ff4444; text-shadow: 0 0 8px #ff4444; }
+.mc-brake .mc-label { color: rgba(255, 80, 80, 0.6); }
+.mc-brake:active {
+  background: rgba(255, 60, 60, 0.2);
+  box-shadow: 0 0 12px rgba(255, 60, 60, 0.5);
+  border-color: #ff4444;
+}
+
+/* ── Right cluster ── */
+.mc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+/* Steer row: two buttons side by side */
+.mc-steer-row {
+  display: flex;
+  gap: 8px;
+}
+
+.mc-steer { width: 64px; height: 54px; }
+.mc-steer .mc-icon { font-size: 1.1rem; }
+
+/* Action row: three buttons side by side */
+.mc-action-row {
+  display: flex;
+  gap: 6px;
+}
+
+.mc-action-row .mc-btn { width: 58px; height: 54px; }
+
+.mc-drift {
+  border-color: rgba(255, 140, 0, 0.45);
+}
+.mc-drift .mc-icon { color: #ff8c00; }
+.mc-drift .mc-label { color: rgba(255, 140, 0, 0.65); }
+.mc-drift:active {
+  background: rgba(255, 140, 0, 0.2);
+  box-shadow: 0 0 12px rgba(255, 140, 0, 0.5);
+  border-color: #ff8c00;
+}
+
+.mc-wheelie {
+  border-color: rgba(168, 85, 247, 0.45);
+}
+.mc-wheelie .mc-icon { color: #a855f7; }
+.mc-wheelie .mc-label { color: rgba(168, 85, 247, 0.65); }
+.mc-wheelie:active {
+  background: rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+  border-color: #a855f7;
+}
+
+.mc-enter {
+  border-color: rgba(0, 240, 255, 0.45);
+}
+.mc-enter .mc-icon { color: #00f0ff; }
+.mc-enter .mc-label { color: rgba(0, 240, 255, 0.65); }
+.mc-enter:active {
+  background: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  border-color: #00f0ff;
+}
+
 
 /* Scanline overlay for CRT vibe */
 .hud-overlay::before {
@@ -365,10 +438,104 @@
   z-index: 9999;
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* --- Tablet (≤ 900px) --- */
+@media (max-width: 900px) {
+  .hud-achievements {
+    min-width: 130px;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .ach-label { font-size: 0.62rem; }
+  .ach-value { font-size: 0.58rem; }
+
+  .hud-minimap { bottom: 170px; }
+  .hud-bottom-left { bottom: 170px; }
+
+  .hud-controls { display: none; }
+}
+
+/* --- Mobile (≤ 600px) --- */
 @media (max-width: 600px) {
+  /* Hide non-essential panels on small screens */
   .hud-achievements { display: none; }
   .hud-controls { display: none; }
-  .hud-minimap { bottom: 160px; right: 10px; }
-  .hud-bottom-left { bottom: 160px; left: 10px; }
+
+  /* Minimap: smaller and repositioned above touch controls */
+  .hud-minimap {
+    bottom: 175px;
+    right: 8px;
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .minimap-canvas {
+    width: 110px !important;
+    height: 110px !important;
+  }
+
+  .minimap-title { font-size: 0.42rem; }
+  .minimap-legend { display: none; }
+
+  /* Speed panel: smaller and repositioned */
+  .hud-bottom-left {
+    bottom: 175px;
+    left: 8px;
+    gap: 6px;
+  }
+
+  .speed-display { padding: 7px 10px; }
+
+  #speed-number {
+    font-size: 1.2rem;
+    min-width: 34px;
+  }
+
+  .speed-unit { font-size: 0.48rem; }
+
+  /* Zone banner: smaller text on mobile */
+  .zone-banner {
+    top: 16px;
+    padding: 6px 16px;
+    max-width: calc(100vw - 32px);
+  }
+  .zone-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+  }
 }
+
+/* --- Small mobile (≤ 380px) --- */
+@media (max-width: 380px) {
+  .hud-minimap {
+    bottom: 170px;
+    right: 6px;
+  }
+
+  .minimap-canvas {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
+  .hud-bottom-left {
+    bottom: 170px;
+    left: 6px;
+  }
+
+  #speed-number { font-size: 1rem; }
+
+  /* Shrink buttons slightly on very small screens */
+  .mc-btn { width: 54px; height: 54px; }
+  .mc-steer { width: 54px; height: 46px; }
+  .mc-action-row .mc-btn { width: 50px; height: 46px; }
+  .mc-icon { font-size: 1.05rem; }
+  .mc-label { font-size: 0.33rem; }
+  .mc-steer-row { gap: 6px; }
+  .mc-action-row { gap: 4px; }
+}
+
+

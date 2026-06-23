@@ -12,7 +12,7 @@ export const MiniGameOverlay: React.FC = () => {
 
   React.useEffect(() => {
     if (activeGame !== 'race' || !gameState.raceStartTime) {
-      setElapsed(0);
+      setTimeout(() => setElapsed(0), 0);
       return;
     }
 

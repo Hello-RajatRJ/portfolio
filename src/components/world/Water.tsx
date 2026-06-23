@@ -2,15 +2,19 @@ import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh } from 'three';
 
+interface EmissiveMaterial {
+  emissiveIntensity?: number;
+}
+
 export const Water: React.FC = () => {
   const waterRef = useRef<Mesh>(null);
 
-  useFrame((_state) => {
+  useFrame(() => {
     if (waterRef.current && waterRef.current.material) {
       // Simulate water ripples by moving the normal map or just animating opacity/color slightly
       // For a simple retro look, we'll just pulse the emissive intensity
       const time = Date.now() * 0.001;
-      const material = waterRef.current.material as any;
+      const material = waterRef.current.material as unknown as EmissiveMaterial;
       if (material.emissiveIntensity !== undefined) {
         material.emissiveIntensity = 0.5 + Math.sin(time * 2) * 0.2;
       }

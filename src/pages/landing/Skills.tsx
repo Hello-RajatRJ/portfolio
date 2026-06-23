@@ -2,21 +2,33 @@ import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { skills } from '../../data/personalInfo';
 
-const categories = ['Frontend', '3D / WebGL', 'Backend', 'Tools'];
+const defaultColors = [
+  '#7c3aed', // Purple
+  '#4f46e5', // Indigo
+  '#8b5cf6', // Violet
+  '#059669', // Emerald
+  '#2563eb', // Blue
+  '#db2777', // Pink
+  '#ea580c', // Orange
+  '#16a34a', // Green
+  '#ca8a04', // Yellow
+];
 
-const categoryColor: Record<string, string> = {
-  'Frontend': '#7c3aed', // Purple
-  '3D / WebGL': '#4f46e5', // Indigo
-  'Backend': '#8b5cf6', // Violet
-  'Tools': '#059669', // Emerald
-};
+// Extract unique categories directly from the skills array
+const categories = Array.from(new Set(skills.map(s => s.category)));
+
+// Dynamically assign colors
+const categoryColor: Record<string, string> = {};
+categories.forEach((cat, index) => {
+  categoryColor[cat] = defaultColors[index % defaultColors.length];
+});
 
 export const Skills: React.FC = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
-    <section id="skills" ref={ref} className="py-32 bg-dark-900 relative overflow-hidden">
+    <section id="skills" ref={ref} className="py-20 sm:py-32 bg-dark-900 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +39,7 @@ export const Skills: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">02. SKILLS</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">
             Tech <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Arsenal</span>
           </h2>
         </motion.div>
@@ -45,7 +57,7 @@ export const Skills: React.FC = () => {
               {cat.toUpperCase()}
             </motion.h3>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {skills.filter((s) => s.category === cat).map((skill, i) => (
                 <motion.div
                   key={skill.name}

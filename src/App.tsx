@@ -11,6 +11,8 @@ import { useInput } from './hooks/useInput';
 import { ArrowLeft } from 'lucide-react';
 import { MiniGameOverlay } from './components/MiniGameOverlay';
 import { AchievementToast } from './components/AchievementToast';
+import { OrientationGuard } from './components/OrientationGuard';
+import { ControlsModal } from './components/ControlsModal';
 
 const GameView: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
@@ -19,11 +21,15 @@ const GameView: React.FC = () => {
   const returnToLanding = useStore((s) => s.returnToLanding);
 
   const [loading, setLoading] = React.useState(true);
+  const [showControls, setShowControls] = React.useState(false);
 
   useInput();
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setShowControls(true);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -80,6 +86,9 @@ const GameView: React.FC = () => {
         </button>
       </div>
 
+      {/* Landscape orientation guard (mobile only) */}
+      <OrientationGuard />
+
       {/* Project Details Modal */}
       <AnimatePresence>
         {gameState.activeProject && (
@@ -97,6 +106,17 @@ const GameView: React.FC = () => {
             onClose={() => setGameState((s) => ({ ...s, showContact: false }))}
             onSuccess={() => setGameState((s) => ({ ...s, submittedContact: true }))}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Controls Modal */}
+      <AnimatePresence>
+        {showControls && (
+          <ControlsModal onClose={() => {
+            setShowControls(false);
+            // Optionally auto-enable audio when they dismiss the modal
+            if (!gameState.audioPlaying) onAudioToggle(true);
+          }} />
         )}
       </AnimatePresence>
     </>

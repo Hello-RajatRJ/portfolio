@@ -1,36 +1,39 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Vector3, Mesh } from 'three';
 import { Text } from '@react-three/drei';
-import { carGlobalPosition } from '../Car';
+import { carGlobalPosition } from '../CarState';
 import { useStore } from '../../store/useStore';
+
+// Define positions statically outside the component
+const coins = Array.from({ length: 20 }).map((_, i) => ({
+  id: i,
+  pos: new Vector3(
+    (Math.random() - 0.5) * 36,
+    0.5,
+    (Math.random() - 0.5) * 36
+  )
+}));
+
+const checkpoints = [
+  new Vector3(18, 0, 20), // Start/End in minigame zone
+  new Vector3(-20, 0, 15),
+  new Vector3(-25, 0, -25),
+  new Vector3(20, 0, -20),
+  new Vector3(25, 0, -5),
+];
 
 export const MiniGames: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
   const setGameState = useStore((s) => s.setGameState);
   const triggerAchievement = useStore((s) => s.triggerAchievement);
 
-  // Helper refs to prevent constant re-renders
+  // Helper refs to prevent constant re-renders for logic
   const collectedCoins = useRef<Set<number>>(new Set());
   const currentCheckpoint = useRef(0);
   
-  // Define positions
-  const coins = useMemo(() => {
-    return Array.from({ length: 20 }).map((_, i) => ({
-      id: i,
-      pos: new Vector3((Math.random() - 0.5) * 60, 0.5, (Math.random() - 0.5) * 60)
-    }));
-  }, []);
-
-  const checkpoints = useMemo(() => {
-    return [
-      new Vector3(18, 0, 20), // Start/End in minigame zone
-      new Vector3(-20, 0, 15),
-      new Vector3(-25, 0, -25),
-      new Vector3(20, 0, -20),
-      new Vector3(25, 0, -5),
-    ];
-  }, []);
+  // State for rendering coins without reading refs during render
+  const [localCoinsCollected, setLocalCoinsCollected] = useState<Set<number>>(new Set());
 
   // Update loop for mini-game logic
   useFrame((_, delta) => {
@@ -49,6 +52,7 @@ export const MiniGames: React.FC = () => {
       });
       
       if (newlyCollected) {
+        setLocalCoinsCollected(new Set(collectedCoins.current));
         setGameState(prev => ({ ...prev, coinsCollected: collectedCoins.current.size }));
         if (collectedCoins.current.size === coins.length) {
           // Win!
@@ -123,17 +127,23 @@ export const MiniGames: React.FC = () => {
 
   return (
     <group>
-      {/* Minigame Starter Zone */}
-      <group position={[18, 0, 20]}>
+      {/* Minigame Starter Zone — subtle neon boundary */}
+      <group position={[13, 0, -12]}>
+        {/* Small subtle ring marker (not a huge debug ring) */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-          <ringGeometry args={[14.8, 15, 32]} />
-          <meshBasicMaterial color="#ff00ff" toneMapped={false} />
+          <ringGeometry args={[5.2, 5.5, 48]} />
+          <meshBasicMaterial color="#7c3aed" toneMapped={false} opacity={0.4} transparent />
         </mesh>
-        
-        <Text position={[0, 5, 0]} fontSize={0.6} color="#ff00ff">
+        {/* Inner zone glow disc */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+          <circleGeometry args={[5.2, 48]} />
+          <meshBasicMaterial color="#a855f7" toneMapped={false} opacity={0.04} transparent />
+        </mesh>
+
+        <Text position={[0, 4.5, 0]} fontSize={0.55} color="#a855f7">
           MINI-GAMES
         </Text>
-        <Text position={[0, 4.2, 0]} fontSize={0.25} color="#ffffff">
+        <Text position={[0, 3.8, 0]} fontSize={0.22} color="rgba(255,255,255,0.6)">
           Enter zone to start a challenge
         </Text>
 
@@ -146,6 +156,7 @@ export const MiniGames: React.FC = () => {
               color="#ffff00" 
               onTrigger={() => {
                 collectedCoins.current.clear();
+                setLocalCoinsCollected(new Set());
                 setGameState(s => ({ ...s, activeMiniGame: 'coins', coinsCollected: 0 }));
               }} 
             />
@@ -172,14 +183,14 @@ export const MiniGames: React.FC = () => {
 
       {/* Render Coins */}
       {gameState.activeMiniGame === 'coins' && coins.map((coin, i) => (
-        !collectedCoins.current.has(i) && <Coin key={i} position={coin.pos} />
+        !localCoinsCollected.has(i) && <Coin key={i} position={coin.pos} />
       ))}
 
       {/* Render Checkpoints */}
       {gameState.activeMiniGame === 'race' && (
         <Checkpoint 
-          position={checkpoints[currentCheckpoint.current]} 
-          index={currentCheckpoint.current} 
+          position={checkpoints[gameState.checkpointsCleared]} 
+          index={gameState.checkpointsCleared} 
         />
       )}
       
@@ -208,7 +219,8 @@ export const MiniGames: React.FC = () => {
 
 const MinigameTrigger: React.FC<{ position: [number, number, number], title: string, color: string, onTrigger: () => void }> = ({ position, title, color, onTrigger }) => {
   useFrame(() => {
-    const pos = new Vector3(...position).add(new Vector3(18, 0, 20)); // offset by parent
+    // Offset by parent group position (13, 0, -12)
+    const pos = new Vector3(...position).add(new Vector3(13, 0, -12));
     if (carGlobalPosition.distanceTo(pos) < 2) {
       onTrigger();
     }

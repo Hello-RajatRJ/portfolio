@@ -38,7 +38,7 @@ export const Contact: React.FC = () => {
   ];
 
   return (
-    <section id="contact" ref={ref} className="py-32 bg-white relative overflow-hidden">
+    <section id="contact" ref={ref} className="py-20 sm:py-32 bg-white relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-radial from-primary-500/5 via-transparent to-transparent pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
@@ -48,7 +48,7 @@ export const Contact: React.FC = () => {
           className="text-center mb-16"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">06. CONTACT</p>
-          <h2 className="font-orbitron text-4xl md:text-5xl font-black text-slate-900 mb-4">
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">
             Get In <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Touch</span>
           </h2>
           <p className="font-inter text-slate-600 max-w-lg mx-auto">
@@ -56,7 +56,7 @@ export const Contact: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           {/* Info column */}
           <motion.div
             initial={{ opacity: 0, x: -40 }}

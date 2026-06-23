@@ -34,8 +34,11 @@ export const Hero: React.FC = () => {
         const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35);
         return () => clearTimeout(t);
       } else {
-        setDeleting(false);
-        setRoleIndex((i) => (i + 1) % roles.length);
+        const t = setTimeout(() => {
+          setDeleting(false);
+          setRoleIndex((i) => (i + 1) % roles.length);
+        }, 50);
+        return () => clearTimeout(t);
       }
     }
   }, [displayed, deleting, roleIndex]);
@@ -132,7 +135,7 @@ export const Hero: React.FC = () => {
       />
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-4xl lg:max-w-5xl mx-auto">
         {/* Availability badge */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -216,7 +219,7 @@ export const Hero: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.3 }}
-          className="flex justify-center gap-12 mt-16 pt-12 border-t border-gray-200"
+          className="flex flex-wrap justify-center gap-6 sm:gap-12 mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-gray-200"
         >
           {[
             { value: `${personal.yearsOfExperience}+`, label: 'Years Experience' },
@@ -224,10 +227,10 @@ export const Hero: React.FC = () => {
             { value: '5+', label: 'Countries Served' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="font-orbitron text-3xl font-black bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">
+              <div className="font-orbitron text-2xl sm:text-3xl font-black bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">
                 {stat.value}
               </div>
-              <div className="font-inter text-slate-500 text-sm mt-1">{stat.label}</div>
+              <div className="font-inter text-slate-500 text-xs sm:text-sm mt-1">{stat.label}</div>
             </div>
           ))}
         </motion.div>

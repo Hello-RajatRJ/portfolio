@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Vector3, Group } from 'three';
-import { carGlobalPosition } from '../Car';
+import { carGlobalPosition } from '../CarState';
 
 // Physics state for destructible props
 export interface DestructibleState {
@@ -16,16 +16,18 @@ export interface DestructibleState {
 }
 
 // Global registry of all destructibles
-export const destructiblesList: DestructibleState[] = [];
+const destructiblesList: DestructibleState[] = [];
 
 // Helper to initialize trees
-export const initTrees = () => {
+const initTrees = () => {
   if (destructiblesList.length > 0) return; // already initialized
 
-  // Add some trees around the map
+  // Add trees around the map edges — within ±22 boundary, spaced to not clutter gameplay
   const treePositions = [
-    [-15, 8], [-12, -22], [8, -12], [22, -8], [-25, 25],
-    [10, 20], [15, 22], [25, 15], [-25, -20], [-20, -25]
+    [-19, 6], [-19, -6], [-19, 18], [-19, -18],
+    [19, 6], [19, -6], [19, 18], [19, -18],
+    [-6, -19], [6, -19], [18, -19], [-18, -19],
+    [0, 19], [12, 19], [-12, 19],
   ];
 
   treePositions.forEach((pos, i) => {
@@ -37,7 +39,7 @@ export const initTrees = () => {
       rot: new Vector3(0, Math.random() * Math.PI, 0),
       rotVel: new Vector3(0, 0, 0),
       knocked: false,
-      scale: 1.0 + Math.random() * 0.5,
+      scale: 0.65 + Math.random() * 0.35, // Smaller trees (was 1.0-1.5)
     });
   });
 };

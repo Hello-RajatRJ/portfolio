@@ -1,7 +1,7 @@
 class AudioSynth {
   private ctx: AudioContext | null = null;
   private isPlaying = false;
-  private timerId: any = null;
+  private timerId: ReturnType<typeof setTimeout> | null = null;
   private currentBeat = 0;
   private tempo = 110; // BPM
   private synthDelayNode: DelayNode | null = null;
@@ -28,6 +28,7 @@ class AudioSynth {
 
     // Initialize AudioContext
     if (!this.ctx) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
 

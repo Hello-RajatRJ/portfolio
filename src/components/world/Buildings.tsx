@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from '@react-three/drei';
 import type { Project } from '../../types';
-import { PROJECT_BILLBOARDS } from '../Car';
+import { PROJECT_BILLBOARDS } from '../CarState';
 
 interface BuildingsProps {
   projects: Project[];
@@ -11,7 +11,7 @@ interface BuildingsProps {
 export const Buildings: React.FC<BuildingsProps> = ({ projects, activeProjectZoneId }) => {
   return (
     <group>
-      {PROJECT_BILLBOARDS.map((bb) => {
+      {PROJECT_BILLBOARDS.map((bb: { id: string; x: number; z: number; radius: number }) => {
         const project = projects.find((p) => p.id === bb.id);
         if (!project) return null;
         
@@ -20,7 +20,7 @@ export const Buildings: React.FC<BuildingsProps> = ({ projects, activeProjectZon
         const style = project.buildingStyle;
 
         return (
-          <group key={bb.id} position={[bb.x, 0, bb.z]} scale={[0.8, 0.8, 0.8]}>
+          <group key={bb.id} position={[bb.x, 0, bb.z]} scale={[0.55, 0.55, 0.55]}>
             {/* Ground Ring (Zone Trigger) */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
               <ringGeometry args={[bb.radius - 0.2, bb.radius, 32]} />
@@ -33,8 +33,8 @@ export const Buildings: React.FC<BuildingsProps> = ({ projects, activeProjectZon
             {/* Interaction Prompt */}
             {isCurrentActive && (
               <Text
-                position={[0, 4.5, 0]}
-                fontSize={0.45}
+                position={[0, 3.8, 0]}
+                fontSize={0.5}
                 color="#7c3aed"
               >
                 PRESS ENTER
@@ -42,8 +42,8 @@ export const Buildings: React.FC<BuildingsProps> = ({ projects, activeProjectZon
             )}
             
             <Text
-              position={[0, 3.8, 0]}
-              fontSize={0.25}
+              position={[0, 3.0, 0]}
+              fontSize={0.28}
               color={color}
             >
               {project.name}

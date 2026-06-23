@@ -61,7 +61,7 @@ export const experience = [
     period: '2023 – Present',
     description: 'Delivering full-stack web solutions for international clients across healthcare, EdTech, fintech, and social platforms. Specializing in React, Node.js, and 3D web experiences.',
     highlights: [
-      'Built 8+ production web applications across diverse industries',
+      'Delivered and deployed 8+ production web applications, and contributed to more than 20 projects overall',
       'Architected scalable REST APIs serving thousands of daily users',
       'Implemented 3D interactive experiences using Three.js and React Three Fiber',
       'Collaborated with remote teams across Australia, Taiwan, India, and the US',

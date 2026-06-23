@@ -69,7 +69,6 @@ export const Contact: React.FC = () => {
   const socials = [
     { label: 'LinkedIn', href: personal.linkedin, color: '#0077B5', emoji: '💼' },
     { label: 'GitHub', href: personal.github, color: '#ffffff', emoji: '⌨️' },
-    { label: 'Twitter', href: personal.twitter, color: '#1DA1F2', emoji: '🐦' },
     { label: 'Email', href: `mailto:${personal.email}`, color: '#6366f1', emoji: '✉️' },
   ].filter(s => !!s.href); // Only keep socials that actually have a URL string
 

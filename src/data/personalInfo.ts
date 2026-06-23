@@ -11,8 +11,7 @@ export const personal = {
   location: 'India',
   email: 'rajatgautam179@gmail.com',
   linkedin: 'https://www.linkedin.com/in/rajat-ambedker-961974231',
-  github: 'https://github.com/rajat',         // TODO: Replace
-  twitter: 'https://twitter.com/rajat',       // TODO: Replace (optional)
+  github: 'https://github.com/Hello-RajatRJ/portfolio',
   resume: '/cv/RajatAmbedkar_CV.docx',
   yearsOfExperience: 4,
   availableForWork: true,

@@ -37,7 +37,7 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 font-mono text-sm text-white/80 space-y-4">
+        <div className="p-4 sm:p-6 font-mono text-sm text-white/80 space-y-4 max-h-[50vh] overflow-y-auto">
           {!isMobile ? (
             <div className="space-y-3">
               <div className="flex justify-between items-center pb-2 border-b border-white/5">

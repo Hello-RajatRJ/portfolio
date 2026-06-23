@@ -341,6 +341,16 @@ const MobileTouchControls: React.FC = () => {
             <span className="mc-label">DRIFT</span>
           </button>
           <button
+            className="mc-btn mc-horn"
+            onTouchStart={() => press('horn')}
+            onTouchEnd={() => release('horn')}
+            onTouchCancel={() => release('horn')}
+            aria-label="Horn"
+          >
+            <span className="mc-icon">🔊</span>
+            <span className="mc-label">HORN</span>
+          </button>
+          <button
             className="mc-btn mc-wheelie"
             onTouchStart={() => press('wheelie')}
             onTouchEnd={() => release('wheelie')}

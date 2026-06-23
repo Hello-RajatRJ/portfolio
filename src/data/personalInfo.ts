@@ -9,7 +9,7 @@ export const personal = {
   tagline: 'Building immersive web experiences that push boundaries',
   bio: "I'm a passionate full-stack developer with expertise in modern web technologies, 3D graphics, and interactive user experiences. I love turning complex problems into elegant, performant solutions — from real-time data dashboards to immersive 3D worlds.",
   location: 'India',
-  email: 'rajat@example.com',           // TODO: Replace with real email
+  email: 'rajatgautam179@gmail.com',
   linkedin: 'https://linkedin.com/in/rajat',  // TODO: Replace
   github: 'https://github.com/rajat',         // TODO: Replace
   twitter: 'https://twitter.com/rajat',       // TODO: Replace (optional)

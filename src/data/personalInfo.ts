@@ -10,7 +10,7 @@ export const personal = {
   bio: "I'm a passionate full-stack developer with expertise in modern web technologies, 3D graphics, and interactive user experiences. I love turning complex problems into elegant, performant solutions — from real-time data dashboards to immersive 3D worlds.",
   location: 'India',
   email: 'rajatgautam179@gmail.com',
-  linkedin: 'https://linkedin.com/in/rajat',  // TODO: Replace
+  linkedin: 'https://www.linkedin.com/in/rajat-ambedker-961974231',
   github: 'https://github.com/rajat',         // TODO: Replace
   twitter: 'https://twitter.com/rajat',       // TODO: Replace (optional)
   resume: '/cv/RajatAmbedkar_CV.docx',

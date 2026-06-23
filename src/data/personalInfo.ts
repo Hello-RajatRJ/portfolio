@@ -41,8 +41,8 @@ export const skills = [
   
   // DevOps, Cloud & Tools
   { name: 'Git / GitHub', level: 80, category: 'Tools', icon: '🐙' },
-  { name: 'Vite / Webpack', level: 88, category: 'Tools', icon: '⚡' },
-  { name: 'Docker', level: 75, category: 'DevOps', icon: '🐳' },
+  { name: 'Vite / Webpack', level: 70, category: 'Tools', icon: '⚡' },
+  { name: 'Docker', level: 50, category: 'DevOps', icon: '🐳' },
   { name: 'AWS / Azure', level: 50, category: 'Cloud', icon: '☁️' },
   { name: 'CI/CD', level: 50, category: 'DevOps', icon: '🔄' },
   

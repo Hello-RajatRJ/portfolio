@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Keyboard, Smartphone, X } from 'lucide-react';
 
@@ -7,12 +7,12 @@ interface ControlsModalProps {
 }
 
 export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Basic touch detection
-    setIsMobile(window.matchMedia('(max-width: 768px)').matches || navigator.maxTouchPoints > 0);
-  }, []);
+  const [isMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(max-width: 768px)').matches || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+    }
+    return false;
+  });
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/60 backdrop-blur-sm pointer-events-auto">

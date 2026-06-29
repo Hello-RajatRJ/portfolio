@@ -32,18 +32,18 @@ export const skills = [
   { name: 'Redux / Zustand', level: 88, category: 'State Management', icon: '📦' },
   
   // Backend & Databases
-  { name: 'Node.js', level: 50, category: 'Backend', icon: '🟢' },
-  { name: 'NestJS', level: 50, category: 'Backend', icon: '🦁' },
-  { name: 'PostgreSQL / SQL', level: 50, category: 'Databases', icon: '🐘' },
-  { name: 'MongoDB', level: 60, category: 'Databases', icon: '🍃' },
-  { name: 'MySQL', level: 50, category: 'Databases', icon: '🐬' },
+  { name: 'Node.js', level: 70, category: 'Backend', icon: '🟢' },
+  { name: 'NestJS', level: 70, category: 'Backend', icon: '🦁' },
+  { name: 'PostgreSQL / SQL', level: 70, category: 'Databases', icon: '🐘' },
+  { name: 'MongoDB', level: 70, category: 'Databases', icon: '🍃' },
+  { name: 'MySQL', level: 70, category: 'Databases', icon: '🐬' },
   
   // DevOps, Cloud & Tools
   { name: 'Git / GitHub', level: 80, category: 'Tools', icon: '🐙' },
   { name: 'Vite / Webpack', level: 70, category: 'Tools', icon: '⚡' },
-  { name: 'Docker', level: 50, category: 'DevOps', icon: '🐳' },
-  { name: 'AWS / Azure', level: 50, category: 'Cloud', icon: '☁️' },
-  { name: 'CI/CD', level: 50, category: 'DevOps', icon: '🔄' },
+  { name: 'Docker', level: 70, category: 'DevOps', icon: '🐳' },
+  { name: 'AWS / Azure', level: 70, category: 'Cloud', icon: '☁️' },
+  { name: 'CI/CD', level: 70, category: 'DevOps', icon: '🔄' },
   
   // Integrations & Additional
   { name: 'JWT Auth', level: 70, category: 'Auth', icon: '🔐' },

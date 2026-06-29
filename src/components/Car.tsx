@@ -23,7 +23,7 @@ const useEngineAudio = (speedRef: React.MutableRefObject<number>, enabled: boole
       bmwEngine.current.volume = 0.0; // Start quiet, fades in via useFrame
       // Preserve pitch is important for some browsers, but we want the pitch to change with speed!
       if ('preservesPitch' in bmwEngine.current) {
-        (bmwEngine.current as any).preservesPitch = false;
+        (bmwEngine.current as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = false;
       }
     }
 

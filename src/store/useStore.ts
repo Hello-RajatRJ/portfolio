@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { GameState } from '../types';
 import projectsData from '../data/projects.json';
 
-type View = 'landing' | 'game';
+type View = 'landing' | 'game' | 'showcase';
 
 interface AppStore {
   // View management
@@ -10,6 +10,11 @@ interface AppStore {
   setView: (view: View) => void;
   launchGame: () => void;
   returnToLanding: () => void;
+
+  // Showcase
+  openShowcase: () => void;
+  showcasePage: string | null; // null = main showcase grid, otherwise category slug
+  setShowcasePage: (page: string | null) => void;
 
   // Game state
   gameState: GameState;
@@ -59,7 +64,12 @@ export const useStore = create<AppStore>((set) => ({
   view: 'landing',
   setView: (view) => set({ view }),
   launchGame: () => set({ view: 'game' }),
-  returnToLanding: () => set({ view: 'landing' }),
+  returnToLanding: () => set({ view: 'landing', showcasePage: null }),
+
+  // Showcase
+  openShowcase: () => set({ view: 'showcase', showcasePage: null }),
+  showcasePage: null,
+  setShowcasePage: (page) => set({ showcasePage: page }),
 
   // Game state
   gameState: initialGameState,

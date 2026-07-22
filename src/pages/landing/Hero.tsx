@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import AnimationShowcaseButton from '../../components/AnimationShowcaseButton';
 import { motion } from 'framer-motion';
 import { useStore } from '../../store/useStore';
 import { personal } from '../../data/personalInfo';
@@ -212,6 +213,11 @@ export const Hero: React.FC = () => {
             </span>
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
+
+          {/* Animation Showcase button */}
+          <div className="mt-4">
+            <AnimationShowcaseButton />
+          </div>
         </motion.div>
 
         {/* Stats row */}

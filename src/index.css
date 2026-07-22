@@ -185,3 +185,115 @@
 .bg-dark-900 { background-color: #fafafa; }
 .bg-dark-800 { background-color: #f3f4f6; }
 .bg-dark-700 { background-color: #e5e7eb; }
+
+/* ============================================
+   ANIMATION SHOWCASE — Utilities
+   ============================================ */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Smooth scrollbar for showcase dark pages */
+.showcase-dark::-webkit-scrollbar { width: 4px; }
+.showcase-dark::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.showcase-dark::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 2px; }
+
+/* ============================================
+   MARQUEE — Infinite scroll text
+   ============================================ */
+@keyframes marquee-scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes marquee-scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+.marquee-left {
+  animation: marquee-scroll-left var(--speed, 30s) linear infinite;
+}
+.marquee-right {
+  animation: marquee-scroll-right var(--speed, 30s) linear infinite;
+}
+
+/* ============================================
+   CUSTOM CURSOR — Hide default on showcase
+   ============================================ */
+.showcase-cursor-hide,
+.showcase-cursor-hide * {
+  cursor: none !important;
+}
+
+/* ============================================
+   TEXT LINE MASK — orgnzm.studio style
+   ============================================ */
+.text-line-mask {
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+  overflow: hidden;
+}
+
+/* ============================================
+   LIQUID GLASS — SVG filter based glass effect
+   ============================================ */
+.liquid-glass {
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================
+   RAINBOW GRADIENT TEXT HOVER
+   ============================================ */
+.rainbow-hover {
+  transition: all 0.5s ease-out;
+}
+.rainbow-hover:hover {
+  background: linear-gradient(270deg, #D586E1 0%, #A886E1 14%, #6F75E4 28%, #6FB1E4 42%, #6FE4B7 56%, #98E46F 70%, #DEE46F 79%, #E4A46F 93%, #E46F6F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================
+   ANIMATED GRADIENT BORDER
+   ============================================ */
+@keyframes border-rotate {
+  0% { --angle: 0deg; }
+  100% { --angle: 360deg; }
+}
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.animated-border {
+  border: 1px solid transparent;
+  background-image: linear-gradient(rgba(10,10,15,1), rgba(10,10,15,1)),
+                     conic-gradient(from var(--angle), transparent 20%, rgba(139,92,246,0.4) 40%, transparent 60%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  animation: border-rotate 4s linear infinite;
+}
+
+/* ============================================
+   COUNTER ANIMATION — tabular nums
+   ============================================ */
+.counter-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+

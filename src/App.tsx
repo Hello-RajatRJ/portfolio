@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from './store/useStore';
 import { Landing } from './pages/Landing';
+import AnimationShowcase from './pages/AnimationShowcase';
 import { GameCanvas } from './components/GameCanvas';
 import { HUD } from './components/HUD';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -139,6 +140,18 @@ const App: React.FC = () => {
           style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
         >
           <Landing />
+        </motion.div>
+      ) : view === 'showcase' ? (
+        <motion.div
+          key="showcase"
+          id="showcase-scroll-container"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -30 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+        >
+          <AnimationShowcase />
         </motion.div>
       ) : (
         <motion.div

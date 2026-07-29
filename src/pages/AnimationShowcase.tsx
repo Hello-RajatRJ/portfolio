@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
 import { animationCategories } from '../data/animationCategories';
 import CategoryCard from '../components/CategoryCard';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, FileText, Sparkles } from 'lucide-react';
 import LuxuryCarPage from './showcase/LuxuryCarPage';
 import RealEstatePage from './showcase/RealEstatePage';
 import AIProductPage from './showcase/AIProductPage';
@@ -32,6 +32,7 @@ const AnimationShowcase: React.FC = () => {
   const showcasePage = useStore((s) => s.showcasePage);
   const setShowcasePage = useStore((s) => s.setShowcasePage);
   const returnToLanding = useStore((s) => s.returnToLanding);
+  const openResumeBuilder = useStore((s) => s.openResumeBuilder);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const transitionRef = useRef<PageTransitionHandle>(null);
   const [loadingComplete, setLoadingComplete] = useState(false);
@@ -297,6 +298,48 @@ const AnimationShowcase: React.FC = () => {
                   />
                 ))}
               </div>
+            </section>
+
+            {/* Resume Builder Showcase Callout Section */}
+            <section className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 mb-24">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-indigo-950/40 via-purple-950/20 to-slate-950/80 p-8 sm:p-12 text-center backdrop-blur-xl shadow-2xl"
+              >
+                {/* Background ambient glow */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                <div className="relative z-10 space-y-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-orbitron tracking-widest uppercase">
+                    <Sparkles size={14} className="text-purple-400" />
+                    POWERFUL ATS RESUME ARCHITECT
+                  </div>
+
+                  <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                    BUILD YOUR FREE <span className="bg-gradient-to-r from-purple-400 via-indigo-300 to-emerald-400 bg-clip-text text-transparent">ATS-FRIENDLY RESUME</span>
+                  </h2>
+
+                  <p className="max-w-2xl mx-auto font-inter text-slate-300 text-sm sm:text-base leading-relaxed">
+                    Craft modern, recruiter-approved resumes with real-time ATS optimization scoring, AI-driven description suggestions, Job Description matching, and free exportable templates.
+                  </p>
+
+                  <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05, boxShadow: '0 0 35px rgba(99, 102, 241, 0.5)' }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={openResumeBuilder}
+                      className="flex items-center gap-3 px-8 py-4 rounded-2xl font-orbitron text-sm tracking-widest font-black text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 shadow-xl hover:brightness-110 transition-all duration-300 cursor-none"
+                      data-cursor-label="BUILD NOW"
+                    >
+                      <FileText size={18} />
+                      CREATE YOUR RESUME
+                    </motion.button>
+                  </div>
+                </div>
+              </motion.div>
             </section>
 
             {/* Footer */}

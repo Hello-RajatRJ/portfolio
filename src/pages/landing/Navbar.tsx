@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Gamepad2 } from 'lucide-react';
+import { Menu, X, Gamepad2, FileText } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { personal } from '../../data/personalInfo';
 
@@ -15,6 +15,7 @@ const navLinks = [
 
 export const Navbar: React.FC = () => {
   const launchGame = useStore((s) => s.launchGame);
+  const openResumeBuilder = useStore((s) => s.openResumeBuilder);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -67,8 +68,17 @@ export const Navbar: React.FC = () => {
               ))}
             </div>
 
-            {/* Right side: Play button + mobile menu */}
+            {/* Right side: Play button + Resume Builder + mobile menu */}
             <div className="flex items-center gap-3">
+              <button
+                id="nav-resume-builder-btn"
+                onClick={openResumeBuilder}
+                className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all"
+              >
+                <FileText size={14} />
+                BUILD RESUME
+              </button>
+
               <button
                 id="nav-play-game-btn"
                 onClick={launchGame}

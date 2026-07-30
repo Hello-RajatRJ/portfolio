@@ -15,6 +15,7 @@ import { MiniGameOverlay } from './components/MiniGameOverlay';
 import { AchievementToast } from './components/AchievementToast';
 import { OrientationGuard } from './components/OrientationGuard';
 import { ControlsModal } from './components/ControlsModal';
+import { SEO } from './components/SEO';
 
 const GameView: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
@@ -125,59 +126,63 @@ const GameView: React.FC = () => {
   );
 };
 
-const App: React.FC = () => {
+export const App: React.FC = () => {
   const view = useStore((s) => s.view);
 
   return (
-    <AnimatePresence mode="wait">
-      {view === 'landing' ? (
-        <motion.div
-          key="landing"
-          className="landing-view"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0, scale: 1.05 }}
-          transition={{ duration: 0.4 }}
-          style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-        >
-          <Landing />
-        </motion.div>
-      ) : view === 'showcase' ? (
-        <motion.div
-          key="showcase"
-          id="showcase-scroll-container"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -30 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-        >
-          <AnimationShowcase />
-        </motion.div>
-      ) : view === 'builder' ? (
-        <motion.div
-          key="builder"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4 }}
-          style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-        >
-          <ResumeBuilderPage />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="game"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          style={{ position: 'absolute', inset: 0 }}
-        >
-          <GameView />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <SEO />
+      <AnimatePresence mode="wait">
+        {view === 'landing' ? (
+          <motion.div
+            key="landing"
+            id="landing-scroll-container"
+            className="landing-view"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.4 }}
+            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+          >
+            <Landing />
+          </motion.div>
+        ) : view === 'showcase' ? (
+          <motion.div
+            key="showcase"
+            id="showcase-scroll-container"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -30 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+          >
+            <AnimationShowcase />
+          </motion.div>
+        ) : view === 'builder' ? (
+          <motion.div
+            key="builder"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+          >
+            <ResumeBuilderPage />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="game"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{ position: 'absolute', inset: 0 }}
+          >
+            <GameView />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

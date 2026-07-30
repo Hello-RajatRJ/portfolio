@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, User, Briefcase, GraduationCap, Code, FolderPlus, Award, Sparkles } from 'lucide-react';
+import { Plus, Trash2, User, Briefcase, GraduationCap, Code, FolderPlus, Award, Sparkles, Upload, Globe, Link, ExternalLink } from 'lucide-react';
 import type { ResumeData, WorkExperience, Education, SkillCategory, ProjectItem, Certification } from '../../types/resume';
 
 interface Props {
   data: ResumeData;
   onChangeData: (data: ResumeData) => void;
   onTriggerAISuggest: () => void;
+  onOpenUploadModal?: () => void;
+  onOpenAIOptimizer?: () => void;
 }
 
 interface CommaSeparatedInputProps {
@@ -48,7 +50,13 @@ const CommaSeparatedInput: React.FC<CommaSeparatedInputProps> = ({ value, onChan
 
 type TabType = 'personal' | 'experience' | 'education' | 'skills' | 'projects' | 'certs';
 
-export const ResumeFormEditor: React.FC<Props> = ({ data, onChangeData, onTriggerAISuggest }) => {
+export const ResumeFormEditor: React.FC<Props> = ({
+  data,
+  onChangeData,
+  onTriggerAISuggest,
+  onOpenUploadModal,
+  onOpenAIOptimizer,
+}) => {
   const [activeTab, setActiveTab] = useState<TabType>('personal');
 
   // Personal Info handlers
@@ -223,7 +231,35 @@ export const ResumeFormEditor: React.FC<Props> = ({ data, onChangeData, onTrigge
   ];
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 text-white shadow-xl">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 text-white shadow-xl space-y-4">
+      {/* Quick Actions Header Banner */}
+      <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="text-xs">
+          <span className="font-bold text-slate-200 block">Resume Editor Tools</span>
+          <span className="text-[11px] text-slate-400">Import existing CV or tailor project technologies to Job Description</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {onOpenUploadModal && (
+            <button
+              onClick={onOpenUploadModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-950/60 border border-indigo-500/40 hover:bg-indigo-900/80 text-indigo-300 text-xs font-semibold transition-all"
+            >
+              <Upload size={13} />
+              <span>Upload CV</span>
+            </button>
+          )}
+          {onOpenAIOptimizer && (
+            <button
+              onClick={onOpenAIOptimizer}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold shadow-md transition-all"
+            >
+              <Sparkles size={13} />
+              <span>AI Tailor for JD</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex border-b border-slate-800 overflow-x-auto gap-1 mb-6 pb-2 scrollbar-none">
         {tabs.map((tab) => {
@@ -301,13 +337,39 @@ export const ResumeFormEditor: React.FC<Props> = ({ data, onChangeData, onTrigge
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">GitHub / Portfolio</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
+                <Globe size={13} className="text-indigo-400" /> Portfolio Website
+              </label>
+              <input
+                type="text"
+                value={data.personalInfo.website}
+                onChange={(e) => handlePersonalChange('website', e.target.value)}
+                placeholder="https://rajatportfolio.dev"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
+                <Link size={13} className="text-purple-400" /> GitHub Profile
+              </label>
               <input
                 type="text"
                 value={data.personalInfo.github}
                 onChange={(e) => handlePersonalChange('github', e.target.value)}
-                placeholder="github.com/Hello-RajatRJ"
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"
+                placeholder="https://github.com/Hello-RajatRJ"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-400 mb-1 flex items-center gap-1">
+                <ExternalLink size={13} className="text-blue-400" /> LinkedIn Profile
+              </label>
+              <input
+                type="text"
+                value={data.personalInfo.linkedin}
+                onChange={(e) => handlePersonalChange('linkedin', e.target.value)}
+                placeholder="https://linkedin.com/in/rajat-ambedkar"
+                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
               />
             </div>
           </div>

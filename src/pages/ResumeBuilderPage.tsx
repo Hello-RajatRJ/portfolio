@@ -8,6 +8,8 @@ import { ResumeHeader } from '../components/resume/ResumeHeader';
 import { ResumeFormEditor } from '../components/resume/ResumeFormEditor';
 import { ATSCheckerPanel } from '../components/resume/ATSCheckerPanel';
 import { AISuggestionModal } from '../components/resume/AISuggestionModal';
+import { UploadCVModal } from '../components/resume/UploadCVModal';
+import { AIOptimizerModal } from '../components/resume/AIOptimizerModal';
 import { ATSClassicTemplate } from '../components/resume/templates/ATSClassicTemplate';
 import { ModernTechTemplate } from '../components/resume/templates/ModernTechTemplate';
 import { CreativeStudioTemplate } from '../components/resume/templates/CreativeStudioTemplate';
@@ -28,6 +30,8 @@ export const ResumeBuilderPage: React.FC = () => {
   const [jobDescriptionText, setJobDescriptionText] = useState('');
   const [showATS, setShowATS] = useState(true);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showAIOptimizerModal, setShowAIOptimizerModal] = useState(false);
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
 
@@ -135,6 +139,8 @@ export const ResumeBuilderPage: React.FC = () => {
         onToggleATS={() => setShowATS(!showATS)}
         showATS={showATS}
         onOpenAIModal={() => setShowAIModal(true)}
+        onOpenUploadModal={() => setShowUploadModal(true)}
+        onOpenAIOptimizer={() => setShowAIOptimizerModal(true)}
         onDownloadPDF={handleDownloadPDF}
         isDownloadingPDF={isDownloadingPDF}
         onOpenGallery={() => setShowGallery(true)}
@@ -148,6 +154,8 @@ export const ResumeBuilderPage: React.FC = () => {
             data={resumeData}
             onChangeData={setResumeData}
             onTriggerAISuggest={() => setShowAIModal(true)}
+            onOpenUploadModal={() => setShowUploadModal(true)}
+            onOpenAIOptimizer={() => setShowAIOptimizerModal(true)}
           />
 
           {showATS && (
@@ -179,7 +187,24 @@ export const ResumeBuilderPage: React.FC = () => {
         </div>
       </main>
 
-      {/* AI Suggestion Modal */}
+      {/* Upload CV Modal */}
+      {showUploadModal && (
+        <UploadCVModal
+          onImportResume={(importedData) => setResumeData(importedData)}
+          onClose={() => setShowUploadModal(false)}
+        />
+      )}
+
+      {/* AI Resume Optimization Modal */}
+      {showAIOptimizerModal && (
+        <AIOptimizerModal
+          data={resumeData}
+          onApplyOptimization={(optimizedData) => setResumeData(optimizedData)}
+          onClose={() => setShowAIOptimizerModal(false)}
+        />
+      )}
+
+      {/* Standard AI Suggestion Modal */}
       {showAIModal && (
         <AISuggestionModal
           data={resumeData}

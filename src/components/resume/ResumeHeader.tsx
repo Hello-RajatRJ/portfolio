@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Sparkles, Download, RefreshCw, Palette, FileText, CheckCircle, ChevronDown, Layers, Printer } from 'lucide-react';
+import { ArrowLeft, Sparkles, Download, RefreshCw, Palette, FileText, CheckCircle, ChevronDown, Layers, Printer, Upload } from 'lucide-react';
 import type { ResumeData, TemplateId } from '../../types/resume';
 
 interface Props {
@@ -10,6 +10,8 @@ interface Props {
   onToggleATS: () => void;
   showATS: boolean;
   onOpenAIModal: () => void;
+  onOpenUploadModal?: () => void;
+  onOpenAIOptimizer?: () => void;
   onDownloadPDF: () => void;
   isDownloadingPDF?: boolean;
   onOpenGallery?: () => void;
@@ -118,6 +120,8 @@ export const ResumeHeader: React.FC<Props> = ({
   onToggleATS,
   showATS,
   onOpenAIModal,
+  onOpenUploadModal,
+  onOpenAIOptimizer,
   onDownloadPDF,
   isDownloadingPDF,
   onOpenGallery,
@@ -223,8 +227,30 @@ export const ResumeHeader: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Right: Actions (Sample, AI, ATS, Download, Print) */}
+        {/* Right: Actions (Upload CV, AI Optimize, Sample, ATS, Download, Print) */}
         <div className="flex items-center flex-wrap justify-center lg:justify-end gap-2 w-full lg:w-auto">
+          {onOpenUploadModal && (
+            <button
+              onClick={onOpenUploadModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 hover:text-white text-xs font-semibold shadow-sm transition-all"
+              title="Upload existing CV file (PDF/DOCX/JSON/TXT) to preview and edit"
+            >
+              <Upload size={13} />
+              <span>UPLOAD CV</span>
+            </button>
+          )}
+
+          {onOpenAIOptimizer && (
+            <button
+              onClick={onOpenAIOptimizer}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold shadow-lg shadow-purple-500/20 hover:scale-[1.02] transition-all"
+              title="Optimize resume and replace project technologies to match Job Description"
+            >
+              <Sparkles size={13} />
+              <span>AI OPTIMIZE FOR JD</span>
+            </button>
+          )}
+
           <button
             onClick={onLoadSample}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all"

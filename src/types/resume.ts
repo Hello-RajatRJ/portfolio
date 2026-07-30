@@ -146,3 +146,23 @@ export interface JDSuggestion {
   recommendedSummary: string;
   suggestedBullets: string[];
 }
+
+export interface AIOptimizationChange {
+  id: string;
+  category: 'summary' | 'skills' | 'project_tech' | 'project_description' | 'experience_highlight';
+  title: string;
+  originalText: string;
+  newText: string;
+  accepted: boolean;
+}
+
+export interface AIOptimizationResult {
+  tailoredData: ResumeData;
+  beforeATSScore: number;
+  afterATSScore: number;
+  extractedKeywords: string[];
+  missingKeywords: string[];
+  suggestedCertifications: string[];
+  changes: AIOptimizationChange[];
+}
+

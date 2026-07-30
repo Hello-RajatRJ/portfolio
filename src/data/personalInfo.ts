@@ -24,7 +24,6 @@ export const skills = [
   { name: 'Vue.js / Nuxt.js', level: 80, category: 'Frontend', icon: '🟩' },
   { name: 'JavaScript', level: 75, category: 'Languages', icon: '🟨' },
   { name: 'TypeScript', level: 75, category: 'Languages', icon: '🔷' },
-  { name: 'Three.js / R3F', level: 85, category: '3D / WebGL', icon: '🎮' },
   
   // Styling & State Management
   { name: 'Tailwind CSS', level: 90, category: 'Styling', icon: '🎨' },
@@ -50,6 +49,13 @@ export const skills = [
   { name: 'Socket.io', level: 70, category: 'Integrations', icon: '🔌' },
   { name: 'Agile / Scrum', level: 70, category: 'Additional', icon: '🏃' },
   { name: 'AI Tools / Chatbots', level: 85, category: 'Additional', icon: '🤖' },
+
+  // Beginner Skills
+  { name: 'Java', level: 45, category: 'Beginner Skills', icon: '☕' },
+  { name: 'Golang (Go)', level: 40, category: 'Beginner Skills', icon: '🐹' },
+  { name: 'Spring Boot', level: 45, category: 'Beginner Skills', icon: '🌱' },
+  { name: 'Three.js', level: 45, category: 'Beginner Skills', icon: '🎮' },
+  { name: 'Python', level: 45, category: 'Beginner Skills', icon: '🐍' },
 ];
 
 export const experience = [

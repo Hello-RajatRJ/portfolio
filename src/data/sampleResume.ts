@@ -1,5 +1,70 @@
 import type { ResumeData } from '../types/resume';
 
+export const emptyResumeData: ResumeData = {
+  personalInfo: {
+    fullName: '',
+    jobTitle: '',
+    email: '',
+    phone: '',
+    location: '',
+    website: '',
+    linkedin: '',
+    github: '',
+    summary: '',
+  },
+  workExperiences: [
+    {
+      id: 'exp-init-1',
+      jobTitle: '',
+      company: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      current: true,
+      highlights: [''],
+    },
+  ],
+  educations: [
+    {
+      id: 'edu-init-1',
+      institution: '',
+      degree: '',
+      fieldOfStudy: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      gpa: '',
+      highlights: [],
+    },
+  ],
+  skillCategories: [
+    {
+      id: 'cat-init-1',
+      categoryName: '',
+      skills: [],
+    },
+  ],
+  projects: [
+    {
+      id: 'proj-init-1',
+      title: '',
+      role: '',
+      duration: '',
+      techStack: [],
+      description: '',
+      highlights: [''],
+      link: '',
+    },
+  ],
+  certifications: [],
+  settings: {
+    templateId: 'ats-classic',
+    accentColor: '#4f46e5',
+    fontSize: 'md',
+    fontFamily: 'inter',
+  },
+};
+
 export const sampleResumeData: ResumeData = {
   personalInfo: {
     fullName: 'Rajat Ambedkar',
@@ -73,7 +138,7 @@ export const sampleResumeData: ResumeData = {
     {
       id: 'cat-1',
       categoryName: 'Frontend & UI',
-      skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Three.js / WebGL', 'Framer Motion', 'Zustand', 'HTML5/CSS3'],
+      skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Framer Motion', 'Zustand', 'HTML5/CSS3'],
     },
     {
       id: 'cat-2',
@@ -85,8 +150,28 @@ export const sampleResumeData: ResumeData = {
       categoryName: 'Tools & Testing',
       skills: ['Git', 'Vite', 'Webpack', 'Jest', 'Cypress', 'CI/CD Pipelines', 'Figma', 'Postman'],
     },
+    {
+      id: 'cat-4',
+      categoryName: 'Beginner Skills',
+      skills: ['Java', 'Golang (Go)', 'Spring Boot', 'Three.js', 'Python'],
+    },
   ],
   projects: [
+    {
+      id: 'proj-ceretax',
+      title: 'CereTax - Cloud-Native Tax Compliance Platform',
+      role: 'Full-Stack Developer',
+      duration: '2023 – Present',
+      techStack: ['React', 'TypeScript', 'Java (Beginner)', 'Golang (Beginner)', 'Spring Boot (Beginner)', 'Node.js', 'PostgreSQL'],
+      description:
+        'An enterprise-grade, cloud-native tax compliance and automation platform. Integrates sales & use tax calculation engines, ERP connectors, and analytics reporting.',
+      highlights: [
+        'Built interactive analytics dashboard and ERP integration layer for multi-jurisdiction tax calculation.',
+        'Contributed to backend services and microservices using Java, Spring Boot, and Golang.',
+        'Designed performant tax rule configuration interface managing thousands of jurisdiction rules.',
+      ],
+      link: 'https://ceretax.com',
+    },
     {
       id: 'proj-1',
       title: '3D Interactive Portfolio World',

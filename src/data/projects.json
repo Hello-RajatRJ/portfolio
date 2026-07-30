@@ -130,7 +130,7 @@
     "name": "CereTax",
     "tagline": "Cloud-Native Tax Compliance Platform",
     "description": "An enterprise-grade, cloud-native tax compliance and automation platform for high-volume businesses. Automates sales, use, and indirect tax calculations across jurisdictions, integrates with major ERPs, and provides audit-ready reporting for digital goods, SaaS, retail, and energy sectors.",
-    "tech": ["React", "TypeScript", "Node.js", "PostgreSQL", "REST APIs"],
+    "tech": ["React", "TypeScript", "Java (Beginner)", "Golang (Beginner)", "Spring Boot (Beginner)", "Node.js", "PostgreSQL", "REST APIs"],
     "features": [
       "Real-time multi-jurisdictional tax calculation engine",
       "ERP integrations (NetSuite, SAP) and e-commerce connectors",

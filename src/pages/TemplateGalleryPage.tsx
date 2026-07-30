@@ -18,6 +18,8 @@ import { TwoPageExecutiveTemplate } from '../components/resume/templates/TwoPage
 import { TwoPageTechLeadTemplate } from '../components/resume/templates/TwoPageTechLeadTemplate';
 import { ConfigurableTemplate } from '../components/resume/templates/ConfigurableTemplate';
 
+import { ConfirmTemplateChangeModal } from '../components/resume/ConfirmTemplateChangeModal';
+
 interface Props {
   onSelectTemplate: (templateId: TemplateId) => void;
   onBack: () => void;
@@ -34,6 +36,7 @@ export const TemplateGalleryPage: React.FC<Props> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<CategoryTag | 'all'>('all');
   const [previewModalTemplate, setPreviewModalTemplate] = useState<TemplateMetadata | null>(null);
+  const [confirmTemplateModal, setConfirmTemplateModal] = useState<TemplateMetadata | null>(null);
 
   const categories: (CategoryTag | 'all')[] = ['all', ...Object.keys(CATEGORY_LABELS) as CategoryTag[]];
 
@@ -212,7 +215,7 @@ export const TemplateGalleryPage: React.FC<Props> = ({
                           <span>FULL SCREEN PREVIEW</span>
                         </button>
                         <button
-                          onClick={() => onSelectTemplate(template.id)}
+                          onClick={() => setConfirmTemplateModal(template)}
                           className="w-full max-w-[220px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xl transition-all"
                         >
                           <Check size={15} />
@@ -262,7 +265,7 @@ export const TemplateGalleryPage: React.FC<Props> = ({
                     </button>
 
                     <button
-                      onClick={() => onSelectTemplate(template.id)}
+                      onClick={() => setConfirmTemplateModal(template)}
                       className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-md ${
                         isSelected
                           ? 'bg-emerald-600 text-white shadow-emerald-600/20'
@@ -297,7 +300,7 @@ export const TemplateGalleryPage: React.FC<Props> = ({
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
-                    onSelectTemplate(previewModalTemplate.id);
+                    setConfirmTemplateModal(previewModalTemplate);
                     setPreviewModalTemplate(null);
                   }}
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg transition-all"
@@ -322,6 +325,19 @@ export const TemplateGalleryPage: React.FC<Props> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmTemplateModal && (
+        <ConfirmTemplateChangeModal
+          templateId={confirmTemplateModal.id}
+          templateName={confirmTemplateModal.name}
+          onConfirm={() => {
+            onSelectTemplate(confirmTemplateModal.id);
+            setConfirmTemplateModal(null);
+          }}
+          onCancel={() => setConfirmTemplateModal(null)}
+        />
       )}
     </div>
   );

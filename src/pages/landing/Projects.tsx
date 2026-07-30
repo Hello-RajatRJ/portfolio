@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ExternalLink, Code2, ChevronRight } from 'lucide-react';
+import { ExternalLink, Code2, ChevronRight, Sparkles } from 'lucide-react';
 import projectsData from '../../data/projects.json';
 
 type Project = (typeof projectsData)[0];
@@ -171,6 +171,9 @@ export const Projects: React.FC = () => {
   const inView = useInView(ref, { once: true, margin: '-100px' });
   const [selected, setSelected] = useState<Project | null>(null);
 
+  // Quadruple projects list for seamless infinite horizontal scroll
+  const marqueeProjects = [...projectsData, ...projectsData, ...projectsData, ...projectsData];
+
   return (
     <section id="projects" ref={ref} className="py-20 sm:py-32 bg-dark-900 relative overflow-hidden">
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
@@ -185,17 +188,82 @@ export const Projects: React.FC = () => {
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">04. PROJECTS</p>
           <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">
             Featured <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Work</span>
           </h2>
           <p className="font-inter text-slate-650 max-w-xl mx-auto">
-            8 real-world projects across healthcare, EdTech, FinTech, AI, and social platforms — click any card for details, or explore them in the 3D world!
+            Real-world enterprise solutions across FinTech, AI, Healthcare, EdTech, and 3D web applications — explore the infinite project scroller or select cards below!
           </p>
         </motion.div>
 
+        {/* INFINITE SCROLLER PROJECT MARQUEE */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="relative w-full overflow-hidden mb-16 py-5 bg-slate-950/80 rounded-2xl border border-slate-800 shadow-2xl backdrop-blur-md"
+        >
+          {/* Gradient Edge Blurs */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-slate-950 via-slate-950/80 to-transparent z-10 pointer-events-none" />
+          
+          <div className="flex items-center justify-between px-6 mb-4">
+            <div className="flex items-center gap-2 text-xs font-orbitron text-primary-400 font-bold uppercase tracking-widest">
+              <Sparkles size={14} className="text-amber-400 animate-pulse" />
+              <span>INFINITE PROJECT SHOWCASE (HOVER TO PAUSE)</span>
+            </div>
+            <span className="text-[10px] font-mono text-slate-400 hidden sm:inline-block">
+              SWIPE / CONTINUOUS AUTO-SCROLL
+            </span>
+          </div>
+
+          <motion.div
+            className="flex gap-5 w-max"
+            animate={{ x: ['0%', '-50%'] }}
+            transition={{ repeat: Infinity, ease: 'linear', duration: 40 }}
+          >
+            {marqueeProjects.map((project, idx) => (
+              <div
+                key={`${project.id}-marquee-${idx}`}
+                onClick={() => setSelected(project)}
+                className="w-[300px] sm:w-[340px] shrink-0 p-5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-primary-500/80 transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-primary-500/10 hover:scale-[1.02]"
+              >
+                <div className="flex items-center justify-between gap-2 mb-2.5">
+                  <span
+                    className="font-orbitron text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded border"
+                    style={{ color: project.color, borderColor: `${project.color}40`, backgroundColor: `${project.color}15` }}
+                  >
+                    {project.category}
+                  </span>
+                  <span className="font-orbitron text-[10px] text-slate-400 group-hover:text-primary-400 flex items-center gap-1 transition-colors">
+                    View <ChevronRight size={12} />
+                  </span>
+                </div>
+                <h4 className="font-orbitron text-slate-100 font-bold text-base group-hover:text-primary-400 transition-colors line-clamp-1">
+                  {project.name}
+                </h4>
+                <p className="font-inter text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed">
+                  {project.tagline}
+                </p>
+                <div className="flex flex-wrap gap-1.5 mt-3.5 pt-3 border-t border-slate-800/80">
+                  {project.tech.slice(0, 3).map((t) => (
+                    <span key={t} className="font-orbitron text-[9px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">
+                      {t}
+                    </span>
+                  ))}
+                  {project.tech.length > 3 && (
+                    <span className="font-orbitron text-[9px] text-slate-500 font-bold">+{project.tech.length - 3}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        {/* Grid View of Projects */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
           {projectsData.map((project, i) => (
             <ProjectCard

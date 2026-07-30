@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Sparkles, Download, RefreshCw, Palette, FileText, CheckCircle, ChevronDown, Layers, Printer, Upload } from 'lucide-react';
 import type { ResumeData, TemplateId } from '../../types/resume';
+import { ConfirmTemplateChangeModal } from './ConfirmTemplateChangeModal';
 
 interface Props {
   data: ResumeData;
@@ -126,15 +127,26 @@ export const ResumeHeader: React.FC<Props> = ({
   isDownloadingPDF,
   onOpenGallery,
 }) => {
+  const [pendingTemplate, setPendingTemplate] = useState<{ id: TemplateId; name: string } | null>(null);
+
   const handlePrint = () => {
     window.print();
   };
 
-  const setTemplate = (templateId: TemplateId) => {
-    onChangeData({
-      ...data,
-      settings: { ...data.settings, templateId },
-    });
+  const handleSelectTemplateChange = (templateId: TemplateId) => {
+    if (templateId === data.settings.templateId) return;
+    const templateName = TEMPLATE_GROUPS.flatMap((g) => g.templates).find((t) => t.id === templateId)?.name || templateId;
+    setPendingTemplate({ id: templateId, name: templateName });
+  };
+
+  const confirmTemplateChange = () => {
+    if (pendingTemplate) {
+      onChangeData({
+        ...data,
+        settings: { ...data.settings, templateId: pendingTemplate.id },
+      });
+      setPendingTemplate(null);
+    }
   };
 
   const setColor = (accentColor: string) => {
@@ -191,7 +203,7 @@ export const ResumeHeader: React.FC<Props> = ({
           <div className="relative flex items-center bg-slate-800/90 border border-slate-700 rounded-lg px-2.5 py-1.5 shadow-sm">
             <select
               value={data.settings.templateId}
-              onChange={(e) => setTemplate(e.target.value as TemplateId)}
+              onChange={(e) => handleSelectTemplateChange(e.target.value as TemplateId)}
               className="bg-transparent text-xs font-bold text-slate-200 focus:outline-none cursor-pointer pr-6 appearance-none max-w-[160px] sm:max-w-[200px] truncate"
             >
               {TEMPLATE_GROUPS.map((group) => (
@@ -300,6 +312,15 @@ export const ResumeHeader: React.FC<Props> = ({
           </button>
         </div>
       </div>
+
+      {pendingTemplate && (
+        <ConfirmTemplateChangeModal
+          templateId={pendingTemplate.id}
+          templateName={pendingTemplate.name}
+          onConfirm={confirmTemplateChange}
+          onCancel={() => setPendingTemplate(null)}
+        />
+      )}
     </header>
   );
 };

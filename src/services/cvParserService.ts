@@ -214,7 +214,7 @@ export class CVParserService {
       projects,
       certifications,
       settings: {
-        templateId: 'developer',
+        templateId: 'modern-tech',
         accentColor: '#7c3aed',
         fontSize: 'md',
         fontFamily: 'inter',
@@ -241,7 +241,7 @@ export class CVParserService {
       projects: [],
       certifications: [],
       settings: {
-        templateId: 'developer',
+        templateId: 'modern-tech',
         accentColor: '#7c3aed',
         fontSize: 'md',
         fontFamily: 'inter',

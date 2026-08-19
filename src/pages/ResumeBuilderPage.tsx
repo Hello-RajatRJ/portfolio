@@ -26,6 +26,7 @@ import html2pdf from 'html2pdf.js';
 
 export const ResumeBuilderPage: React.FC = () => {
   const returnToLanding = useStore((s) => s.returnToLanding);
+  const openChatbotPage = useStore((s) => s.openChatbotPage);
   const [resumeData, setResumeData] = useState<ResumeData>(sampleResumeData);
   const [jobDescriptionText, setJobDescriptionText] = useState('');
   const [showATS, setShowATS] = useState(true);
@@ -129,7 +130,7 @@ export const ResumeBuilderPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col font-sans">
+    <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col font-sans pb-16">
       {/* Top Navigation Header */}
       <ResumeHeader
         data={resumeData}
@@ -141,6 +142,7 @@ export const ResumeBuilderPage: React.FC = () => {
         onOpenAIModal={() => setShowAIModal(true)}
         onOpenUploadModal={() => setShowUploadModal(true)}
         onOpenAIOptimizer={() => setShowAIOptimizerModal(true)}
+        onOpenChatbot={openChatbotPage}
         onDownloadPDF={handleDownloadPDF}
         isDownloadingPDF={isDownloadingPDF}
         onOpenGallery={() => setShowGallery(true)}
@@ -212,6 +214,72 @@ export const ResumeBuilderPage: React.FC = () => {
           onClose={() => setShowAIModal(false)}
         />
       )}
+
+      {/* FIXED BOTTOM HEADER BAR */}
+      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/90 px-3 sm:px-6 py-2 shadow-2xl flex items-center justify-between flex-wrap gap-2 text-xs font-semibold text-white">
+        <div className="flex items-center gap-3 overflow-x-auto">
+          {/* Live ATS Score Badge */}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-slate-900 border border-slate-700/80">
+            <span className="text-slate-400 font-mono text-[10px] uppercase font-bold tracking-wider">ATS SCORE:</span>
+            <span className={`font-orbitron font-bold text-sm ${atsAnalysis.score >= 80 ? 'text-emerald-400' : atsAnalysis.score >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
+              {atsAnalysis.score}/100
+            </span>
+          </div>
+
+          <button
+            onClick={() => setShowGallery(true)}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 transition-all cursor-pointer"
+          >
+            🎨 <span>Templates</span>
+          </button>
+
+          <button
+            onClick={() => setShowAIOptimizerModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-950/60 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 transition-all cursor-pointer"
+          >
+            🚀 <span>AI Matcher</span>
+          </button>
+
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all cursor-pointer"
+          >
+            📥 <span>Import CV</span>
+          </button>
+
+          <button
+            onClick={openChatbotPage}
+            className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-900/60 border border-blue-500/40 text-blue-300 transition-all cursor-pointer"
+          >
+            🤖 <span>AI Coach</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 ml-auto">
+          <button
+            onClick={() => {
+              const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(resumeData, null, 2));
+              const downloadAnchor = document.createElement('a');
+              downloadAnchor.setAttribute('href', dataStr);
+              downloadAnchor.setAttribute('download', `${(resumeData.personalInfo.fullName || 'Resume').replace(/\s+/g, '_')}_Backup.json`);
+              document.body.appendChild(downloadAnchor);
+              downloadAnchor.click();
+              downloadAnchor.remove();
+            }}
+            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all cursor-pointer text-[11px]"
+          >
+            Export JSON
+          </button>
+
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isDownloadingPDF}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-lg shadow-emerald-600/30 cursor-pointer"
+          >
+            🖨️ <span>{isDownloadingPDF ? 'Exporting PDF...' : 'DOWNLOAD PDF'}</span>
+          </button>
+        </div>
+      </footer>
     </div>
   );
 };

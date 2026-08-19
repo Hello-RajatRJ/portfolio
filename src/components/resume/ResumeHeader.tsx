@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Sparkles, Download, RefreshCw, Palette, FileText, CheckCircle, ChevronDown, Layers, Printer, Upload } from 'lucide-react';
+import { ArrowLeft, Sparkles, Download, RefreshCw, Palette, FileText, CheckCircle, ChevronDown, Layers, Upload, Bot } from 'lucide-react';
 import type { ResumeData, TemplateId } from '../../types/resume';
 import { ConfirmTemplateChangeModal } from './ConfirmTemplateChangeModal';
 
@@ -13,6 +13,7 @@ interface Props {
   onOpenAIModal: () => void;
   onOpenUploadModal?: () => void;
   onOpenAIOptimizer?: () => void;
+  onOpenChatbot?: () => void;
   onDownloadPDF: () => void;
   isDownloadingPDF?: boolean;
   onOpenGallery?: () => void;
@@ -123,15 +124,12 @@ export const ResumeHeader: React.FC<Props> = ({
   onOpenAIModal,
   onOpenUploadModal,
   onOpenAIOptimizer,
+  onOpenChatbot,
   onDownloadPDF,
   isDownloadingPDF,
   onOpenGallery,
 }) => {
   const [pendingTemplate, setPendingTemplate] = useState<{ id: TemplateId; name: string } | null>(null);
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   const handleSelectTemplateChange = (templateId: TemplateId) => {
     if (templateId === data.settings.templateId) return;
@@ -239,76 +237,117 @@ export const ResumeHeader: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* Right: Actions (Upload CV, AI Optimize, Sample, ATS, Download, Print) */}
+        {/* Right: Quick PDF Action */}
         <div className="flex items-center flex-wrap justify-center lg:justify-end gap-2 w-full lg:w-auto">
-          {onOpenUploadModal && (
-            <button
-              onClick={onOpenUploadModal}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-indigo-500/40 bg-indigo-950/40 hover:bg-indigo-900/60 text-indigo-300 hover:text-white text-xs font-semibold shadow-sm transition-all"
-              title="Upload existing CV file (PDF/DOCX/JSON/TXT) to preview and edit"
-            >
-              <Upload size={13} />
-              <span>UPLOAD CV</span>
-            </button>
-          )}
+          <button
+            onClick={onDownloadPDF}
+            disabled={isDownloadingPDF}
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-emerald-600/20 hover:scale-[1.02] transition-all cursor-pointer"
+            title="Download PDF directly to your device"
+          >
+            <Download size={13} />
+            <span>{isDownloadingPDF ? 'GENERATING PDF...' : 'DOWNLOAD PDF'}</span>
+          </button>
+        </div>
+      </div>
 
-          {onOpenAIOptimizer && (
+      {/* SECONDARY SUB-NAVBAR BAR */}
+      <div className="bg-slate-950/90 border-t border-slate-800/80 px-3 sm:px-6 py-1.5 mt-2 max-w-[1700px] mx-auto rounded-xl flex items-center justify-between flex-wrap gap-2 text-xs font-semibold">
+        <div className="flex items-center gap-2 overflow-x-auto py-0.5">
+          <span className="text-slate-400 font-mono text-[10px] uppercase font-bold tracking-wider mr-1">QUICK TOOLBAR:</span>
+
+          {onOpenGallery && (
             <button
-              onClick={onOpenAIOptimizer}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-indigo-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold shadow-lg shadow-purple-500/20 hover:scale-[1.02] transition-all"
-              title="Optimize resume and replace project technologies to match Job Description"
+              onClick={onOpenGallery}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 transition-all cursor-pointer"
             >
-              <Sparkles size={13} />
-              <span>AI OPTIMIZE FOR JD</span>
+              <Layers size={12} />
+              <span>Templates Gallery</span>
             </button>
           )}
 
           <button
             onClick={onLoadSample}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all"
-            title="Pre-fill sample resume data"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all cursor-pointer"
           >
             <RefreshCw size={12} />
-            <span className="hidden sm:inline">Sample Data</span>
+            <span>Load Demo Resume</span>
           </button>
+
+          {onOpenAIOptimizer && (
+            <button
+              onClick={onOpenAIOptimizer}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-purple-950/50 hover:bg-purple-900/60 border border-purple-500/40 text-purple-300 transition-all cursor-pointer"
+            >
+              <Sparkles size={12} />
+              <span>AI ATS Matcher</span>
+            </button>
+          )}
 
           <button
             onClick={onOpenAIModal}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-md transition-all"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-950/50 hover:bg-indigo-900/60 border border-indigo-500/40 text-indigo-300 transition-all cursor-pointer"
           >
-            <Sparkles size={13} />
+            <Sparkles size={12} />
             <span>AI Suggest</span>
           </button>
 
+          {onOpenUploadModal && (
+            <button
+              onClick={onOpenUploadModal}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all cursor-pointer"
+            >
+              <Upload size={12} />
+              <span>Import Existing CV</span>
+            </button>
+          )}
+
+          {onOpenChatbot && (
+            <button
+              onClick={onOpenChatbot}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-950/50 hover:bg-blue-900/60 border border-blue-500/40 text-blue-300 transition-all cursor-pointer"
+            >
+              <Bot size={12} />
+              <span>AI Career Assistant</span>
+            </button>
+          )}
+
           <button
             onClick={onToggleATS}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-all ${
-              showATS
-                ? 'bg-emerald-600/30 border-emerald-500 text-emerald-300 shadow-sm'
-                : 'bg-slate-800 border-slate-700 text-slate-300 hover:text-white'
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
+              showATS ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300' : 'bg-slate-800 border-slate-700 text-slate-400'
             }`}
           >
-            <CheckCircle size={13} />
-            <span>ATS Checker</span>
+            <CheckCircle size={12} />
+            <span>ATS Score Gauge ({showATS ? 'ON' : 'OFF'})</span>
           </button>
+        </div>
 
+        <div className="flex items-center gap-2 ml-auto">
           <button
             onClick={onDownloadPDF}
             disabled={isDownloadingPDF}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-emerald-600/20 hover:scale-[1.02] transition-all"
-            title="Download PDF directly to your device"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-sm cursor-pointer"
           >
-            <Download size={13} />
-            <span>{isDownloadingPDF ? 'GENERATING...' : 'DOWNLOAD PDF'}</span>
+            <Download size={12} />
+            <span>{isDownloadingPDF ? 'Exporting...' : 'Export PDF'}</span>
           </button>
 
           <button
-            onClick={handlePrint}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all"
-            title="Print or Save via Browser Print Dialog"
+            onClick={() => {
+              const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+              const downloadAnchor = document.createElement('a');
+              downloadAnchor.setAttribute('href', dataStr);
+              downloadAnchor.setAttribute('download', `${data.personalInfo.fullName.replace(/\s+/g, '_')}_Resume_Backup.json`);
+              document.body.appendChild(downloadAnchor);
+              downloadAnchor.click();
+              downloadAnchor.remove();
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-all cursor-pointer"
+            title="Download JSON backup"
           >
-            <Printer size={12} />
-            <span className="hidden sm:inline">Print</span>
+            <FileText size={12} />
+            <span>Export JSON</span>
           </button>
         </div>
       </div>

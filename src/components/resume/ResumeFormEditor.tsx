@@ -653,16 +653,6 @@ export const ResumeFormEditor: React.FC<Props> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Demo / Repository Link</label>
-                  <input
-                    type="text"
-                    value={proj.link || ''}
-                    onChange={(e) => updateProject(proj.id, 'link', e.target.value)}
-                    placeholder="https://github.com/..."
-                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"
-                  />
-                </div>
-                <div>
                   <label className="block text-[11px] text-slate-400 mb-1">Your Role in Project</label>
                   <input
                     type="text"
@@ -673,16 +663,36 @@ export const ResumeFormEditor: React.FC<Props> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Project Duration / Timeline</label>
+                  <label className="block text-[11px] text-slate-400 mb-1">Live Link URL</label>
+                  <input
+                    type="text"
+                    value={proj.link || ''}
+                    onChange={(e) => updateProject(proj.id, 'link', e.target.value)}
+                    placeholder="https://myproject.com"
+                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">GitHub / Repo Link</label>
+                  <input
+                    type="text"
+                    value={proj.repoLink || ''}
+                    onChange={(e) => updateProject(proj.id, 'repoLink', e.target.value)}
+                    placeholder="https://github.com/username/repo"
+                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Project Start Date & End Date / Timeline</label>
                   <input
                     type="text"
                     value={proj.duration || ''}
                     onChange={(e) => updateProject(proj.id, 'duration', e.target.value)}
-                    placeholder="e.g. 3 Months (Jan 2024 - Mar 2024)"
+                    placeholder="e.g. Jan 2024 - Present"
                     className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-white"
                   />
                 </div>
-                <div className="sm:col-span-2">
+                <div>
                   <label className="block text-[11px] text-slate-400 mb-1">Tech Stack Used (comma separated)</label>
                   <CommaSeparatedInput
                     value={proj.techStack || []}

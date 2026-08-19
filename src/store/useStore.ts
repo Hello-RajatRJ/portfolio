@@ -1,16 +1,27 @@
 import { create } from 'zustand';
 import type { GameState } from '../types';
 import projectsData from '../data/projects.json';
+import { AuthService, type UserProfile } from '../services/authService';
 
-type View = 'landing' | 'game' | 'showcase' | 'builder';
+type View = 'landing' | 'game' | 'showcase' | 'builder' | 'chatbot' | 'assessment';
 
 interface AppStore {
+  // User Authentication & Profile
+  user: UserProfile;
+  setUser: (user: UserProfile) => void;
+  showAuthModal: boolean;
+  setShowAuthModal: (show: boolean) => void;
+  authPendingTargetView: View | null;
+  setAuthPendingTargetView: (view: View | null) => void;
+
   // View management
   view: View;
   setView: (view: View) => void;
   launchGame: () => void;
   returnToLanding: () => void;
   openResumeBuilder: () => void;
+  openChatbotPage: () => void;
+  openAssessmentPage: () => void;
 
   // Showcase
   openShowcase: () => void;
@@ -36,6 +47,11 @@ interface AppStore {
   // Day/night
   timeOfDay: number; // 0 = midnight, 0.5 = noon, 1 = midnight again
   setTimeOfDay: (t: number) => void;
+
+  // AI Chatbot
+  isChatbotOpen: boolean;
+  setChatbotOpen: (open: boolean) => void;
+  toggleChatbot: () => void;
 }
 
 const initialGameState: GameState = {
@@ -60,13 +76,47 @@ const initialGameState: GameState = {
   driftTimeLeft: 30,
 };
 
-export const useStore = create<AppStore>((set) => ({
+export const useStore = create<AppStore>((set, get) => ({
+  // User Authentication & Profile
+  user: AuthService.getUser(),
+  setUser: (user) => set({ user }),
+  showAuthModal: false,
+  setShowAuthModal: (show) => set({ showAuthModal: show }),
+  authPendingTargetView: null,
+  setAuthPendingTargetView: (target) => set({ authPendingTargetView: target }),
+
   // View
   view: 'landing',
   setView: (view) => set({ view }),
   launchGame: () => set({ view: 'game' }),
   returnToLanding: () => set({ view: 'landing', showcasePage: null }),
-  openResumeBuilder: () => set({ view: 'builder' }),
+
+  openResumeBuilder: () => {
+    const user = get().user;
+    if (!user || !user.isLoggedIn) {
+      set({ showAuthModal: true, authPendingTargetView: 'builder' });
+    } else {
+      set({ view: 'builder' });
+    }
+  },
+
+  openChatbotPage: () => {
+    const user = get().user;
+    if (!user || !user.isLoggedIn) {
+      set({ showAuthModal: true, authPendingTargetView: 'chatbot' });
+    } else {
+      set({ view: 'chatbot' });
+    }
+  },
+
+  openAssessmentPage: () => {
+    const user = get().user;
+    if (!user || !user.isLoggedIn) {
+      set({ showAuthModal: true, authPendingTargetView: 'assessment' });
+    } else {
+      set({ view: 'assessment' });
+    }
+  },
 
   // Showcase
   openShowcase: () => set({ view: 'showcase', showcasePage: null }),
@@ -96,4 +146,9 @@ export const useStore = create<AppStore>((set) => ({
   // Day/night cycle (starts at dawn: 0.2)
   timeOfDay: 0.2,
   setTimeOfDay: (t) => set({ timeOfDay: t }),
+
+  // AI Chatbot
+  isChatbotOpen: false,
+  setChatbotOpen: (open) => set({ isChatbotOpen: open }),
+  toggleChatbot: () => set((state) => ({ isChatbotOpen: !state.isChatbotOpen })),
 }));

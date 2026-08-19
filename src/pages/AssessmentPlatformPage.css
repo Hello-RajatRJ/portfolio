@@ -1,0 +1,215 @@
+/* ============================================================
+   AI MOCK TEST & ASSESSMENT PLATFORM - CYBERPUNK NEON THEME
+   ============================================================ */
+
+.assessment-container {
+  min-height: 100vh;
+  width: 100vw;
+  background: #090d16;
+  color: #f0f6fc;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Navbar Header */
+.assessment-navbar {
+  height: 64px;
+  padding: 0 20px;
+  background: rgba(17, 22, 34, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.assessment-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #58a6ff;
+  letter-spacing: 0.5px;
+}
+
+/* Dashboard & Setup View */
+.assessment-dashboard {
+  flex: 1;
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.assessment-banner {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(31, 111, 235, 0.2) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 24px;
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.2);
+}
+
+.assessment-banner::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.35) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Technology Card Grid */
+.assessment-tech-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.assessment-tech-card {
+  background: #111622;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.assessment-tech-card:hover {
+  transform: translateY(-4px);
+  border-color: #58a6ff;
+  box-shadow: 0 10px 30px rgba(88, 166, 255, 0.3);
+  background: #161c2b;
+}
+
+.assessment-tech-card.selected {
+  border-color: #7ee787;
+  background: rgba(35, 134, 54, 0.15);
+  box-shadow: 0 0 25px rgba(35, 134, 54, 0.35);
+}
+
+/* Exam Arena Layout */
+.assessment-exam-arena {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+  background: #090d16;
+}
+
+.assessment-exam-header {
+  min-height: 60px;
+  padding: 12px 20px;
+  background: #111622;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.assessment-exam-body {
+  flex: 1;
+  display: flex;
+  overflow-y: auto;
+}
+
+/* Question Palette Sidebar */
+.assessment-palette-sidebar {
+  width: 280px;
+  background: #111622;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.assessment-palette-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.assessment-palette-btn {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  color: #8b949e;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.assessment-palette-btn.current {
+  border-color: #58a6ff;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.6);
+  color: #ffffff;
+  background: rgba(31, 111, 235, 0.45);
+}
+
+.assessment-palette-btn.answered {
+  background: rgba(35, 134, 54, 0.3);
+  border-color: rgba(35, 134, 54, 0.6);
+  color: #7ee787;
+  box-shadow: 0 0 10px rgba(35, 134, 54, 0.3);
+}
+
+.assessment-palette-btn.marked {
+  background: rgba(217, 119, 6, 0.3);
+  border-color: rgba(217, 119, 6, 0.6);
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(217, 119, 6, 0.3);
+}
+
+/* Results Certificate Card */
+.assessment-results-view {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.assessment-score-card {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2) 0%, rgba(31, 111, 235, 0.15) 100%);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 15px 50px rgba(124, 58, 237, 0.25);
+}

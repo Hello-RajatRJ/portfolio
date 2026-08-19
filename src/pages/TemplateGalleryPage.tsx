@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowLeft, Search, Grid3X3, Sparkles, CheckCircle2, Eye, X, Check } from 'lucide-react';
 import { ALL_TEMPLATES, CATEGORY_LABELS, getTemplateConfig } from '../data/templateConfigs';
 import type { CategoryTag, TemplateMetadata } from '../data/templateConfigs';
 import type { ResumeData, TemplateId } from '../types/resume';
 import { sampleResumeData } from '../data/sampleResume';
+import { RazorpayUtil } from '../utils/razorpay';
 
 // Template imports for live preview
 import { ATSClassicTemplate } from '../components/resume/templates/ATSClassicTemplate';
@@ -37,6 +38,32 @@ export const TemplateGalleryPage: React.FC<Props> = ({
   const [activeCategory, setActiveCategory] = useState<CategoryTag | 'all'>('all');
   const [previewModalTemplate, setPreviewModalTemplate] = useState<TemplateMetadata | null>(null);
   const [confirmTemplateModal, setConfirmTemplateModal] = useState<TemplateMetadata | null>(null);
+
+  // Handle return from backend payment gateway URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const unlockedId = searchParams.get('unlockedTemplate');
+      const paymentStatus = searchParams.get('payment');
+      if (unlockedId && paymentStatus === 'success') {
+        onSelectTemplate(unlockedId as TemplateId);
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, [onSelectTemplate]);
+
+  const handleUnlockTemplate = (template: TemplateMetadata) => {
+    RazorpayUtil.initiatePayment({
+      amountInINR: 50,
+      itemName: `Resume Template: ${template.name}`,
+      itemDescription: 'Lifetime template access & export',
+      itemId: template.id,
+      type: 'template',
+      onSuccess: () => {
+        onSelectTemplate(template.id as TemplateId);
+      },
+    });
+  };
 
   const categories: (CategoryTag | 'all')[] = ['all', ...Object.keys(CATEGORY_LABELS) as CategoryTag[]];
 
@@ -206,21 +233,31 @@ export const TemplateGalleryPage: React.FC<Props> = ({
                       </div>
 
                       {/* Quick Hover Controls Overlay */}
-                      <div className="absolute inset-0 bg-slate-950/75 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 p-6">
+                      <div className="absolute inset-0 bg-slate-950/80 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-xs flex flex-col items-center justify-center gap-3 p-6">
                         <button
                           onClick={() => setPreviewModalTemplate(template)}
-                          className="w-full max-w-[220px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-600 shadow-lg transition-all"
+                          className="w-full max-w-[230px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-600 shadow-lg transition-all transform hover:scale-105"
                         >
                           <Eye size={15} className="text-indigo-400" />
                           <span>FULL SCREEN PREVIEW</span>
                         </button>
-                        <button
-                          onClick={() => setConfirmTemplateModal(template)}
-                          className="w-full max-w-[220px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xl transition-all"
-                        >
-                          <Check size={15} />
-                          <span>APPLY THIS TEMPLATE</span>
-                        </button>
+                        
+                        {template.isHandCrafted ? (
+                          <button
+                            onClick={() => handleUnlockTemplate(template)}
+                            className="w-full max-w-[230px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-bold shadow-xl shadow-amber-500/25 transition-all transform hover:scale-105"
+                          >
+                            <span>💳 UNLOCK FOR ₹50 (RAZORPAY)</span>
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmTemplateModal(template)}
+                            className="w-full max-w-[230px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-xl transition-all transform hover:scale-105"
+                          >
+                            <Check size={15} />
+                            <span>APPLY THIS TEMPLATE</span>
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -236,7 +273,7 @@ export const TemplateGalleryPage: React.FC<Props> = ({
                           </span>
                           {template.isHandCrafted && (
                             <span className="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                              <Sparkles size={10} className="inline mr-1" />PREMIUM
+                              <Sparkles size={10} className="inline mr-1" />₹50 PAID
                             </span>
                           )}
                         </div>
@@ -264,17 +301,26 @@ export const TemplateGalleryPage: React.FC<Props> = ({
                       Preview
                     </button>
 
-                    <button
-                      onClick={() => setConfirmTemplateModal(template)}
-                      className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-md ${
-                        isSelected
-                          ? 'bg-emerald-600 text-white shadow-emerald-600/20'
-                          : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20'
-                      }`}
-                    >
-                      <Check size={13} />
-                      {isSelected ? 'ACTIVE' : 'SELECT'}
-                    </button>
+                    {template.isHandCrafted ? (
+                      <button
+                        onClick={() => handleUnlockTemplate(template)}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white shadow-md shadow-amber-500/20 transition-all"
+                      >
+                        💳 UNLOCK ₹50
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setConfirmTemplateModal(template)}
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-md ${
+                          isSelected
+                            ? 'bg-emerald-600 text-white shadow-emerald-600/20'
+                            : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/20'
+                        }`}
+                      >
+                        <Check size={13} />
+                        {isSelected ? 'ACTIVE' : 'SELECT'}
+                      </button>
+                    )}
                   </div>
                 </div>
               );

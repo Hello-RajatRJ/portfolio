@@ -98,11 +98,14 @@ export interface ProjectItem {
   id: string;
   title: string;
   role: string;
+  startDate?: string;
+  endDate?: string;
   duration?: string;
   techStack: string[];
   description: string;
-  highlights?: string[];
   link?: string;
+  repoLink?: string;
+  highlights: string[];
 }
 
 export interface Certification {

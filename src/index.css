@@ -26,6 +26,12 @@
     padding: 0;
   }
 
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
   html {
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
@@ -33,11 +39,15 @@
     scroll-behavior: smooth;
   }
 
+  option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
+
   body {
     font-family: var(--font-body);
     background-color: var(--color-bg);
     color: #0f172a; /* Slate 900 dark text */
-    overflow-x: hidden;
   }
 
   button {
@@ -96,13 +106,66 @@
 }
 
 /* ============================================
-   LANDING VIEW — Scrollable content
+   HIGH-IMPACT ANIMATIONS & MODERN UTILITIES
    ============================================ */
+
+@keyframes textGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatParticle {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-30px) scale(1.2); opacity: 0.8; }
+}
+
+@keyframes levitate {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(124, 58, 237, 0.4), 0 0 20px rgba(124, 58, 237, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(124, 58, 237, 0.8), 0 0 40px rgba(59, 130, 246, 0.6); }
+}
+
+.animated-gradient-text {
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textGradientFlow 6s ease infinite;
+}
+
+.levitate-badge {
+  animation: levitate 5s ease-in-out infinite;
+}
+
+.pulse-glow-node {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.glass-card-glow {
+  background: rgba(17, 22, 34, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-glow:hover {
+  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 15px 40px rgba(124, 58, 237, 0.25);
+}
+
+/* LANDING VIEW — Single Primary Scrollable Container */
 .landing-view {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Scrollbar */

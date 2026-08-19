@@ -269,7 +269,12 @@ export const ConfigurableTemplate: React.FC<Props> = ({ data, config }) => {
                     {proj.highlights.map((h, i) => <li key={i} className="text-[11px]">{h}</li>)}
                   </ul>
                 )}
-                {config.showLinks && proj.link && <div className={`text-[10px] ${textMuted} underline`}>{proj.link}</div>}
+                {config.showLinks && (
+                  <div className={`flex flex-wrap gap-3 text-[10px] ${textMuted} pt-0.5`}>
+                    {proj.link && <a href={proj.link} target="_blank" rel="noreferrer" className="underline hover:text-blue-500 font-semibold">🔗 Live Demo</a>}
+                    {proj.repoLink && <a href={proj.repoLink} target="_blank" rel="noreferrer" className="underline hover:text-blue-500 font-semibold">💻 GitHub Repo</a>}
+                  </div>
+                )}
               </div>
             ))}
           </div>

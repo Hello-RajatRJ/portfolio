@@ -1,0 +1,34 @@
+/* USER PROFILE DRAWER STYLES */
+.profile-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 17, 23, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 90;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profile-drawer-card {
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  background: #161b22;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  animation: slideDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDrawer {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

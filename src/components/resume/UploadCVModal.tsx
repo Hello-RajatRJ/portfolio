@@ -93,7 +93,7 @@ export const UploadCVModal: React.FC<Props> = ({ onImportResume, onClose }) => {
             >
               <input
                 type="file"
-                accept=".json,.pdf,.docx,.txt,.md"
+                accept=".csv,.json,.pdf,.docx,.txt,.md"
                 onChange={handleFileUpload}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
@@ -102,8 +102,8 @@ export const UploadCVModal: React.FC<Props> = ({ onImportResume, onClose }) => {
                   <FileText size={32} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">Click or drag & drop your CV file here</p>
-                  <p className="text-xs text-slate-400 mt-1">Supports .JSON, .PDF, .DOCX, .TXT, and .MD files</p>
+                  <p className="text-sm font-semibold text-white">Click or drag & drop your CSV or CV file here</p>
+                  <p className="text-xs text-slate-400 mt-1">Supports .CSV, .JSON, .PDF, .DOCX, .TXT, and .MD files</p>
                 </div>
                 {fileName && <p className="text-xs font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1 rounded-full">Selected: {fileName}</p>}
                 {loading && <p className="text-xs font-semibold text-indigo-400 animate-pulse">Extracting resume fields...</p>}

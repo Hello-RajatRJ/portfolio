@@ -16,6 +16,9 @@ import { AchievementToast } from './components/AchievementToast';
 import { OrientationGuard } from './components/OrientationGuard';
 import { ControlsModal } from './components/ControlsModal';
 import { SEO } from './components/SEO';
+import { GeminiAIStudioPage } from './pages/GeminiAIStudioPage';
+import { AssessmentPlatformPage } from './pages/AssessmentPlatformPage';
+import { AuthModal } from './components/AuthModal';
 
 const GameView: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
@@ -128,10 +131,32 @@ const GameView: React.FC = () => {
 
 export const App: React.FC = () => {
   const view = useStore((s) => s.view);
+  const setView = useStore((s) => s.setView);
+  const showAuthModal = useStore((s) => s.showAuthModal);
+  const setShowAuthModal = useStore((s) => s.setShowAuthModal);
+  const authPendingTargetView = useStore((s) => s.authPendingTargetView);
+  const setAuthPendingTargetView = useStore((s) => s.setAuthPendingTargetView);
 
   return (
     <>
       <SEO />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        targetFeatureLabel={
+          authPendingTargetView === 'builder'
+            ? 'CV Resume Maker'
+            : authPendingTargetView === 'chatbot'
+            ? 'Gemini AI Studio'
+            : 'AI Mock Test Platform'
+        }
+        onSuccess={() => {
+          if (authPendingTargetView) {
+            setView(authPendingTargetView);
+            setAuthPendingTargetView(null);
+          }
+        }}
+      />
       <AnimatePresence mode="wait">
         {view === 'landing' ? (
           <motion.div
@@ -168,6 +193,28 @@ export const App: React.FC = () => {
             style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
           >
             <ResumeBuilderPage />
+          </motion.div>
+        ) : view === 'chatbot' ? (
+          <motion.div
+            key="chatbot"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            style={{ position: 'absolute', inset: 0 }}
+          >
+            <GeminiAIStudioPage />
+          </motion.div>
+        ) : view === 'assessment' ? (
+          <motion.div
+            key="assessment"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.4 }}
+            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+          >
+            <AssessmentPlatformPage />
           </motion.div>
         ) : (
           <motion.div

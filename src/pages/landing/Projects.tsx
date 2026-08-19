@@ -5,15 +5,47 @@ import projectsData from '../../data/projects.json';
 
 type Project = (typeof projectsData)[0];
 
+/* ─── Animation Variants ─── */
+const sectionHeader = {
+  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)',
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
+  },
+};
+
+const cardVariant = {
+  hidden: { opacity: 0, y: 40, scale: 0.92 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: 'spring' as const, stiffness: 200, damping: 18 },
+  },
+};
+
 const ProjectCard: React.FC<{ project: Project; index: number; inView: boolean; onClick: () => void }> = ({
   project, index, inView, onClick,
 }) => (
   <motion.div
-    initial={{ opacity: 0, y: 40 }}
-    animate={inView ? { opacity: 1, y: 0 } : {}}
-    transition={{ delay: index * 0.08, duration: 0.6 }}
-    className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-primary-300 hover:shadow-md transition-all duration-500 cursor-pointer flex flex-col shadow-sm"
-    style={{ '--accent': project.color } as React.CSSProperties}
+    variants={cardVariant}
+    initial="hidden"
+    animate={inView ? 'visible' : 'hidden'}
+    transition={{ delay: index * 0.06 }}
+    whileHover={{
+      scale: 1.04,
+      y: -8,
+      rotateY: 2,
+      rotateX: -1,
+      boxShadow: `0 24px 60px ${project.color}25`,
+      borderColor: project.color,
+      transition: { type: 'spring', stiffness: 350, damping: 14 },
+    }}
+    whileTap={{ scale: 0.98 }}
+    className="group relative bg-white border border-gray-200 rounded-2xl overflow-hidden transition-colors duration-300 cursor-pointer flex flex-col shadow-sm"
+    style={{ '--accent': project.color, transformStyle: 'preserve-3d' } as React.CSSProperties}
     onClick={onClick}
   >
     {/* Top accent bar */}
@@ -33,10 +65,15 @@ const ProjectCard: React.FC<{ project: Project; index: number; inView: boolean; 
           <h3 className="font-orbitron text-slate-900 font-bold text-xl leading-tight">{project.name}</h3>
           <p className="font-inter text-slate-500 text-sm mt-0.5">{project.tagline}</p>
         </div>
-        <ChevronRight
-          size={20}
-          className="text-slate-400 group-hover:text-primary-600 group-hover:translate-x-1 transition-all duration-300 shrink-0 mt-1"
-        />
+        <motion.div
+          animate={{ x: [0, 4, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
+        >
+          <ChevronRight
+            size={20}
+            className="text-slate-400 group-hover:text-primary-600 transition-colors duration-300 shrink-0 mt-1"
+          />
+        </motion.div>
       </div>
 
       {/* Description */}
@@ -47,9 +84,13 @@ const ProjectCard: React.FC<{ project: Project; index: number; inView: boolean; 
       {/* Tech tags */}
       <div className="flex flex-wrap gap-2 mb-4">
         {project.tech.slice(0, 4).map((t) => (
-          <span key={t} className="font-orbitron text-xs bg-gray-50 border border-gray-150 rounded-md px-2 py-0.5 text-slate-500">
+          <motion.span
+            key={t}
+            whileHover={{ scale: 1.08, y: -2 }}
+            className="font-orbitron text-xs bg-gray-50 border border-gray-150 rounded-md px-2 py-0.5 text-slate-500"
+          >
             {t}
-          </span>
+          </motion.span>
         ))}
         {project.tech.length > 4 && (
           <span className="font-orbitron text-xs text-slate-400">+{project.tech.length - 4}</span>
@@ -96,10 +137,10 @@ const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = 
     onClick={onClose}
   >
     <motion.div
-      initial={{ scale: 0.9, opacity: 0, y: 20 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0.9, opacity: 0, y: 20 }}
-      transition={{ type: 'spring', damping: 25 }}
+      initial={{ scale: 0.85, opacity: 0, y: 30, rotateX: 5 }}
+      animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
+      exit={{ scale: 0.85, opacity: 0, y: 30, rotateX: 5 }}
+      transition={{ type: 'spring', damping: 22, stiffness: 250 }}
       className="bg-white border rounded-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl"
       style={{ borderColor: `${project.color}50`, borderTopWidth: '3px', borderTopColor: project.color }}
       onClick={(e) => e.stopPropagation()}
@@ -114,51 +155,101 @@ const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = 
             <h2 className="font-orbitron text-2xl font-black text-slate-900">{project.name}</h2>
             <p className="font-inter text-slate-500 mt-1">{project.tagline}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 text-3xl leading-none p-1 transition-colors" aria-label="Close">×</button>
+          <motion.button
+            whileHover={{ rotate: 90, scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-700 text-3xl leading-none p-1 transition-colors"
+            aria-label="Close"
+          >
+            ×
+          </motion.button>
         </div>
 
         {/* Tech tags */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <motion.div
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-wrap gap-2 mb-6"
+        >
           {project.tech.map((t) => (
-            <span key={t} className="font-orbitron text-xs px-3 py-1 rounded-full border" style={{ borderColor: `${project.color}40`, color: project.color, background: `${project.color}10` }}>
+            <motion.span
+              key={t}
+              variants={{
+                hidden: { opacity: 0, scale: 0.7 },
+                visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300 } },
+              }}
+              className="font-orbitron text-xs px-3 py-1 rounded-full border"
+              style={{ borderColor: `${project.color}40`, color: project.color, background: `${project.color}10` }}
+            >
               {t}
-            </span>
+            </motion.span>
           ))}
-        </div>
+        </motion.div>
 
         <p className="font-inter text-slate-700 leading-relaxed mb-6">{project.description}</p>
 
         {/* Features */}
         <h3 className="font-orbitron text-xs tracking-widest text-slate-500 mb-3 font-semibold">KEY FEATURES</h3>
-        <ul className="space-y-2 mb-6">
+        <motion.ul
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
+          initial="hidden"
+          animate="visible"
+          className="space-y-2 mb-6"
+        >
           {project.features.map((f, i) => (
-            <li key={i} className="flex items-start gap-2 font-inter text-sm text-slate-600">
+            <motion.li
+              key={i}
+              variants={{
+                hidden: { opacity: 0, x: -10 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+              }}
+              className="flex items-start gap-2 font-inter text-sm text-slate-600"
+            >
               <span style={{ color: project.color }} className="mt-0.5 shrink-0">◆</span> {f}
-            </li>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
 
         {/* Role */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6"
+        >
           <h3 className="font-orbitron text-xs tracking-widest text-slate-500 mb-2 font-semibold">MY ROLE</h3>
           <p className="font-inter text-sm text-slate-700">{project.role}</p>
-        </div>
+        </motion.div>
 
         {/* Actions */}
         <div className="flex gap-3">
           {project.liveDemo && (
-            <a href={project.liveDemo} target="_blank" rel="noopener noreferrer"
+            <motion.a
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              href={project.liveDemo}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-orbitron text-xs tracking-widest text-white font-bold transition-all hover:brightness-110"
-              style={{ background: project.color }}>
+              style={{ background: project.color }}
+            >
               <ExternalLink size={14} /> LIVE SITE
-            </a>
+            </motion.a>
           )}
           {project.github && (
-            <a href={project.github} target="_blank" rel="noopener noreferrer"
+            <motion.a
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-orbitron text-xs tracking-widest border transition-all hover:bg-gray-50"
-              style={{ borderColor: `${project.color}50`, color: project.color }}>
+              style={{ borderColor: `${project.color}50`, color: project.color }}
+            >
               <Code2 size={14} /> GITHUB
-            </a>
+            </motion.a>
           )}
         </div>
       </div>
@@ -168,7 +259,7 @@ const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = 
 
 export const Projects: React.FC = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-100px' });
+  const inView = useInView(ref, { once: true, margin: '-80px' });
   const [selected, setSelected] = useState<Project | null>(null);
 
   // Quadruple projects list for seamless infinite horizontal scroll
@@ -185,9 +276,9 @@ export const Projects: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
+          variants={sectionHeader}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
           className="text-center mb-12"
         >
           <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">04. PROJECTS</p>
@@ -201,9 +292,9 @@ export const Projects: React.FC = () => {
 
         {/* INFINITE SCROLLER PROJECT MARQUEE */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           className="relative w-full overflow-hidden mb-16 py-5 bg-slate-950/80 rounded-2xl border border-slate-800 shadow-2xl backdrop-blur-md"
         >
           {/* Gradient Edge Blurs */}
@@ -226,10 +317,17 @@ export const Projects: React.FC = () => {
             transition={{ repeat: Infinity, ease: 'linear', duration: 40 }}
           >
             {marqueeProjects.map((project, idx) => (
-              <div
+              <motion.div
                 key={`${project.id}-marquee-${idx}`}
                 onClick={() => setSelected(project)}
-                className="w-[300px] sm:w-[340px] shrink-0 p-5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-primary-500/80 transition-all duration-300 group cursor-pointer shadow-lg hover:shadow-primary-500/10 hover:scale-[1.02]"
+                whileHover={{
+                  scale: 1.04,
+                  y: -4,
+                  borderColor: `${project.color}80`,
+                  boxShadow: `0 12px 30px ${project.color}20`,
+                  transition: { type: 'spring', stiffness: 400, damping: 15 },
+                }}
+                className="w-[300px] sm:w-[340px] shrink-0 p-5 rounded-xl bg-slate-900/90 border border-slate-800 transition-colors duration-300 group cursor-pointer shadow-lg"
               >
                 <div className="flex items-center justify-between gap-2 mb-2.5">
                   <span
@@ -258,13 +356,18 @@ export const Projects: React.FC = () => {
                     <span className="font-orbitron text-[9px] text-slate-500 font-bold">+{project.tech.length - 3}</span>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </motion.div>
 
-        {/* Grid View of Projects */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+        {/* Grid View of Projects — staggered */}
+        <motion.div
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}
+          initial="hidden"
+          animate={inView ? 'visible' : 'hidden'}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+        >
           {projectsData.map((project, i) => (
             <ProjectCard
               key={project.id}
@@ -274,24 +377,27 @@ export const Projects: React.FC = () => {
               onClick={() => setSelected(project)}
             />
           ))}
-        </div>
+        </motion.div>
 
         {/* Game CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.8 }}
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
+          transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
+          whileHover={{ scale: 1.02, y: -3, boxShadow: '0 16px 40px rgba(124,58,237,0.15)' }}
           className="text-center mt-16 p-8 rounded-2xl border border-primary-200 bg-primary-50/50"
         >
           <p className="font-orbitron text-slate-900 text-lg font-bold mb-2">Want a more immersive experience?</p>
           <p className="font-inter text-slate-600 mb-6">Drive to each project's dedicated building in the 3D portfolio world!</p>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.06, y: -3, boxShadow: '0 12px 35px rgba(124,58,237,0.4)' }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => document.getElementById('hero-play-game-btn')?.click()}
             className="px-8 py-3 rounded-xl font-orbitron text-sm tracking-widest text-white font-bold"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', boxShadow: '0 4px 12px rgba(124,58,237,0.3)' }}
           >
             ▶ LAUNCH 3D WORLD
-          </button>
+          </motion.button>
         </motion.div>
       </div>
 

@@ -1,9 +1,9 @@
-import type { ResumeData, WorkExperience, ProjectItem } from '../types/resume';
-import { sampleResumeData } from '../data/sampleResume';
+import type { ResumeData, WorkExperience, ProjectItem, SkillCategory, Education, Certification } from '../types/resume';
+import { CVSemanticParser, sanitizeLines } from '../utils/cvSemanticParser';
 
 export class CVParserService {
   /**
-   * Main entry point to parse a File (JSON, TXT, MD, DOCX, PDF)
+   * Main entry point to parse a File (JSON, CSV, TXT, MD, DOCX, PDF)
    */
   static async parseFile(file: File): Promise<ResumeData> {
     const fileName = file.name.toLowerCase();
@@ -19,383 +19,223 @@ export class CVParserService {
       }
     }
 
-    // 2. Extract text depending on file type
+    // 2. All files via backend API (http://localhost:3000/api/parse-file)
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('http://localhost:3000/api/parse-file', {
+        method: 'POST',
+        body: formData,
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          return this.normalizeResumeData(json.data);
+        }
+      }
+    } catch (err) {
+      console.warn('Backend parse-file endpoint unreachable, using in-browser extraction', err);
+    }
+
+    // 3. In-Browser Client-Side Extraction Fallback
     let extractedText = '';
 
     if (fileName.endsWith('.pdf')) {
-      const binaryStr = await file.text();
-      extractedText = this.extractTextFromPDFBinary(binaryStr);
-    } else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
-      const binaryStr = await file.text();
-      extractedText = this.extractTextFromDOCXBinary(binaryStr);
+      extractedText = await this.extractTextFromPDFInBrowser(file);
     } else {
-      // Plain text, markdown, rtf
       extractedText = await file.text();
     }
 
-    // If binary extraction resulted in very short text, try fallback text reading
-    if (!extractedText || extractedText.length < 30) {
-      extractedText = await file.text();
+    const cleanLines = sanitizeLines(extractedText);
+    const cleanText = cleanLines.join('\n');
+
+    if (!cleanText || cleanText.trim().length < 5) {
+      throw new Error('Could not extract readable text from this file.');
     }
 
-    return this.parseTextToResumeData(extractedText, file.name);
+    const canonical = CVSemanticParser.parse(cleanText);
+    return this.normalizeResumeData(canonical);
   }
 
   /**
-   * Extract text strings from PDF stream binaries
+   * Extract text from PDF in browser using PDF.js via CDN dynamic loader
    */
-  private static extractTextFromPDFBinary(binaryStr: string): string {
-    const textParts: string[] = [];
-
-    // Extract text in PDF BT...ET blocks
-    const btBlocks = binaryStr.match(/BT[\s\S]*?ET/g) || [];
-    for (const block of btBlocks) {
-      // Extract text in parentheses e.g. (John Doe) Tj
-      const matches = block.match(/\(([^()\\]|\\[\s\S])*\)/g) || [];
-      for (const m of matches) {
-        const cleaned = m
-          .slice(1, -1)
-          .replace(/\\([()])/g, '$1')
-          .replace(/\\n/g, ' ')
-          .replace(/\\r/g, ' ')
-          .trim();
-        if (cleaned.length > 0 && !/^[\d\s\/\.()-]+$/.test(cleaned) && cleaned.length < 300) {
-          textParts.push(cleaned);
-        }
+  private static async extractTextFromPDFInBrowser(file: File): Promise<string> {
+    try {
+      // Ensure PDF.js is loaded in browser window
+      if (!(window as any).pdfjsLib) {
+        await new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          script.onload = () => {
+            (window as any).pdfjsLib.GlobalWorkerOptions.workerSrc =
+              'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            resolve();
+          };
+          script.onerror = () => reject(new Error('Failed to load PDF.js library'));
+          document.head.appendChild(script);
+        });
       }
-    }
 
-    // Fallback: search all parenthesized strings in stream
-    if (textParts.length < 5) {
-      const rawMatches = binaryStr.match(/\([A-Za-z0-9\s.,@:;\/\-+_#%&'"]{3,100}\)/g) || [];
-      for (const rm of rawMatches) {
-        const text = rm.slice(1, -1).trim();
-        if (text.length > 2 && !text.includes('Font') && !text.includes('ProcSet')) {
-          textParts.push(text);
+      const pdfjsLib = (window as any).pdfjsLib;
+      const arrayBuffer = await file.arrayBuffer();
+      const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer), verbosity: 0 });
+      const pdf = await loadingTask.promise;
+
+      let fullDocText = '';
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        let lastY: number | null = null;
+        let pageText = '';
+
+        for (const item of textContent.items as any[]) {
+          if (!item.str) continue;
+          const currentY = item.transform ? item.transform[5] : null;
+          if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 4) {
+            pageText += '\n';
+          } else if (lastY !== null && !pageText.endsWith(' ') && !pageText.endsWith('\n') && !item.str.startsWith(' ')) {
+            pageText += ' ';
+          }
+          pageText += item.str;
+          if (currentY !== null) {
+            lastY = currentY;
+          }
         }
+        fullDocText += pageText + '\n\n';
       }
-    }
 
-    return textParts.join('\n');
+      return fullDocText;
+    } catch (e) {
+      console.warn('In-browser PDF.js failed, falling back to text stream', e);
+      return '';
+    }
   }
 
   /**
-   * Extract text from DOCX XML (<w:t> tags)
+   * Normalize any input into standard Portfolio ResumeData schema
    */
-  private static extractTextFromDOCXBinary(binaryStr: string): string {
-    const wtMatches = binaryStr.match(/<w:t[^>]*>([^<]+)<\/w:t>/g) || [];
-    if (wtMatches.length > 0) {
-      return wtMatches
-        .map((tag) => tag.replace(/<[^>]+>/g, '').trim())
-        .filter(Boolean)
-        .join('\n');
-    }
+  static normalizeResumeData(raw: any): ResumeData {
+    if (!raw) return this.emptyResumeData();
 
-    // Fallback XML cleanup
-    const cleanStr = binaryStr.replace(/<[^>]+>/g, ' ');
-    return cleanStr.replace(/[\x00-\x1F\x7F-\x9F]/g, ' ').replace(/\s+/g, ' ');
-  }
+    const contactRaw = raw.contact || raw.personalInfo || raw.personalDetails || {};
+    const personalInfo = {
+      fullName: contactRaw.fullName || contactRaw.name || '',
+      jobTitle: contactRaw.jobTitle || contactRaw.title || contactRaw.position || '',
+      email: contactRaw.email || '',
+      phone: contactRaw.phone || contactRaw.mobile || '',
+      location: contactRaw.location || contactRaw.city || '',
+      website: contactRaw.website || contactRaw.portfolio || '',
+      linkedin: contactRaw.linkedin || contactRaw.linkedInUrl || '',
+      github: contactRaw.github || contactRaw.gitHubUrl || '',
+      summary: contactRaw.summary || contactRaw.profile || contactRaw.about || '',
+    };
 
-  /**
-   * Safely normalize JSON or partial objects into a valid ResumeData structure
-   */
-  public static normalizeResumeData(raw: any): ResumeData {
-    const base = sampleResumeData;
+    // Work Experiences
+    const rawExp = raw.experience || raw.workExperiences || raw.workExperience || [];
+    const workExperiences: WorkExperience[] = Array.isArray(rawExp)
+      ? rawExp.map((e: any, idx: number) => ({
+          id: e.id || `exp-${Date.now()}-${idx + 1}`,
+          jobTitle: e.position || e.jobTitle || e.role || '',
+          company: e.company || e.companyName || '',
+          location: e.location || '',
+          startDate: e.startDate || e.start || '',
+          endDate: e.endDate || e.end || (e.current ? 'Present' : ''),
+          current: Boolean(e.current || (e.endDate && /present|current/i.test(e.endDate))),
+          highlights: Array.isArray(e.highlights) && e.highlights.length > 0
+            ? e.highlights
+            : Array.isArray(e.responsibilities) && e.responsibilities.length > 0
+            ? e.responsibilities
+            : e.description ? [e.description] : [],
+        }))
+      : [];
+
+    // Educations
+    const rawEdu = raw.education || raw.educations || [];
+    const educations: Education[] = Array.isArray(rawEdu)
+      ? rawEdu.map((e: any, idx: number) => ({
+          id: e.id || `edu-${Date.now()}-${idx + 1}`,
+          institution: e.institution || e.school || e.university || '',
+          degree: e.degree || e.qualification || '',
+          fieldOfStudy: e.fieldOfStudy || e.field || e.major || '',
+          location: e.location || '',
+          startDate: e.startDate || '',
+          endDate: e.endDate || '',
+          gpa: e.gpa || e.grade || '',
+          highlights: Array.isArray(e.highlights) ? e.highlights : [],
+        }))
+      : [];
+
+    // Skill Categories
+    const rawSkills = raw.skills || raw.skillCategories || [];
+    const skillCategories: SkillCategory[] = Array.isArray(rawSkills)
+      ? rawSkills.map((s: any, idx: number) => ({
+          id: s.id || `skills-${idx + 1}`,
+          categoryName: s.category || s.categoryName || s.name || 'Skills',
+          skills: Array.isArray(s.skills) ? s.skills : Array.isArray(s.items) ? s.items : [],
+        }))
+      : [];
+
+    // Projects
+    const rawProj = raw.projects || raw.projectItems || [];
+    const projects: ProjectItem[] = Array.isArray(rawProj)
+      ? rawProj.map((p: any, idx: number) => ({
+          id: p.id || `proj-${Date.now()}-${idx + 1}`,
+          title: p.name || p.title || p.projectName || '',
+          role: p.role || '',
+          duration: p.duration || (p.startDate && p.endDate ? `${p.startDate} - ${p.endDate}` : ''),
+          techStack: Array.isArray(p.technologies) ? p.technologies : Array.isArray(p.techStack) ? p.techStack : [],
+          description: p.description || '',
+          highlights: Array.isArray(p.highlights) ? p.highlights : [],
+          link: p.link || p.url || '',
+          repoLink: p.repoLink || p.github || '',
+        }))
+      : [];
+
+    // Certifications
+    const rawCerts = raw.certifications || raw.certificates || [];
+    const certifications: Certification[] = Array.isArray(rawCerts)
+      ? rawCerts.map((c: any, idx: number) => ({
+          id: c.id || `cert-${Date.now()}-${idx + 1}`,
+          name: c.name || c.title || '',
+          issuer: c.issuer || c.organization || '',
+          date: c.date || c.issueDate || '',
+          expiryDate: c.expiryDate || '',
+          credentialId: c.credentialId || '',
+          link: c.link || '',
+        }))
+      : [];
 
     return {
-      personalInfo: {
-        fullName: raw?.personalInfo?.fullName || raw?.fullName || raw?.name || base.personalInfo.fullName,
-        jobTitle: raw?.personalInfo?.jobTitle || raw?.jobTitle || raw?.title || base.personalInfo.jobTitle,
-        email: raw?.personalInfo?.email || raw?.email || base.personalInfo.email,
-        phone: raw?.personalInfo?.phone || raw?.phone || base.personalInfo.phone,
-        location: raw?.personalInfo?.location || raw?.location || base.personalInfo.location,
-        website: raw?.personalInfo?.website || raw?.website || base.personalInfo.website,
-        linkedin: raw?.personalInfo?.linkedin || raw?.linkedin || base.personalInfo.linkedin,
-        github: raw?.personalInfo?.github || raw?.github || base.personalInfo.github,
-        summary: raw?.personalInfo?.summary || raw?.summary || base.personalInfo.summary,
-      },
-      workExperiences: Array.isArray(raw?.workExperiences) && raw.workExperiences.length > 0
-        ? raw.workExperiences.map((w: any, idx: number) => ({
-            id: w.id || `exp-${Date.now()}-${idx}`,
-            jobTitle: w.jobTitle || w.title || 'Software Engineer',
-            company: w.company || 'Tech Company',
-            location: w.location || '',
-            startDate: w.startDate || '',
-            endDate: w.endDate || '',
-            current: Boolean(w.current),
-            highlights: Array.isArray(w.highlights) ? w.highlights : [w.description || 'Delivered engineering solutions.'],
-          }))
-        : base.workExperiences,
-      educations: Array.isArray(raw?.educations) && raw.educations.length > 0
-        ? raw.educations.map((e: any, idx: number) => ({
-            id: e.id || `edu-${Date.now()}-${idx}`,
-            institution: e.institution || e.school || 'University',
-            degree: e.degree || 'Bachelor of Science',
-            fieldOfStudy: e.fieldOfStudy || e.field || 'Computer Science',
-            location: e.location || '',
-            startDate: e.startDate || '',
-            endDate: e.endDate || '',
-            gpa: e.gpa || '',
-            highlights: Array.isArray(e.highlights) ? e.highlights : [],
-          }))
-        : base.educations,
-      skillCategories: Array.isArray(raw?.skillCategories) && raw.skillCategories.length > 0
-        ? raw.skillCategories.map((s: any, idx: number) => ({
-            id: s.id || `cat-${Date.now()}-${idx}`,
-            categoryName: s.categoryName || s.name || 'Technical Skills',
-            skills: Array.isArray(s.skills) ? s.skills : [],
-          }))
-        : base.skillCategories,
-      projects: Array.isArray(raw?.projects) && raw.projects.length > 0
-        ? raw.projects.map((p: any, idx: number) => ({
-            id: p.id || `proj-${Date.now()}-${idx}`,
-            title: p.title || p.name || 'Web Platform Project',
-            role: p.role || 'Lead Developer',
-            duration: p.duration || '',
-            techStack: Array.isArray(p.techStack) ? p.techStack : ['React', 'TypeScript', 'Node.js'],
-            description: p.description || 'Full-stack application built for high scale.',
-            highlights: Array.isArray(p.highlights) ? p.highlights : ['Architected modular UI components.'],
-            link: p.link || '',
-          }))
-        : base.projects,
-      certifications: Array.isArray(raw?.certifications) ? raw.certifications : base.certifications,
-      settings: {
-        templateId: raw?.settings?.templateId || base.settings.templateId,
-        accentColor: raw?.settings?.accentColor || base.settings.accentColor,
-        fontSize: raw?.settings?.fontSize || base.settings.fontSize,
-        fontFamily: raw?.settings?.fontFamily || base.settings.fontFamily,
-      },
+      personalInfo,
+      workExperiences,
+      educations,
+      skillCategories,
+      projects,
+      certifications,
+      customSections: [],
     };
   }
 
-  /**
-   * Deep Text Parsing into structured ResumeData
-   */
-  private static parseTextToResumeData(text: string, originalFileName: string): ResumeData {
-    const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-
-    // 1. Contact Details Heuristics
-    const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    const phoneMatch = text.match(/(\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s-]?\d{3}[\s-]?\d{4}/);
-    const linkedinMatch = text.match(/(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+/i);
-    const githubMatch = text.match(/(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+/i);
-    const websiteMatch = text.match(/(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.(com|dev|io|org|net|me)\b/i);
-
-    // 2. Full Name Extraction
-    let fullName = 'Developer Profile';
-    for (const l of lines.slice(0, 5)) {
-      if (
-        !l.includes('@') &&
-        !l.toLowerCase().includes('resume') &&
-        !l.toLowerCase().includes('curriculum') &&
-        !l.toLowerCase().includes('page') &&
-        l.length >= 3 &&
-        l.length <= 35 &&
-        /^[a-zA-Z\s.'-]+$/.test(l)
-      ) {
-        fullName = l;
-        break;
-      }
-    }
-
-    // 3. Job Title Extraction
-    let jobTitle = 'Senior Software Engineer';
-    const titleRegex = /(software engineer|full stack|frontend|backend|web developer|architect|lead engineer|data scientist|devops|ui\/ux designer|mobile developer)/i;
-    for (const l of lines.slice(0, 10)) {
-      const match = l.match(titleRegex);
-      if (match) {
-        jobTitle = l.length < 45 ? l : match[0].toUpperCase();
-        break;
-      }
-    }
-
-    // 4. Section Splitter
-    let currentSection: 'summary' | 'experience' | 'education' | 'skills' | 'projects' | 'other' = 'summary';
-    const summaryLines: string[] = [];
-    const experienceLines: string[] = [];
-    const educationLines: string[] = [];
-    const skillLines: string[] = [];
-    const projectLines: string[] = [];
-
-    for (const line of lines) {
-      const lower = line.toLowerCase();
-
-      if (lower.match(/^(summary|profile|about me|professional summary|objective)\b/)) {
-        currentSection = 'summary';
-        continue;
-      }
-      if (lower.match(/^(work experience|experience|employment history|work history|professional experience)\b/)) {
-        currentSection = 'experience';
-        continue;
-      }
-      if (lower.match(/^(education|academic background|qualifications)\b/)) {
-        currentSection = 'education';
-        continue;
-      }
-      if (lower.match(/^(skills|technical skills|technologies|core competencies|skills & tools)\b/)) {
-        currentSection = 'skills';
-        continue;
-      }
-      if (lower.match(/^(projects|key projects|portfolio|selected work)\b/)) {
-        currentSection = 'projects';
-        continue;
-      }
-
-      if (currentSection === 'summary') summaryLines.push(line);
-      else if (currentSection === 'experience') experienceLines.push(line);
-      else if (currentSection === 'education') educationLines.push(line);
-      else if (currentSection === 'skills') skillLines.push(line);
-      else if (currentSection === 'projects') projectLines.push(line);
-    }
-
-    // 5. Extract Skills
-    const extractedSkillsSet = new Set<string>();
-    const techKeywords = [
-      'React', 'TypeScript', 'JavaScript', 'Node.js', 'Express', 'Python', 'Java', 'C++', 'C#',
-      'AWS', 'Docker', 'Kubernetes', 'PostgreSQL', 'MongoDB', 'GraphQL', 'REST APIs', 'CI/CD',
-      'Git', 'HTML5', 'CSS3', 'Tailwind CSS', 'Redux', 'Zustand', 'Three.js', 'Next.js', 'Vue.js',
-      'Angular', 'Agile', 'Scrum', 'Microservices', 'Cloud', 'System Design', 'Testing', 'Jest',
-    ];
-
-    // Find keywords in text
-    const allTextLower = text.toLowerCase();
-    techKeywords.forEach((kw) => {
-      if (allTextLower.includes(kw.toLowerCase())) {
-        extractedSkillsSet.add(kw);
-      }
-    });
-
-    if (skillLines.length > 0) {
-      skillLines.join(' ').split(/[,•|/;\n]/).forEach((s) => {
-        const cleaned = s.trim();
-        if (cleaned.length > 1 && cleaned.length < 30) {
-          extractedSkillsSet.add(cleaned);
-        }
-      });
-    }
-
-    const skillsList = Array.from(extractedSkillsSet);
-    const primarySkills = skillsList.length > 0 ? skillsList : ['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'Git', 'AWS'];
-
-    // 6. Work Experience Breakdown
-    const parsedExperiences: WorkExperience[] = [];
-    if (experienceLines.length > 0) {
-      let currentCompany = 'Engineering Firm';
-      let currentTitle = jobTitle;
-      let currentHighlights: string[] = [];
-
-      for (const el of experienceLines) {
-        if (el.match(/(19|20)\d{2}|present|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i) && el.length < 60) {
-          if (currentHighlights.length > 0) {
-            parsedExperiences.push({
-              id: `exp-${Date.now()}-${parsedExperiences.length}`,
-              jobTitle: currentTitle,
-              company: currentCompany,
-              location: 'Remote / On-site',
-              startDate: '2021',
-              endDate: 'Present',
-              current: true,
-              highlights: currentHighlights,
-            });
-            currentHighlights = [];
-          }
-          currentTitle = el.length < 40 ? el : 'Software Engineer';
-        } else if (el.length > 10) {
-          currentHighlights.push(el.replace(/^[•\-\*]\s*/, ''));
-        }
-      }
-
-      if (currentHighlights.length > 0) {
-        parsedExperiences.push({
-          id: `exp-${Date.now()}-${parsedExperiences.length}`,
-          jobTitle: currentTitle,
-          company: currentCompany,
-          location: 'San Francisco, CA',
-          startDate: '2022',
-          endDate: 'Present',
-          current: true,
-          highlights: currentHighlights.slice(0, 5),
-        });
-      }
-    }
-
-    const finalExperiences = parsedExperiences.length > 0 ? parsedExperiences : [
-      {
-        id: `exp-${Date.now()}-1`,
-        jobTitle: jobTitle,
-        company: 'Tech Solutions Inc.',
-        location: 'San Francisco, CA',
-        startDate: '2022',
-        endDate: 'Present',
-        current: true,
-        highlights: experienceLines.length > 0
-          ? experienceLines.slice(0, 4).map((l) => l.replace(/^[•\-\*]\s*/, ''))
-          : [
-              'Architected high-throughput web applications with modern frontend & backend frameworks.',
-              'Engineered RESTful & GraphQL microservices handling real-time data sync.',
-              'Collaborated in cross-functional agile teams to optimize performance and deployment cycles.',
-            ],
-      },
-    ];
-
-    // 7. Projects Breakdown
-    const parsedProjects: ProjectItem[] = [
-      {
-        id: `proj-${Date.now()}-1`,
-        title: projectLines[0] || 'Enterprise Web Application',
-        role: 'Lead Architect',
-        techStack: primarySkills.slice(0, 4),
-        description: projectLines.length > 1 ? projectLines.slice(0, 2).join(' ') : 'High performance web application designed for enterprise scale and low latency.',
-        highlights: projectLines.length > 2
-          ? projectLines.slice(2, 5).map((l) => l.replace(/^[•\-\*]\s*/, ''))
-          : ['Designed component library and state management architecture.'],
-      },
-    ];
-
-    const base = sampleResumeData;
-
+  private static emptyResumeData(): ResumeData {
     return {
       personalInfo: {
-        fullName,
-        jobTitle,
-        email: emailMatch ? emailMatch[0] : 'developer@example.com',
-        phone: phoneMatch ? phoneMatch[0] : '+1 (555) 019-2834',
-        location: 'San Francisco, CA',
-        website: websiteMatch ? (websiteMatch[0].startsWith('http') ? websiteMatch[0] : `https://${websiteMatch[0]}`) : 'https://portfolio.dev',
-        linkedin: linkedinMatch ? linkedinMatch[0] : 'https://linkedin.com/in/developer',
-        github: githubMatch ? githubMatch[0] : 'https://github.com/developer',
-        summary: summaryLines.length > 0
-          ? summaryLines.join(' ').slice(0, 450)
-          : `Extracted profile from ${originalFileName}. Results-oriented ${jobTitle} with proven expertise in ${primarySkills.slice(0, 4).join(', ')}. Experienced in delivering scalable web solutions and high-performance applications.`,
+        fullName: '',
+        jobTitle: '',
+        email: '',
+        phone: '',
+        location: '',
+        website: '',
+        linkedin: '',
+        github: '',
+        summary: '',
       },
-      workExperiences: finalExperiences,
-      educations: [
-        {
-          id: `edu-${Date.now()}-1`,
-          institution: educationLines[0] || 'State University',
-          degree: educationLines[1] || 'Bachelor of Science',
-          fieldOfStudy: 'Computer Science & Software Engineering',
-          location: 'California',
-          startDate: '2018',
-          endDate: '2022',
-          highlights: educationLines.slice(2, 4),
-        },
-      ],
-      skillCategories: [
-        {
-          id: `cat-${Date.now()}-1`,
-          categoryName: 'Core Technical Stack',
-          skills: primarySkills.slice(0, 8),
-        },
-        {
-          id: `cat-${Date.now()}-2`,
-          categoryName: 'Frameworks & Tools',
-          skills: primarySkills.length > 8 ? primarySkills.slice(8, 16) : ['Git', 'Docker', 'AWS', 'Jest', 'CI/CD'],
-        },
-      ],
-      projects: parsedProjects,
-      certifications: base.certifications,
-      settings: base.settings,
+      workExperiences: [],
+      educations: [],
+      skillCategories: [],
+      projects: [],
+      certifications: [],
+      customSections: [],
     };
   }
 }

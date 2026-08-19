@@ -213,7 +213,12 @@ export class CVParserService {
       skillCategories,
       projects,
       certifications,
-      customSections: [],
+      settings: {
+        templateId: 'developer',
+        accentColor: '#7c3aed',
+        fontSize: 'md',
+        fontFamily: 'inter',
+      },
     };
   }
 
@@ -235,7 +240,12 @@ export class CVParserService {
       skillCategories: [],
       projects: [],
       certifications: [],
-      customSections: [],
+      settings: {
+        templateId: 'developer',
+        accentColor: '#7c3aed',
+        fontSize: 'md',
+        fontFamily: 'inter',
+      },
     };
   }
 }

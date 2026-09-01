@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Gamepad2, FileText, LogOut, UserCheck, ChevronDown, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
+import { Menu, X, Gamepad2, FileText, LogOut, UserCheck, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { AuthService } from '../../services/authService';
 import { UserProfileDrawer } from '../../components/UserProfileDrawer';
 import { personal } from '../../data/personalInfo';
 
 const navSections = [
-  { label: 'About Me', href: '#about', icon: User },
-  { label: 'Skills & Stack', href: '#skills', icon: Code2 },
-  { label: 'Work Experience', href: '#experience', icon: Briefcase },
-  { label: 'Projects Showcase', href: '#projects', icon: FolderGit2 },
-  { label: 'Resume & CV', href: '#resume', icon: FileText },
+  { label: 'About', href: '#about', icon: User },
+  { label: 'Skills', href: '#skills', icon: Code2 },
+  { label: 'Experience', href: '#experience', icon: Briefcase },
+  { label: 'Projects', href: '#projects', icon: FolderGit2 },
+  { label: 'Resume', href: '#resume', icon: FileText },
   { label: 'Contact', href: '#contact', icon: Mail },
 ];
 
@@ -24,17 +24,33 @@ export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showProfileDrawer, setShowProfileDrawer] = useState(false);
-  const [sectionsOpen, setSectionsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('about');
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const sectionIds = ['about', 'skills', 'experience', 'projects', 'resume', 'contact'];
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+
+      const scrollPosition = window.scrollY + 180;
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const id = sectionIds[i];
+        const el = document.getElementById(id);
+        if (el) {
+          const top = el.offsetTop;
+          if (scrollPosition >= top) {
+            setActiveSection(id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollTo = (href: string) => {
     setMobileOpen(false);
-    setSectionsOpen(false);
     document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -51,11 +67,11 @@ export const Navbar: React.FC = () => {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-16 gap-4">
             {/* Logo */}
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="font-orbitron text-lg font-black flex items-center gap-1 cursor-pointer"
+              className="font-orbitron text-lg font-black flex items-center gap-1 cursor-pointer shrink-0"
             >
               <span className="bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent font-bold">
                 {personal.firstName}
@@ -63,41 +79,26 @@ export const Navbar: React.FC = () => {
               <span className="text-slate-500 text-sm font-bold">.dev</span>
             </button>
 
-            {/* SECTIONS DROPDOWN MENU */}
-            <div className="relative hidden md:block">
-              <button
-                onClick={() => setSectionsOpen(!sectionsOpen)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200/80 border border-gray-250 font-orbitron text-xs font-bold text-slate-800 transition-all cursor-pointer shadow-sm"
-              >
-                <span>SECTIONS</span>
-                <ChevronDown size={14} className={`text-slate-500 transition-transform duration-200 ${sectionsOpen ? 'rotate-180 text-violet-600' : ''}`} />
-              </button>
-
-              <AnimatePresence>
-                {sectionsOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute left-0 mt-2 w-56 p-1.5 rounded-2xl bg-white/95 backdrop-blur-xl border border-gray-200 shadow-2xl shadow-slate-900/10 z-50 flex flex-col gap-1"
+            {/* Desktop Navigation Links — Spanning the Header */}
+            <div className="hidden md:flex items-center gap-1 lg:gap-2">
+              {navSections.map((sec) => {
+                const IconComp = sec.icon;
+                const isActive = activeSection === sec.href.replace('#', '');
+                return (
+                  <button
+                    key={sec.label}
+                    onClick={() => scrollTo(sec.href)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-orbitron font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-violet-50 text-violet-700 shadow-sm border border-violet-200/80'
+                        : 'text-slate-650 hover:text-violet-700 hover:bg-violet-50/50'
+                    }`}
                   >
-                    {navSections.map((sec) => {
-                      const IconComp = sec.icon;
-                      return (
-                        <button
-                          key={sec.label}
-                          onClick={() => scrollTo(sec.href)}
-                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-violet-50 text-slate-700 hover:text-violet-700 text-xs font-semibold font-orbitron transition-all text-left cursor-pointer"
-                        >
-                          <IconComp size={15} className="text-violet-600" />
-                          <span>{sec.label}</span>
-                        </button>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                    <IconComp size={14} className={isActive ? 'text-violet-600' : 'text-slate-400'} />
+                    <span>{sec.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Right side: User Badge + Action Buttons + Mobile Toggle */}

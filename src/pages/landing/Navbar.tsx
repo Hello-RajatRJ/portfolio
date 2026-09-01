@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Gamepad2, FileText, LogOut, UserCheck, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
+import { Menu, X, Gamepad2, FileText, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
 import { useStore } from '../../store/useStore';
-import { AuthService } from '../../services/authService';
-import { UserProfileDrawer } from '../../components/UserProfileDrawer';
 import { personal } from '../../data/personalInfo';
 
 const navSections = [
@@ -16,14 +14,10 @@ const navSections = [
 ];
 
 export const Navbar: React.FC = () => {
-  const user = useStore((s) => s.user);
-  const setUser = useStore((s) => s.setUser);
-  const setShowAuthModal = useStore((s) => s.setShowAuthModal);
   const launchGame = useStore((s) => s.launchGame);
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showProfileDrawer, setShowProfileDrawer] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('about');
 
   useEffect(() => {
@@ -67,7 +61,7 @@ export const Navbar: React.FC = () => {
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center justify-between h-16 gap-2 sm:gap-6">
             {/* Logo */}
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -79,8 +73,8 @@ export const Navbar: React.FC = () => {
               <span className="text-slate-500 text-sm font-bold">.dev</span>
             </button>
 
-            {/* Desktop Navigation Links — Spanning the Header */}
-            <div className="hidden md:flex items-center gap-1 lg:gap-2">
+            {/* Desktop Navigation Links — Filling and Center-Aligning the Header */}
+            <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-6 gap-1 lg:gap-3 xl:gap-5">
               {navSections.map((sec) => {
                 const IconComp = sec.icon;
                 const isActive = activeSection === sec.href.replace('#', '');
@@ -88,62 +82,21 @@ export const Navbar: React.FC = () => {
                   <button
                     key={sec.label}
                     onClick={() => scrollTo(sec.href)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-orbitron font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'bg-violet-50 text-violet-700 shadow-sm border border-violet-200/80'
-                        : 'text-slate-650 hover:text-violet-700 hover:bg-violet-50/50'
+                        ? 'bg-violet-50 text-violet-700 font-bold shadow-sm border border-violet-200'
+                        : 'text-slate-650 hover:text-violet-700 hover:bg-violet-50/60'
                     }`}
                   >
-                    <IconComp size={14} className={isActive ? 'text-violet-600' : 'text-slate-400'} />
+                    <IconComp size={15} className={isActive ? 'text-violet-600' : 'text-slate-400 group-hover:text-violet-500'} />
                     <span>{sec.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Right side: User Badge + Action Buttons + Mobile Toggle */}
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              {/* Candidate Account Status Badge */}
-              {user && user.isLoggedIn ? (
-                <div
-                  onClick={() => setShowProfileDrawer(true)}
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-violet-200 bg-violet-50/80 hover:bg-violet-100/80 text-xs font-semibold text-slate-900 cursor-pointer shadow-sm transition-all hover:scale-[1.02]"
-                  title="Click to view & edit Profile & Rank"
-                >
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0 shadow-sm">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <span className="font-bold text-slate-900 max-w-[80px] sm:max-w-[120px] truncate">{user.name}</span>
-                  <span className="hidden sm:inline-block text-[9px] font-mono px-2 py-0.5 rounded-md bg-violet-100 text-violet-700 font-bold border border-violet-200">
-                    {user.rankTitle}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const loggedOut = AuthService.logout();
-                      setUser(loggedOut);
-                    }}
-                    className="p-1 hover:text-red-600 text-slate-400 transition-colors ml-0.5 cursor-pointer"
-                    title="Log Out Account"
-                  >
-                    <LogOut size={13} />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowAuthModal(true)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-gray-300 bg-white hover:bg-gray-50 text-xs font-semibold text-slate-800 transition-all cursor-pointer shadow-sm"
-                >
-                  <UserCheck size={13} className="text-emerald-600" />
-                  <span>Sign In</span>
-                </button>
-              )}
-
-              <UserProfileDrawer
-                isOpen={showProfileDrawer}
-                onClose={() => setShowProfileDrawer(false)}
-              />
-
+            {/* Right side: Action Button + Mobile Toggle */}
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               <button
                 id="nav-play-game-btn"
                 onClick={launchGame}
@@ -176,30 +129,6 @@ export const Navbar: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             className="fixed top-16 left-0 right-0 z-[99] bg-white/98 backdrop-blur-xl border-b border-gray-200 p-4 flex flex-col gap-2 md:hidden shadow-xl"
           >
-            {/* Candidate Mobile Status Card */}
-            {user && user.isLoggedIn && (
-              <div className="p-3 mb-2 rounded-xl bg-violet-50/80 border border-violet-200 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="font-bold text-slate-900 text-xs">{user.name}</div>
-                    <div className="text-[10px] text-violet-700 font-mono font-semibold">{user.rankTitle} · Candidate</div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
-                    const loggedOut = AuthService.logout();
-                    setUser(loggedOut);
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-red-50 text-red-600 border border-red-200 text-xs font-semibold"
-                >
-                  Log Out
-                </button>
-              </div>
-            )}
-
             {navSections.map((sec, idx) => {
               const IconComp = sec.icon;
               return (
@@ -236,3 +165,4 @@ export const Navbar: React.FC = () => {
     </>
   );
 };
+

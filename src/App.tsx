@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from './store/useStore';
 import { Landing } from './pages/Landing';
 import AnimationShowcase from './pages/AnimationShowcase';
-import ResumeBuilderPage from './pages/ResumeBuilderPage';
 import { GameCanvas } from './components/GameCanvas';
 import { HUD } from './components/HUD';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -16,8 +15,6 @@ import { AchievementToast } from './components/AchievementToast';
 import { OrientationGuard } from './components/OrientationGuard';
 import { ControlsModal } from './components/ControlsModal';
 import { SEO } from './components/SEO';
-import { GeminiAIStudioPage } from './pages/GeminiAIStudioPage';
-import { AssessmentPlatformPage } from './pages/AssessmentPlatformPage';
 import { AuthModal } from './components/AuthModal';
 
 const GameView: React.FC = () => {
@@ -143,13 +140,7 @@ export const App: React.FC = () => {
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
-        targetFeatureLabel={
-          authPendingTargetView === 'builder'
-            ? 'CV Resume Maker'
-            : authPendingTargetView === 'chatbot'
-            ? 'Gemini AI Studio'
-            : 'AI Mock Test Platform'
-        }
+        targetFeatureLabel="Developer Tools"
         onSuccess={() => {
           if (authPendingTargetView) {
             setView(authPendingTargetView);
@@ -182,39 +173,6 @@ export const App: React.FC = () => {
             style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
           >
             <AnimationShowcase />
-          </motion.div>
-        ) : view === 'builder' ? (
-          <motion.div
-            key="builder"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-          >
-            <ResumeBuilderPage />
-          </motion.div>
-        ) : view === 'chatbot' ? (
-          <motion.div
-            key="chatbot"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            style={{ position: 'absolute', inset: 0 }}
-          >
-            <GeminiAIStudioPage />
-          </motion.div>
-        ) : view === 'assessment' ? (
-          <motion.div
-            key="assessment"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.4 }}
-            style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-          >
-            <AssessmentPlatformPage />
           </motion.div>
         ) : (
           <motion.div

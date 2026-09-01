@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Download, FileText } from 'lucide-react';
-import { useStore } from '../../store/useStore';
 import { personal } from '../../data/personalInfo';
 
 /* ─── Animation Variants ─── */
@@ -38,7 +37,6 @@ const slideInRight = {
 export const ResumeSection: React.FC = () => {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-80px' });
-  const openResumeBuilder = useStore((s) => s.openResumeBuilder);
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -183,17 +181,6 @@ export const ResumeSection: React.FC = () => {
               >
                 <Download size={16} />
                 DOWNLOAD PDF
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.06, y: -4, boxShadow: '0 14px 40px rgba(16,185,129,0.2)' }}
-                whileTap={{ scale: 0.97 }}
-                id="resume-create-builder-btn"
-                onClick={openResumeBuilder}
-                className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-orbitron text-sm tracking-widest font-bold text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 hover:bg-emerald-500/20 transition-all cursor-pointer"
-              >
-                <FileText size={16} />
-                BUILD FREE RESUME
               </motion.button>
             </motion.div>
 

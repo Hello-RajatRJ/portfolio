@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Gamepad2, FileText, Bot, Award, LogOut, UserCheck, ChevronDown, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
+import { Menu, X, Gamepad2, FileText, LogOut, UserCheck, ChevronDown, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { AuthService } from '../../services/authService';
 import { UserProfileDrawer } from '../../components/UserProfileDrawer';
@@ -20,9 +20,6 @@ export const Navbar: React.FC = () => {
   const setUser = useStore((s) => s.setUser);
   const setShowAuthModal = useStore((s) => s.setShowAuthModal);
   const launchGame = useStore((s) => s.launchGame);
-  const openResumeBuilder = useStore((s) => s.openResumeBuilder);
-  const openChatbotPage = useStore((s) => s.openChatbotPage);
-  const openAssessmentPage = useStore((s) => s.openAssessmentPage);
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -145,35 +142,6 @@ export const Navbar: React.FC = () => {
                 isOpen={showProfileDrawer}
                 onClose={() => setShowProfileDrawer(false)}
               />
-
-              <button
-                id="nav-ai-assessment-btn"
-                onClick={openAssessmentPage}
-                className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-amber-700 border border-amber-300 bg-amber-50 hover:bg-amber-100/80 transition-all"
-                title="Open AI Technical Assessment Platform"
-              >
-                <Award size={14} className="text-amber-600" />
-                AI MOCK TEST
-              </button>
-
-              <button
-                id="nav-ai-chatbot-btn"
-                onClick={openChatbotPage}
-                className="hidden lg:flex items-center gap-1.5 px-3 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-violet-700 border border-violet-300 bg-violet-50 hover:bg-violet-100/80 transition-all"
-                title="Open Gemini AI Studio LLM Workspace"
-              >
-                <Bot size={14} className="text-violet-600" />
-                GEMINI AI STUDIO
-              </button>
-
-              <button
-                id="nav-resume-builder-btn"
-                onClick={openResumeBuilder}
-                className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-emerald-700 border border-emerald-300 bg-emerald-50 hover:bg-emerald-100/80 transition-all"
-              >
-                <FileText size={14} className="text-emerald-600" />
-                BUILD RESUME
-              </button>
 
               <button
                 id="nav-play-game-btn"

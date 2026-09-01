@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-title" content="Rajat RJ" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="canonical" href="https://rj-ambedkar-portfolio.netlify.app/" />
+<link rel="manifest" href="/manifest.json">
 
 
   <!-- Primary SEO Title & Meta -->
@@ -80,6 +81,12 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .catch(err => console.error('Service Worker registration failed:', err));
+}
+</script>
 </body>
 
 </html>

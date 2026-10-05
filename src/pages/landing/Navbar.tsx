@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Gamepad2, FileText, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
 import { useStore } from '../../store/useStore';
-import { personal } from '../../data/personalInfo';
+
 
 const navSections = [
   { label: 'About', href: '#about', icon: User },
@@ -54,11 +54,10 @@ export const Navbar: React.FC = () => {
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-          scrolled
-            ? 'bg-black/95 backdrop-blur-xl border-b border-red-900/30 shadow-md shadow-black/30'
-            : 'bg-black/90 backdrop-blur-md border-b border-white/5'
-        }`}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled
+          ? 'bg-black/95 backdrop-blur-xl border-b border-red-900/30 shadow-md shadow-black/30'
+          : 'bg-black/90 backdrop-blur-md border-b border-white/5'
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-6">
@@ -106,11 +105,10 @@ export const Navbar: React.FC = () => {
                   <button
                     key={sec.label}
                     onClick={() => scrollTo(sec.href)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'bg-red-950/60 text-red-400 font-bold shadow-sm border border-red-800/50'
-                        : 'text-neutral-400 hover:text-red-400 hover:bg-red-950/30'
-                    }`}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${isActive
+                      ? 'bg-red-950/60 text-red-400 font-bold shadow-sm border border-red-800/50'
+                      : 'text-neutral-400 hover:text-red-400 hover:bg-red-950/30'
+                      }`}
                   >
                     <IconComp size={15} className={isActive ? 'text-red-500' : 'text-neutral-500 group-hover:text-red-400'} />
                     <span>{sec.label}</span>

@@ -1,51 +1,60 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <!-- Background Theme Gradient -->
+    <!-- Background: Deep Pure Pitch Black -->
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b0f19" />
-      <stop offset="50%" stop-color="#111827" />
-      <stop offset="100%" stop-color="#0f172a" />
+      <stop offset="0%" stop-color="#000000" />
+      <stop offset="50%" stop-color="#0a0202" />
+      <stop offset="100%" stop-color="#000000" />
     </linearGradient>
 
-    <!-- Theme Text Gradient (Indigo -> Purple -> Neon Pink) -->
-    <linearGradient id="themeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="50%" stop-color="#a855f7" />
-      <stop offset="100%" stop-color="#ec4899" />
+    <!-- Theme Text Gradient (Bright Crimson Red -> Deep Red) -->
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b3b" />
+      <stop offset="45%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
     </linearGradient>
 
-    <!-- Accent Border Gradient -->
+    <!-- Accent Border Gradient (Pure Red & Black) -->
     <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.8" />
-      <stop offset="50%" stop-color="#a855f7" stop-opacity="0.5" />
-      <stop offset="100%" stop-color="#ec4899" stop-opacity="0.8" />
+      <stop offset="0%" stop-color="#ef4444" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#7f1d1d" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#ef4444" stop-opacity="0.9" />
     </linearGradient>
 
-    <!-- Neon Glow Filter -->
-    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="14" result="blur" />
+    <!-- Red Neon Glow Filter -->
+    <filter id="neonRedGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
   </defs>
 
-  <!-- Base Rounded Container -->
-  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#bgGradient)" stroke="url(#borderGradient)" stroke-width="8" />
+  <!-- Base Black Cyber Rounded Container -->
+  <rect x="20" y="20" width="472" height="472" rx="110" fill="url(#bgGradient)" stroke="url(#borderGradient)" stroke-width="12" />
 
-  <!-- Ambient Inner Theme Glow -->
-  <circle cx="256" cy="256" r="180" fill="#6366f1" opacity="0.15" filter="blur(35px)" />
+  <!-- Ambient Red Core Glow -->
+  <circle cx="256" cy="256" r="170" fill="#dc2626" opacity="0.22" filter="blur(45px)" />
 
-  <!-- RJ Monogram Text in Theme Color Gradient -->
+  <!-- Corner Cyber Tech Accents -->
+  <rect x="42" y="42" width="28" height="6" fill="#ef4444" opacity="0.8" rx="3" />
+  <rect x="42" y="42" width="6" height="28" fill="#ef4444" opacity="0.8" rx="3" />
+  <rect x="442" y="464" width="28" height="6" fill="#ef4444" opacity="0.8" rx="3" />
+  <rect x="464" y="442" width="6" height="28" fill="#ef4444" opacity="0.8" rx="3" />
+
+  <!-- RJ Monogram in Red & Black -->
   <text
     x="256"
-    y="320"
+    y="322"
     font-family="'Orbitron', 'Inter', 'Segoe UI', 'Roboto', sans-serif"
-    font-size="225"
+    font-size="220"
     font-weight="900"
-    fill="url(#themeGradient)"
+    fill="url(#redGradient)"
     text-anchor="middle"
-    filter="url(#neonGlow)"
+    filter="url(#neonRedGlow)"
     letter-spacing="-8"
   >
     RJ
   </text>
+
+  <!-- Accent Status Dot -->
+  <circle cx="410" cy="115" r="14" fill="#ef4444" filter="url(#neonRedGlow)" />
 </svg>

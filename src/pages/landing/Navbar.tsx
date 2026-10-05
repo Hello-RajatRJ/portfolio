@@ -62,15 +62,39 @@ export const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 gap-2 sm:gap-6">
-            {/* Logo */}
+            {/* Brand Logo - Red & Black Cyber Aesthetic */}
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="font-orbitron text-lg font-black flex items-center gap-1 cursor-pointer shrink-0"
+              className="flex items-center gap-2.5 cursor-pointer group shrink-0 select-none text-left"
+              title="Rajat Ambedkar - Back to top"
             >
-              <span className="bg-gradient-to-r from-red-600 via-red-500 to-red-400 bg-clip-text text-transparent font-bold">
-                {personal.firstName}
-              </span>
-              <span className="text-neutral-500 text-sm font-bold">.dev</span>
+              {/* Cyber Monogram Badge */}
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-black border-2 border-red-600/80 flex items-center justify-center shadow-[0_0_18px_rgba(220,38,38,0.45)] group-hover:border-red-500 group-hover:shadow-[0_0_24px_rgba(220,38,38,0.7)] transition-all duration-300">
+                {/* Inner radial gradient */}
+                <div className="absolute inset-0 rounded-xl bg-radial from-red-600/25 via-transparent to-black pointer-events-none" />
+                {/* Red monogram */}
+                <span className="font-orbitron text-base sm:text-lg font-black text-red-500 tracking-tighter drop-shadow-[0_0_8px_rgba(239,68,68,0.85)] group-hover:scale-105 transition-transform duration-300">
+                  R<span className="text-white text-xs">J</span>
+                </span>
+                {/* Corner accent LED */}
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_6px_#ef4444]" />
+              </div>
+
+              {/* Text mark */}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5 font-orbitron text-base sm:text-lg font-black tracking-wide leading-none">
+                  <span className="bg-gradient-to-r from-red-500 via-red-600 to-red-400 bg-clip-text text-transparent group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all">
+                    RAJAT
+                  </span>
+                  <span className="bg-black text-red-400 text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded border border-red-700/60 shadow-[0_0_10px_rgba(220,38,38,0.3)]">
+                    .DEV
+                  </span>
+                </div>
+                <span className="text-[9px] font-mono text-neutral-400 tracking-widest uppercase mt-0.5 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block animate-ping" />
+                  UI ARCHITECT
+                </span>
+              </div>
             </button>
 
             {/* Desktop Navigation Links — Filling and Center-Aligning the Header */}

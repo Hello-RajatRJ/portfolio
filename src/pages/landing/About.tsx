@@ -74,7 +74,7 @@ export const About: React.FC = () => {
       <motion.div
         animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.15, 1] }}
         transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
-        className="absolute top-1/2 left-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"
+        className="absolute top-1/2 left-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"
       />
 
       <motion.div
@@ -87,15 +87,15 @@ export const About: React.FC = () => {
         <motion.div variants={fadeUp} className="text-center mb-16">
           <motion.p
             variants={fadeUp}
-            className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3"
+            className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3"
           >
             01. ABOUT ME
           </motion.p>
           <motion.h2
             variants={fadeUp}
-            className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900"
+            className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white"
           >
-            Who I <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Am</span>
+            Who I <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Am</span>
           </motion.h2>
         </motion.div>
 
@@ -104,22 +104,22 @@ export const About: React.FC = () => {
           <motion.div variants={slideInLeft} className="space-y-6">
             <motion.p
               variants={fadeUp}
-              className="font-inter text-slate-700 text-lg leading-relaxed"
+              className="font-inter text-neutral-300 text-lg leading-relaxed"
             >
               {personal.bio}
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="font-inter text-slate-600 leading-relaxed"
+              className="font-inter text-neutral-400 leading-relaxed"
             >
               When I'm not writing code, I'm exploring the intersection of web technology and game design —
-              which is why I built this portfolio as an interactive 3D experience you can actually <em className="text-primary-600 font-semibold not-italic">drive through</em>.
+              which is why I built this portfolio as an interactive 3D experience you can actually <em className="text-red-500 font-semibold not-italic">drive through</em>.
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="font-inter text-slate-600 leading-relaxed"
+              className="font-inter text-neutral-400 leading-relaxed"
             >
-              I've had the privilege of working with clients across <span className="text-slate-850 font-semibold">Australia, Taiwan, the United States, India, and Armenia</span> — 
+              I've had the privilege of working with clients across <span className="text-white font-semibold">Australia, Taiwan, the United States, India, and Armenia</span> — 
               delivering everything from healthcare platforms to AI-powered communication tools.
             </motion.p>
 
@@ -140,14 +140,14 @@ export const About: React.FC = () => {
                   whileHover={{
                     scale: 1.06,
                     y: -6,
-                    boxShadow: '0 16px 40px rgba(99,102,241,0.15)',
-                    borderColor: 'rgba(99,102,241,0.6)',
+                    boxShadow: '0 16px 40px rgba(220,38,38,0.15)',
+                    borderColor: 'rgba(220,38,38,0.6)',
                     transition: { type: 'spring', stiffness: 400, damping: 12 },
                   }}
-                  className="bg-white border border-gray-250 hover:border-indigo-400 rounded-xl p-4 shadow-sm transition-colors"
+                  className="bg-neutral-900 border border-neutral-800 hover:border-red-700 rounded-xl p-4 shadow-sm transition-colors"
                 >
-                  <div className="font-orbitron text-xs text-indigo-600 tracking-widest mb-1 font-bold">{fact.label.toUpperCase()}</div>
-                  <div className="font-inter text-slate-950 font-bold text-sm">{fact.value}</div>
+                  <div className="font-orbitron text-xs text-red-500 tracking-widest mb-1 font-bold">{fact.label.toUpperCase()}</div>
+                  <div className="font-inter text-white font-bold text-sm">{fact.value}</div>
                 </motion.div>
               ))}
             </motion.div>
@@ -159,21 +159,21 @@ export const About: React.FC = () => {
             <motion.div
               animate={{ opacity: [0.4, 0.8, 0.4] }}
               transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-              className="absolute -inset-px rounded-2xl bg-gradient-to-r from-primary-500/20 via-violet-500/20 to-indigo-500/20 blur-sm"
+              className="absolute -inset-px rounded-2xl bg-gradient-to-r from-red-600/20 via-red-500/20 to-red-700/20 blur-sm"
             />
             <motion.div
               whileHover={{
                 rotateY: 3,
                 rotateX: -2,
                 scale: 1.02,
-                boxShadow: '0 20px 60px rgba(124,58,237,0.15)',
+                boxShadow: '0 20px 60px rgba(220,38,38,0.15)',
                 transition: { type: 'spring', stiffness: 200, damping: 20 },
               }}
-              className="relative bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-md"
+              className="relative bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-800 shadow-md"
               style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
             >
               {/* Window bar */}
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-neutral-800 bg-neutral-900">
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 3, delay: 0 }}
@@ -182,18 +182,18 @@ export const About: React.FC = () => {
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 3, delay: 0.5 }}
-                  className="w-3 h-3 rounded-full bg-yellow-500/60"
+                  className="w-3 h-3 rounded-full bg-neutral-500/60"
                 />
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 3, delay: 1 }}
-                  className="w-3 h-3 rounded-full bg-green-500/60"
+                  className="w-3 h-3 rounded-full bg-neutral-600/60"
                 />
-                <span className="ml-3 font-mono text-xs text-slate-500">developer.ts</span>
+                <span className="ml-3 font-mono text-xs text-neutral-500">developer.ts</span>
               </div>
               {/* Code */}
               <pre className="p-4 sm:p-6 text-xs sm:text-sm font-mono overflow-x-auto">
-                <code className="text-slate-800 whitespace-pre">
+                <code className="text-neutral-300 whitespace-pre">
                   {codeSnippet.split('\n').map((line, i) => (
                     <motion.div
                       key={i}
@@ -202,13 +202,13 @@ export const About: React.FC = () => {
                       transition={{ delay: 0.6 + i * 0.04, duration: 0.4 }}
                       className="flex"
                     >
-                      <span className="text-slate-400 select-none w-6 mr-4 text-right shrink-0">{i + 1}</span>
+                      <span className="text-neutral-600 select-none w-6 mr-4 text-right shrink-0">{i + 1}</span>
                       <span dangerouslySetInnerHTML={{
                         __html: line
-                          .replace(/(\".*?\")/g, '<span style="color:#059669">$1</span>')
-                          .replace(/\b(const|async|await|while|true|return)\b/g, '<span style="color:#7c3aed;font-weight:bold">$1</span>')
-                          .replace(/\/\/.*/g, '<span style="color:#64748b">$&</span>')
-                          .replace(/\b(name|passion|stack|coffeePerDay)\b/g, '<span style="color:#2563eb">$&</span>')
+                          .replace(/(\".*?\")/g, '<span style="color:#ef4444">$1</span>')
+                          .replace(/\b(const|async|await|while|true|return)\b/g, '<span style="color:#dc2626;font-weight:bold">$1</span>')
+                          .replace(/\/\/.*/g, '<span style="color:#525252">$&</span>')
+                          .replace(/\b(name|passion|stack|coffeePerDay)\b/g, '<span style="color:#ffffff">$&</span>')
                       }} />
                     </motion.div>
                   ))}

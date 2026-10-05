@@ -48,6 +48,33 @@ const slideRight = {
   },
 };
 
+import { AvatarCanvas3D } from '../../components/AvatarCanvas3D';
+
+/* ─── 3D Avatar Component (React Three Fiber WebGL) ─── */
+const Avatar3D: React.FC = () => {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, scale: 0.8, y: 40 },
+        visible: {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          transition: {
+            type: 'spring',
+            stiffness: 160,
+            damping: 20,
+            delay: 0.1,
+          },
+        },
+      }}
+      className="w-full flex justify-center items-center"
+    >
+      <AvatarCanvas3D />
+    </motion.div>
+  );
+};
+
 export const Hero: React.FC = () => {
   const launchGame = useStore((s) => s.launchGame);
   const [roleIndex, setRoleIndex] = useState(0);
@@ -120,7 +147,7 @@ export const Hero: React.FC = () => {
         if (p.y > canvas.height) p.y = 0;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(99, 102, 241, ${p.opacity})`;
+        ctx.fillStyle = `rgba(220, 38, 38, ${p.opacity})`;
         ctx.fill();
       });
 
@@ -130,7 +157,7 @@ export const Hero: React.FC = () => {
           const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
           if (dist < 120) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(139, 92, 246, ${0.12 * (1 - dist / 120)})`;
+            ctx.strokeStyle = `rgba(220, 38, 38, ${0.12 * (1 - dist / 120)})`;
             ctx.lineWidth = 0.5;
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
@@ -154,180 +181,192 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-dark-900">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-dark-900 pt-16 pb-4 sm:pt-20 sm:pb-6 lg:pt-20 lg:pb-6">
       {/* Particle canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
 
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-radial from-primary-500/10 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-radial from-red-600/10 via-transparent to-transparent pointer-events-none" />
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }}
         transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-        className="absolute top-0 left-0 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl pointer-events-none"
+        className="absolute top-0 left-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl pointer-events-none"
       />
       <motion.div
         animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.08, 0.05] }}
         transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut', delay: 2 }}
-        className="absolute bottom-0 right-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none"
+        className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl pointer-events-none"
       />
 
       {/* Grid lines overlay */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(rgba(99,102,241,1) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,1) 1px, transparent 1px)',
+          backgroundImage: 'linear-gradient(rgba(220,38,38,1) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,1) 1px, transparent 1px)',
           backgroundSize: '60px 60px',
         }}
       />
 
-      {/* Content — Stagger Container */}
+      {/* Content — Responsive Hero Grid */}
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="relative z-10 text-center px-4 max-w-4xl lg:max-w-5xl mx-auto"
+        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       >
-        {/* Availability badge */}
-        <motion.div
-          variants={scaleIn}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary-200 bg-primary-50 text-primary-700 text-sm font-inter mb-8"
-        >
-          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          Available for opportunities
-        </motion.div>
-
-        {/* Name */}
-        <motion.h1
-          variants={fadeUp}
-          className="font-orbitron text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 mb-4 leading-none"
-        >
-          <span className="animated-gradient-text">
-            {personal.name}
-          </span>
-        </motion.h1>
-
-        {/* Levitating Tech Badges — staggered pop-in */}
-        <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
-          className="flex flex-wrap justify-center gap-3 my-4"
-        >
-          {['⚛️ React 19', '🔷 TypeScript', '🟢 Node.js', '🐍 Python', '☁️ AWS/Azure', '🤖 Gemini AI'].map((tech) => (
-            <motion.span
-              key={tech}
-              variants={{
-                hidden: { opacity: 0, y: 20, scale: 0.7, rotate: -5 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  rotate: 0,
-                  transition: { type: 'spring', stiffness: 300, damping: 15 },
-                },
-              }}
-              whileHover={{
-                scale: 1.12,
-                y: -6,
-                rotate: 2,
-                boxShadow: '0 8px 25px rgba(124,58,237,0.3)',
-                transition: { type: 'spring', stiffness: 400, damping: 10 },
-              }}
-              className="levitate-badge px-3 py-1 rounded-full bg-slate-900/80 border border-slate-700/60 text-slate-200 text-xs font-mono font-semibold shadow-lg backdrop-blur-md cursor-default"
-            >
-              {tech}
-            </motion.span>
-          ))}
-        </motion.div>
-
-        {/* Typewriter role */}
-        <motion.div
-          variants={fadeUp}
-          className="font-orbitron text-xl md:text-2xl text-slate-700 mb-4 h-8 flex items-center justify-center font-bold"
-        >
-          <span>{displayed}</span>
-          <span className="ml-1 w-0.5 h-6 bg-primary-600 animate-pulse" />
-        </motion.div>
-
-        {/* Tagline */}
-        <motion.p
-          variants={fadeUp}
-          className="font-inter text-slate-600 text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
-        >
-          {personal.tagline}
-        </motion.p>
-
-        {/* CTA Buttons — staggered slide-in */}
-        <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-        >
-          {/* View Work button */}
-          <motion.button
-            variants={slideRight}
-            whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 30px rgba(99,102,241,0.2)' }}
-            whileTap={{ scale: 0.97 }}
-            onClick={scrollToProjects}
-            id="hero-view-work-btn"
-            className="group px-8 py-4 rounded-xl border border-primary-300 text-primary-600 font-orbitron text-sm tracking-widest hover:bg-primary-50 transition-all duration-300 hover:shadow-md"
-          >
-            VIEW MY WORK
-          </motion.button>
-
-          {/* Play Game button */}
-          <motion.button
-            variants={slideRight}
-            whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 35px rgba(124,58,237,0.4)' }}
-            whileTap={{ scale: 0.97 }}
-            onClick={launchGame}
-            id="hero-play-game-btn"
-            className="group relative px-8 py-4 rounded-xl font-orbitron text-sm tracking-widest font-bold overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
-              boxShadow: '0 4px 20px rgba(124,58,237,0.3)',
-            }}
-          >
-            <span className="relative z-10 flex items-center gap-3 text-white">
-              <span className="text-lg">▶</span>
-              PLAY PORTFOLIO GAME
-            </span>
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </motion.button>
-
-          {/* Animation Showcase button */}
-          <motion.div variants={slideRight} className="mt-4">
-            <AnimationShowcaseButton />
-          </motion.div>
-        </motion.div>
-
-        {/* Stats row — count-up style stagger */}
-        <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15, delayChildren: 0.3 } } }}
-          className="flex flex-wrap justify-center gap-6 sm:gap-12 mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-gray-200"
-        >
-          {[
-            { value: `${personal.yearsOfExperience}+`, label: 'Years Experience' },
-            { value: '8+', label: 'Projects Delivered' },
-            { value: '5+', label: 'Countries Served' },
-          ].map((stat) => (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center py-2 lg:py-4">
+          
+          {/* ═══ LEFT COLUMN: Information & CTAs (7 cols on Desktop) ═══ */}
+          <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+            {/* Availability badge */}
             <motion.div
-              key={stat.label}
-              variants={{
-                hidden: { opacity: 0, y: 30, scale: 0.8 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  transition: { type: 'spring', stiffness: 200, damping: 15 },
-                },
-              }}
-              whileHover={{ scale: 1.1, y: -4, transition: { type: 'spring', stiffness: 400 } }}
-              className="text-center cursor-default"
+              variants={scaleIn}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-800/40 bg-red-950/30 text-red-400 text-sm font-inter mb-6 shadow-lg shadow-red-950/20"
             >
-              <div className="font-orbitron text-2xl sm:text-3xl font-black bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">
-                {stat.value}
-              </div>
-              <div className="font-inter text-slate-500 text-xs sm:text-sm mt-1">{stat.label}</div>
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              Available for opportunities
             </motion.div>
-          ))}
-        </motion.div>
+
+            {/* Name */}
+            <motion.h1
+              variants={fadeUp}
+              className="font-orbitron text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black text-white mb-4 leading-tight tracking-tight"
+            >
+              <span className="animated-gradient-text">
+                {personal.name}
+              </span>
+            </motion.h1>
+
+            {/* Typewriter role */}
+            <motion.div
+              variants={fadeUp}
+              className="font-orbitron text-xl sm:text-2xl md:text-3xl text-neutral-300 mb-4 h-9 flex items-center font-bold"
+            >
+              <span>{displayed}</span>
+              <span className="ml-1.5 w-0.5 h-7 bg-red-600 animate-pulse" />
+            </motion.div>
+
+            {/* Levitating Tech Badges */}
+            <motion.div
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
+              className="flex flex-wrap justify-center lg:justify-start gap-2.5 my-4 max-w-2xl"
+            >
+              {['⚛️ React 19', '🔷 TypeScript', '🟢 Node.js', '🐍 Python', '☁️ AWS/Azure', '🤖 Gemini AI'].map((tech) => (
+                <motion.span
+                  key={tech}
+                  variants={{
+                    hidden: { opacity: 0, y: 20, scale: 0.7, rotate: -5 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      rotate: 0,
+                      transition: { type: 'spring', stiffness: 300, damping: 15 },
+                    },
+                  }}
+                  whileHover={{
+                    scale: 1.12,
+                    y: -4,
+                    rotate: 2,
+                    boxShadow: '0 8px 25px rgba(220,38,38,0.35)',
+                    transition: { type: 'spring', stiffness: 400, damping: 10 },
+                  }}
+                  className="levitate-badge px-3.5 py-1.5 rounded-full bg-black/80 border border-red-900/40 text-neutral-200 text-xs sm:text-sm font-mono font-semibold shadow-lg backdrop-blur-md cursor-default transition-colors hover:border-red-600/60"
+                >
+                  {tech}
+                </motion.span>
+              ))}
+            </motion.div>
+
+            {/* Tagline */}
+            <motion.p
+              variants={fadeUp}
+              className="font-inter text-neutral-400 text-base sm:text-lg md:text-xl max-w-2xl mb-8 leading-relaxed"
+            >
+              {personal.tagline}
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
+              className="flex flex-wrap gap-4 justify-center lg:justify-start items-center w-full"
+            >
+              {/* View Work button */}
+              <motion.button
+                variants={slideRight}
+                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 30px rgba(220,38,38,0.25)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={scrollToProjects}
+                id="hero-view-work-btn"
+                className="group px-7 py-3.5 rounded-xl border border-red-700/50 text-red-400 font-orbitron text-xs sm:text-sm tracking-widest hover:bg-red-950/40 transition-all duration-300 hover:shadow-lg"
+              >
+                VIEW MY WORK
+              </motion.button>
+
+              {/* Play Game button */}
+              <motion.button
+                variants={slideRight}
+                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 35px rgba(220,38,38,0.45)' }}
+                whileTap={{ scale: 0.97 }}
+                onClick={launchGame}
+                id="hero-play-game-btn"
+                className="group relative px-7 py-3.5 rounded-xl font-orbitron text-xs sm:text-sm tracking-widest font-bold overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+                  boxShadow: '0 4px 20px rgba(220,38,38,0.3)',
+                }}
+              >
+                <span className="relative z-10 flex items-center gap-2.5 text-white">
+                  <span className="text-base">▶</span>
+                  PLAY PORTFOLIO GAME
+                </span>
+                <div className="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </motion.button>
+
+              {/* Animation Showcase button */}
+              <motion.div variants={slideRight}>
+                <AnimationShowcaseButton />
+              </motion.div>
+            </motion.div>
+
+            {/* Quick Stats */}
+            <motion.div
+              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15, delayChildren: 0.3 } } }}
+              className="flex flex-wrap justify-center lg:justify-start gap-8 sm:gap-12 mt-6 pt-5 border-t border-neutral-800/80 w-full max-w-xl"
+            >
+              {[
+                { value: `${personal.yearsOfExperience}+`, label: 'Years Experience' },
+                { value: '8+', label: 'Projects Delivered' },
+                { value: '5+', label: 'Countries Served' },
+              ].map((stat) => (
+                <motion.div
+                  key={stat.label}
+                  variants={{
+                    hidden: { opacity: 0, y: 20, scale: 0.8 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      transition: { type: 'spring', stiffness: 200, damping: 15 },
+                    },
+                  }}
+                  whileHover={{ scale: 1.1, y: -3, transition: { type: 'spring', stiffness: 400 } }}
+                  className="text-center lg:text-left cursor-default"
+                >
+                  <div className="font-orbitron text-2xl sm:text-3xl font-black bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
+                    {stat.value}
+                  </div>
+                  <div className="font-inter text-neutral-500 text-xs sm:text-sm mt-0.5">{stat.label}</div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* ═══ RIGHT COLUMN: Large 3D Avatar (5 cols on Desktop, Hero Centerpiece) ═══ */}
+          <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2 lg:pr-6 xl:pr-10">
+            <Avatar3D />
+          </div>
+
+        </div>
       </motion.div>
 
       {/* Scroll indicator */}
@@ -335,13 +374,13 @@ export const Hero: React.FC = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-600 text-xs font-orbitron tracking-widest"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-500 text-xs font-orbitron tracking-widest"
       >
         <span>SCROLL</span>
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-          className="w-px h-8 bg-gradient-to-b from-gray-600 to-transparent"
+          className="w-px h-8 bg-gradient-to-b from-neutral-500 to-transparent"
         />
       </motion.div>
     </section>

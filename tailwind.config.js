@@ -12,32 +12,39 @@ export default {
       },
       colors: {
         primary: {
-          50:  '#f5f3ff', // violet-50
-          100: '#ede9fe', // violet-100
-          400: '#a78bfa', // violet-400
-          500: '#8b5cf6', // violet-500
-          600: '#7c3aed', // violet-600
-          700: '#6d28d9', // violet-700
+          50:  '#fef2f2', // red-50
+          100: '#fee2e2', // red-100
+          200: '#fecaca', // red-200
+          300: '#fca5a5', // red-300
+          400: '#f87171', // red-400
+          500: '#ef4444', // red-500
+          600: '#dc2626', // red-600
+          700: '#b91c1c', // red-700
         },
         violet: {
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
+          400: '#f87171', // mapped to red
+          500: '#ef4444',
+          600: '#dc2626',
         },
         cyan: {
-          400: '#a78bfa', // mapped to purple for compatibility
-          500: '#7c3aed',
+          400: '#f87171', // mapped to red for compatibility
+          500: '#dc2626',
+        },
+        indigo: {
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
         },
         dark: {
-          900: '#fafafa', // mapped to bright colors
-          800: '#f3f4f6',
-          700: '#e5e7eb',
-          600: '#d1d5db',
+          900: '#0a0a0a', // near-black
+          800: '#111111',
+          700: '#1a1a1a',
+          600: '#262626',
         },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'hero-gradient': 'linear-gradient(135deg, #ffffff 0%, #f3f4f6 50%, #fafafa 100%)',
+        'hero-gradient': 'linear-gradient(135deg, #0a0a0a 0%, #111111 50%, #0a0a0a 100%)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

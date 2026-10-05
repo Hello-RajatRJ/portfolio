@@ -106,18 +106,18 @@ export const Contact: React.FC = () => {
   };
 
   const socials = [
-    { label: 'LinkedIn', href: personal.linkedin, color: '#0077B5', emoji: '💼' },
+    { label: 'LinkedIn', href: personal.linkedin, color: '#dc2626', emoji: '💼' },
     { label: 'GitHub', href: personal.github, color: '#ffffff', emoji: '⌨️' },
-    { label: 'Email', href: `mailto:${personal.email}`, color: '#6366f1', emoji: '✉️' },
+    { label: 'Email', href: `mailto:${personal.email}`, color: '#ef4444', emoji: '✉️' },
   ].filter(s => !!s.href); // Only keep socials that actually have a URL string
 
   return (
-    <section id="contact" ref={ref} className="py-20 sm:py-32 bg-white relative overflow-hidden">
+    <section id="contact" ref={ref} className="py-20 sm:py-32 bg-dark-900 relative overflow-hidden">
       {/* Animated glow */}
       <motion.div
         animate={{ scale: [1, 1.3, 1], opacity: [0.03, 0.07, 0.03] }}
         transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-radial from-primary-500/5 via-transparent to-transparent pointer-events-none"
+        className="absolute inset-0 bg-gradient-radial from-red-600/5 via-transparent to-transparent pointer-events-none"
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
@@ -127,11 +127,11 @@ export const Contact: React.FC = () => {
           animate={inView ? 'visible' : 'hidden'}
           className="text-center mb-16"
         >
-          <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">06. CONTACT</p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900 mb-4">
-            Get In <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Touch</span>
+          <p className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3">06. CONTACT</p>
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
+            Get In <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Touch</span>
           </h2>
-          <p className="font-inter text-slate-600 max-w-lg mx-auto">
+          <p className="font-inter text-neutral-400 max-w-lg mx-auto">
             Have a project in mind? Let's build something amazing together.
           </p>
         </motion.div>
@@ -152,32 +152,32 @@ export const Contact: React.FC = () => {
             >
               <motion.div
                 variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5 } } }}
-                className="flex items-center gap-3 font-inter text-slate-605"
+                className="flex items-center gap-3 font-inter text-neutral-400"
               >
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
                 >
-                  <Mail size={18} className="text-primary-600 shrink-0" />
+                  <Mail size={18} className="text-red-500 shrink-0" />
                 </motion.div>
-                <a href={`mailto:${personal.email}`} className="hover:text-primary-600 transition-colors font-semibold text-slate-700">{personal.email}</a>
+                <a href={`mailto:${personal.email}`} className="hover:text-red-400 transition-colors font-semibold text-neutral-300">{personal.email}</a>
               </motion.div>
               <motion.div
                 variants={{ hidden: { opacity: 0, x: -20 }, visible: { opacity: 1, x: 0, transition: { duration: 0.5 } } }}
-                className="flex items-center gap-3 font-inter text-slate-600"
+                className="flex items-center gap-3 font-inter text-neutral-400"
               >
                 <motion.div
                   animate={{ y: [0, -3, 0] }}
                   transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                 >
-                  <MapPin size={18} className="text-primary-600 shrink-0" />
+                  <MapPin size={18} className="text-red-500 shrink-0" />
                 </motion.div>
                 <span>{personal.location}</span>
               </motion.div>
             </motion.div>
 
             <div>
-              <p className="font-orbitron text-xs tracking-widest text-slate-500 mb-4 font-semibold">FIND ME ON</p>
+              <p className="font-orbitron text-xs tracking-widest text-neutral-500 mb-4 font-semibold">FIND ME ON</p>
               <motion.div
                 variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
                 initial="hidden"
@@ -197,13 +197,13 @@ export const Contact: React.FC = () => {
                     whileHover={{
                       scale: 1.06,
                       y: -5,
-                      boxShadow: '0 12px 30px rgba(99,102,241,0.15)',
-                      borderColor: 'rgba(99,102,241,0.6)',
+                      boxShadow: '0 12px 30px rgba(220,38,38,0.15)',
+                      borderColor: 'rgba(220,38,38,0.6)',
                       transition: { type: 'spring', stiffness: 400, damping: 12 },
                     }}
                     whileTap={{ scale: 0.97 }}
                     id={`social-${s.label.toLowerCase()}`}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-200 bg-white hover:bg-primary-50/10 transition-colors duration-300 group shadow-sm"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-neutral-800 bg-neutral-950 hover:bg-red-950/20 transition-colors duration-300 group shadow-sm"
                   >
                     <motion.span
                       whileHover={{ scale: 1.2, rotate: 10 }}
@@ -211,7 +211,7 @@ export const Contact: React.FC = () => {
                     >
                       {s.emoji}
                     </motion.span>
-                    <span className="font-inter text-sm font-semibold text-slate-600 group-hover:text-primary-600 transition-colors">{s.label}</span>
+                    <span className="font-inter text-sm font-semibold text-neutral-400 group-hover:text-red-400 transition-colors">{s.label}</span>
                   </motion.a>
                 ))}
               </motion.div>
@@ -222,18 +222,18 @@ export const Contact: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.6, duration: 0.6 }}
-              whileHover={{ scale: 1.02, y: -3, boxShadow: '0 8px 25px rgba(22,163,74,0.1)' }}
-              className="p-5 rounded-xl border border-green-200 bg-green-50/50"
+              whileHover={{ scale: 1.02, y: -3, boxShadow: '0 8px 25px rgba(220,38,38,0.1)' }}
+              className="p-5 rounded-xl border border-red-900/30 bg-red-950/20"
             >
               <div className="flex items-center gap-2 mb-2">
                 <motion.div
                   animate={{ scale: [1, 1.3, 1] }}
                   transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-                  className="w-2 h-2 rounded-full bg-green-500"
+                  className="w-2 h-2 rounded-full bg-red-500"
                 />
-                <span className="font-orbitron text-xs text-green-700 tracking-wider font-bold">OPEN TO WORK</span>
+                <span className="font-orbitron text-xs text-red-400 tracking-wider font-bold">OPEN TO WORK</span>
               </div>
-              <p className="font-inter text-sm text-slate-600">
+              <p className="font-inter text-sm text-neutral-400">
                 Currently available for freelance projects, contract work, and full-time opportunities.
               </p>
             </motion.div>
@@ -256,10 +256,10 @@ export const Contact: React.FC = () => {
                   animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
                   transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
                 >
-                  <CheckCircle size={64} className="text-green-500 mb-4" />
+                  <CheckCircle size={64} className="text-red-500 mb-4" />
                 </motion.div>
-                <h3 className="font-orbitron text-xl text-slate-900 font-bold mb-2">Message Sent!</h3>
-                <p className="font-inter text-slate-600">I'll get back to you as soon as possible.</p>
+                <h3 className="font-orbitron text-xl text-white font-bold mb-2">Message Sent!</h3>
+                <p className="font-inter text-neutral-400">I'll get back to you as soon as possible.</p>
               </motion.div>
             ) : (
               <motion.form
@@ -273,58 +273,58 @@ export const Contact: React.FC = () => {
               >
                 {/* Name */}
                 <motion.div variants={formFieldVariant}>
-                  <label htmlFor="contact-name" className="font-orbitron text-xs tracking-widest text-slate-500 block mb-2 font-bold">YOUR NAME</label>
+                  <label htmlFor="contact-name" className="font-orbitron text-xs tracking-widest text-neutral-500 block mb-2 font-bold">YOUR NAME</label>
                   <motion.input
-                    whileFocus={{ scale: 1.01, borderColor: 'rgba(99,102,241,0.8)', boxShadow: '0 0 20px rgba(99,102,241,0.15)' }}
+                    whileFocus={{ scale: 1.01, borderColor: 'rgba(220,38,38,0.8)', boxShadow: '0 0 20px rgba(220,38,38,0.15)' }}
                     id="contact-name"
                     type="text"
                     value={name}
                     onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: '' })); }}
                     placeholder="Alex Mercer"
-                    className={`w-full bg-white border rounded-xl px-4 py-3 font-inter text-slate-800 placeholder-gray-400 outline-none transition-all ${errors.name ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'}`}
+                    className={`w-full bg-neutral-950 border rounded-xl px-4 py-3 font-inter text-white placeholder-neutral-600 outline-none transition-all ${errors.name ? 'border-red-500 focus:border-red-400' : 'border-neutral-800 focus:border-red-600'}`}
                   />
                   {errors.name && <p className="text-red-500 text-xs mt-1 font-inter">{errors.name}</p>}
                 </motion.div>
 
                 {/* Email */}
                 <motion.div variants={formFieldVariant}>
-                  <label htmlFor="contact-email" className="font-orbitron text-xs tracking-widest text-slate-500 block mb-2 font-bold">EMAIL ADDRESS</label>
+                  <label htmlFor="contact-email" className="font-orbitron text-xs tracking-widest text-neutral-500 block mb-2 font-bold">EMAIL ADDRESS</label>
                   <motion.input
-                    whileFocus={{ scale: 1.01, borderColor: 'rgba(99,102,241,0.8)', boxShadow: '0 0 20px rgba(99,102,241,0.15)' }}
+                    whileFocus={{ scale: 1.01, borderColor: 'rgba(220,38,38,0.8)', boxShadow: '0 0 20px rgba(220,38,38,0.15)' }}
                     id="contact-email"
                     type="email"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: '' })); }}
                     placeholder="alex@example.com"
-                    className={`w-full bg-white border rounded-xl px-4 py-3 font-inter text-slate-800 placeholder-gray-400 outline-none transition-all ${errors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'}`}
+                    className={`w-full bg-neutral-950 border rounded-xl px-4 py-3 font-inter text-white placeholder-neutral-600 outline-none transition-all ${errors.email ? 'border-red-500 focus:border-red-400' : 'border-neutral-800 focus:border-red-600'}`}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1 font-inter">{errors.email}</p>}
                 </motion.div>
 
                 {/* Message */}
                 <motion.div variants={formFieldVariant}>
-                  <label htmlFor="contact-message" className="font-orbitron text-xs tracking-widest text-slate-500 block mb-2 font-bold">MESSAGE</label>
+                  <label htmlFor="contact-message" className="font-orbitron text-xs tracking-widest text-neutral-500 block mb-2 font-bold">MESSAGE</label>
                   <motion.textarea
-                    whileFocus={{ scale: 1.01, borderColor: 'rgba(99,102,241,0.8)', boxShadow: '0 0 20px rgba(99,102,241,0.15)' }}
+                    whileFocus={{ scale: 1.01, borderColor: 'rgba(220,38,38,0.8)', boxShadow: '0 0 20px rgba(220,38,38,0.15)' }}
                     id="contact-message"
                     value={message}
                     onChange={(e) => { setMessage(e.target.value); setErrors((p) => ({ ...p, message: '' })); }}
                     placeholder="Tell me about your project..."
                     rows={5}
-                    className={`w-full bg-white border rounded-xl px-4 py-3 font-inter text-slate-800 placeholder-gray-400 outline-none transition-all resize-none ${errors.message ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-primary-500'}`}
+                    className={`w-full bg-neutral-950 border rounded-xl px-4 py-3 font-inter text-white placeholder-neutral-600 outline-none transition-all resize-none ${errors.message ? 'border-red-500 focus:border-red-400' : 'border-neutral-800 focus:border-red-600'}`}
                   />
                   {errors.message && <p className="text-red-500 text-xs mt-1 font-inter">{errors.message}</p>}
                 </motion.div>
 
                 <motion.button
                   variants={formFieldVariant}
-                  whileHover={{ scale: 1.03, y: -3, boxShadow: '0 12px 35px rgba(124,58,237,0.35)' }}
+                  whileHover={{ scale: 1.03, y: -3, boxShadow: '0 12px 35px rgba(220,38,38,0.35)' }}
                   whileTap={{ scale: 0.97 }}
                   type="submit"
                   id="contact-submit"
                   disabled={status === 'sending'}
                   className="w-full flex items-center justify-center gap-3 py-4 rounded-xl font-orbitron text-sm tracking-widest font-bold text-white disabled:opacity-60 transition-all cursor-pointer"
-                  style={{ background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' }}
+                  style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}
                 >
                   {status === 'sending' ? (
                     <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> SENDING...</>

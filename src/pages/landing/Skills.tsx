@@ -3,15 +3,15 @@ import { motion, useInView } from 'framer-motion';
 import { skills } from '../../data/personalInfo';
 
 const defaultColors = [
-  '#7c3aed', // Purple
-  '#4f46e5', // Indigo
-  '#8b5cf6', // Violet
-  '#059669', // Emerald
-  '#2563eb', // Blue
-  '#db2777', // Pink
-  '#ea580c', // Orange
-  '#16a34a', // Green
-  '#ca8a04', // Yellow
+  '#dc2626', // Red
+  '#ef4444', // Light Red
+  '#b91c1c', // Dark Red
+  '#f87171', // Soft Red
+  '#991b1b', // Deep Red
+  '#dc2626', // Red
+  '#ef4444', // Light Red
+  '#b91c1c', // Dark Red
+  '#f87171', // Soft Red
 ];
 
 // Extract unique categories directly from the skills array
@@ -64,7 +64,7 @@ export const Skills: React.FC = () => {
       <motion.div
         animate={{ x: [0, -20, 0], y: [0, 15, 0] }}
         transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut' }}
-        className="absolute top-0 right-0 w-96 h-96 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"
+        className="absolute top-0 right-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl pointer-events-none"
       />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -74,9 +74,9 @@ export const Skills: React.FC = () => {
           animate={inView ? 'visible' : 'hidden'}
           className="text-center mb-16"
         >
-          <p className="font-orbitron text-primary-600 text-sm tracking-[0.3em] mb-3">02. SKILLS</p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-slate-900">
-            Tech <span className="bg-gradient-to-r from-primary-600 to-indigo-600 bg-clip-text text-transparent">Arsenal</span>
+          <p className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3">02. SKILLS</p>
+          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white">
+            Tech <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Arsenal</span>
           </h2>
         </motion.div>
 
@@ -116,7 +116,7 @@ export const Skills: React.FC = () => {
                     transition: { type: 'spring', stiffness: 400, damping: 12 },
                   }}
                   whileTap={{ scale: 0.98 }}
-                  className="group bg-white border border-gray-200 hover:border-primary-400 rounded-xl p-4 transition-colors duration-300 cursor-default"
+                  className="group bg-neutral-950 border border-neutral-800 hover:border-red-700 rounded-xl p-4 transition-colors duration-300 cursor-default"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
@@ -126,14 +126,14 @@ export const Skills: React.FC = () => {
                       >
                         {skill.icon}
                       </motion.span>
-                      <span className="font-inter text-slate-800 text-sm font-bold">{skill.name}</span>
+                      <span className="font-inter text-neutral-200 text-sm font-bold">{skill.name}</span>
                     </div>
                     <span className="font-orbitron text-xs font-bold" style={{ color: categoryColor[cat] }}>
                       {skill.level}%
                     </span>
                   </div>
                   {/* Animated progress bar */}
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden border border-gray-200">
+                  <div className="h-2 bg-neutral-800 rounded-full overflow-hidden border border-neutral-700">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={inView ? { width: `${skill.level}%` } : { width: 0 }}
@@ -149,7 +149,7 @@ export const Skills: React.FC = () => {
                       <motion.div
                         animate={{ x: ['-100%', '200%'] }}
                         transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut', delay: catIdx * 0.3 + 1 }}
-                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
                         style={{ width: '50%' }}
                       />
                     </motion.div>

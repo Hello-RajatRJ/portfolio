@@ -17,8 +17,8 @@ const AnimationShowcaseButton: React.FC = () => {
       whileTap={{ scale: 0.96 }}
       className="group relative overflow-hidden rounded-xl px-8 py-4 font-orbitron text-sm tracking-widest font-bold"
       style={{
-        background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)',
-        boxShadow: '0 4px 24px rgba(139, 92, 246, 0.35)',
+        background: 'linear-gradient(135deg, #b91c1c, #dc2626, #ef4444)',
+        boxShadow: '0 4px 24px rgba(220, 38, 38, 0.35)',
       }}
     >
       <span className="relative z-10 flex items-center gap-3 text-white">

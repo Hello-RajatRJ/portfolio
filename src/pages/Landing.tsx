@@ -11,7 +11,7 @@ import { Footer } from './landing/Footer';
 
 export const Landing: React.FC = () => {
   return (
-    <div className="min-h-screen bg-dark-900 text-slate-800 overflow-x-hidden">
+    <div className="min-h-screen bg-dark-900 text-slate-800 overflow-x-clip">
       <Navbar />
       <main>
         <Hero />

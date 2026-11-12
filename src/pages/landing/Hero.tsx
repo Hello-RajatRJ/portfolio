@@ -305,21 +305,21 @@ export const Hero: React.FC = () => {
               {/* Play Game button */}
               <motion.button
                 variants={slideRight}
-                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 35px rgba(220,38,38,0.45)' }}
+                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 35px rgba(239,68,68,0.55)' }}
                 whileTap={{ scale: 0.97 }}
                 onClick={launchGame}
                 id="hero-play-game-btn"
-                className="group relative px-7 py-3.5 rounded-xl font-orbitron text-xs sm:text-sm tracking-widest font-bold overflow-hidden"
+                className="group relative px-7 py-3.5 rounded-xl font-orbitron text-xs sm:text-sm tracking-widest font-bold overflow-hidden cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #dc2626, #b91c1c)',
-                  boxShadow: '0 4px 20px rgba(220,38,38,0.3)',
+                  background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
+                  boxShadow: '0 4px 20px rgba(239,68,68,0.4)',
                 }}
               >
                 <span className="relative z-10 flex items-center gap-2.5 text-white">
                   <span className="text-base">▶</span>
-                  PLAY PORTFOLIO GAME
+                  EXPLORE 3D RACING WORLD
                 </span>
-                <div className="absolute inset-0 bg-white/15 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.button>
 
               {/* Animation Showcase button */}

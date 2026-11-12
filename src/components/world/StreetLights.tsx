@@ -7,11 +7,11 @@ export const StreetLights: React.FC = () => {
   const postRef = useRef<InstancedMesh>(null);
   const bulbRef = useRef<InstancedMesh>(null);
 
-  // Positions for the lights along the roads
+  // Positions for the lights along the roads (offset away from the central Hot Wheels track at x = 0)
   const positions = useMemo(() => [
     [-10, 0, -2], [10, 0, -2], [-10, 0, 18], [10, 0, 18], // Horizontal roads
     [-18, 0, -10], [-18, 0, 10], [22, 0, -10], [22, 0, 10], // Vertical roads
-    [0, 0, -10], [0, 0, 10], // Center vertical road
+    [-4.5, 0, -10], [4.5, 0, 10], // Offset alongside runway
     [-2, 0, -22], [2, 0, 22] // Center horizontal edges
   ], []);
 

@@ -14,6 +14,17 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
     return false;
   });
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/60 backdrop-blur-sm pointer-events-auto">
       <motion.div
@@ -29,6 +40,7 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
             <h2 className="font-orbitron tracking-widest text-sm font-bold text-white">DRIVING CONTROLS</h2>
           </div>
           <button
+            id="close-controls-modal-btn"
             onClick={onClose}
             className="text-white/50 hover:text-white transition-colors"
           >
@@ -45,7 +57,7 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
                 <span className="text-purple-400 font-bold tracking-wider">WASD / ARROWS</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                <span>Drift / Handbrake</span>
+                <span>Handbrake</span>
                 <span className="text-purple-400 font-bold tracking-wider">SPACE</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-white/5">
@@ -68,7 +80,7 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
                 <span className="text-purple-400 font-bold tracking-wider">ON-SCREEN JOYSTICK</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                <span>Drift</span>
+                <span>Handbrake</span>
                 <span className="text-purple-400 font-bold tracking-wider">BRAKE BUTTON</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-b border-white/5">
@@ -90,6 +102,7 @@ export const ControlsModal: React.FC<ControlsModalProps> = ({ onClose }) => {
         {/* Footer */}
         <div className="p-4 bg-white/5 flex justify-end">
           <button
+            id="start-engine-btn"
             onClick={onClose}
             className="px-6 py-2 bg-purple-600 hover:bg-purple-500 text-white font-orbitron text-xs tracking-widest rounded transition-colors shadow-[0_0_15px_rgba(168,85,247,0.4)] hover:shadow-[0_0_25px_rgba(168,85,247,0.6)]"
           >

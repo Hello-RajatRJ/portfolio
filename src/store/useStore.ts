@@ -36,8 +36,8 @@ interface AppStore {
   projects: typeof projectsData;
 
   // Mini-game state
-  activeMiniGame: 'none' | 'drift' | 'coins' | 'checkpoint';
-  setActiveMiniGame: (game: 'none' | 'drift' | 'coins' | 'checkpoint') => void;
+  activeMiniGame: 'none' | 'coins' | 'checkpoint';
+  setActiveMiniGame: (game: 'none' | 'coins' | 'checkpoint') => void;
 
   // Achievement notifications
   pendingAchievement: string | null;
@@ -63,8 +63,46 @@ const initialGameState: GameState = {
   currentZone: null,
   audioPlaying: false,
   speed: 0,
-  drift: 0,
   activeProjectZoneId: null,
+  // Game modes & visuals
+  gameMode: 'free-roam',
+  cameraPerspective: 'tpp',
+  nitroAmount: 100,
+  gear: 1,
+  // Fuel & Garage
+  fuel: 100,
+  milesDriven: 0,
+  isRefueling: false,
+  selectedCar: 'charger',
+  showGarageModal: false,
+  // Racing mode
+  racePosition: 1,
+  totalRacers: 6,
+  currentLap: 1,
+  totalLaps: 3,
+  raceTimer: 0,
+  raceFinished: false,
+  raceCountdown: -1,
+  // Bowling & Skills Interactive Reset
+  bowlingPinsDown: 0,
+  totalBowlingPins: 10,
+  bowlingScoreText: null,
+  skillsDisplaced: false,
+  // AI Intelligence Factory & Guided Tour
+  activeFactoryDeptId: null,
+  nearbyFactoryDeptId: null,
+  tourActive: false,
+  tourPaused: false,
+  tourStepIndex: 0,
+  visitedFactoryDepts: [],
+  factoryQuery: 'How does the AI Factory retrieve internal docs and execute safe tools?',
+  factoryOutputFormat: 'text',
+  // Stunt mode
+  stuntScore: 0,
+  airTime: 0,
+  jumpDistance: 0,
+  stuntMessage: null,
+  // Legacy / extra mini-games state
   activeMiniGame: 'none',
   coinsCollected: 0,
   totalCoins: 20,
@@ -72,8 +110,6 @@ const initialGameState: GameState = {
   totalCheckpoints: 5,
   raceStartTime: null,
   raceEndTime: null,
-  driftPoints: 0,
-  driftTimeLeft: 30,
 };
 
 export const useStore = create<AppStore>((set, get) => ({
@@ -85,7 +121,7 @@ export const useStore = create<AppStore>((set, get) => ({
   authPendingTargetView: null,
   setAuthPendingTargetView: (target) => set({ authPendingTargetView: target }),
 
-  // View
+  // View — default to complete portfolio landing page; opens 3D world on button click!
   view: 'landing',
   setView: (view) => set({ view }),
   launchGame: () => set({ view: 'game' }),

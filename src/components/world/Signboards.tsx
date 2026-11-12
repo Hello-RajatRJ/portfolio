@@ -46,16 +46,16 @@ const Sign: React.FC<SignProps> = ({ position, rotation, text, color = '#00f0ff'
 export const Signboards: React.FC = () => {
   return (
     <group>
-      {/* Starting zone signs */}
-      <Sign position={[-3, 0, 10]} rotation={[0, Math.PI / 4, 0]} text="<- PROJECTS" color="#00f0ff" />
-      <Sign position={[3, 0, 10]} rotation={[0, -Math.PI / 4, 0]} text="SKILLS ->" color="#ffff00" />
+      {/* Starting zone signs (placed safely alongside the track) */}
+      <Sign position={[-4.2, 0, 1.5]} rotation={[0, Math.PI / 3, 0]} text="<- PROJECTS" color="#00f0ff" />
+      <Sign position={[4.2, 0, 1.5]} rotation={[0, -Math.PI / 3, 0]} text="SKILLS ->" color="#ffff00" />
       
       {/* Project signs */}
       <Sign position={[-18, 0, -2]} rotation={[0, 0, 0]} text="ENTERPRISES ^" color="#4A90D9" />
       <Sign position={[-5, 0, -10]} rotation={[0, Math.PI / 2, 0]} text="<- TECH HUB" color="#00BCD4" />
       
       {/* More signs around the map */}
-      <Sign position={[0, 0, -2]} rotation={[0, 0, 0]} text="^ MORE PROJECTS" color="#ff007f" />
+      <Sign position={[-4.5, 0, -2]} rotation={[0, 0, 0]} text="^ MORE PROJECTS" color="#ff007f" />
     </group>
   );
 };

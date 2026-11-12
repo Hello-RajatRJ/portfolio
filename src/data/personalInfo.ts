@@ -18,44 +18,42 @@ export const personal = {
 };
 
 export const skills = [
-  // Frontend & Languages
-  { name: 'React.js', level: 95, category: 'Frontend', icon: '⚛️' },
-  { name: 'Next.js', level: 88, category: 'Frontend', icon: '▲' },
-  { name: 'Vue.js / Nuxt.js', level: 80, category: 'Frontend', icon: '🟩' },
-  { name: 'JavaScript', level: 75, category: 'Languages', icon: '🟨' },
-  { name: 'TypeScript', level: 75, category: 'Languages', icon: '🔷' },
-  
-  // Styling & State Management
-  { name: 'Tailwind CSS', level: 90, category: 'Styling', icon: '🎨' },
-  { name: 'Bootstrap / MUI', level: 85, category: 'Styling', icon: '📐' },
-  { name: 'Redux / Zustand', level: 88, category: 'State Management', icon: '📦' },
-  
-  // Backend & Databases
-  { name: 'Node.js', level: 70, category: 'Backend', icon: '🟢' },
-  { name: 'NestJS', level: 70, category: 'Backend', icon: '🦁' },
-  { name: 'PostgreSQL / SQL', level: 70, category: 'Databases', icon: '🐘' },
-  { name: 'MongoDB', level: 70, category: 'Databases', icon: '🍃' },
-  { name: 'MySQL', level: 70, category: 'Databases', icon: '🐬' },
-  
-  // DevOps, Cloud & Tools
-  { name: 'Git / GitHub', level: 80, category: 'Tools', icon: '🐙' },
-  { name: 'Vite / Webpack', level: 70, category: 'Tools', icon: '⚡' },
-  { name: 'Docker', level: 70, category: 'DevOps', icon: '🐳' },
-  { name: 'AWS / Azure', level: 70, category: 'Cloud', icon: '☁️' },
-  { name: 'CI/CD', level: 70, category: 'DevOps', icon: '🔄' },
-  
-  // Integrations & Additional
-  { name: 'JWT Auth', level: 70, category: 'Auth', icon: '🔐' },
-  { name: 'Socket.io', level: 70, category: 'Integrations', icon: '🔌' },
-  { name: 'Agile / Scrum', level: 70, category: 'Additional', icon: '🏃' },
-  { name: 'AI Tools / Chatbots', level: 85, category: 'Additional', icon: '🤖' },
+  // 01. Frontend & UI Architecture
+  { name: 'React.js', level: 95, category: 'Frontend & UI Architecture', icon: '⚛️' },
+  { name: 'Next.js', level: 88, category: 'Frontend & UI Architecture', icon: '▲' },
+  { name: 'Vue.js / Nuxt.js', level: 80, category: 'Frontend & UI Architecture', icon: '🟩' },
+  { name: 'JavaScript', level: 75, category: 'Frontend & UI Architecture', icon: '🟨' },
+  { name: 'TypeScript', level: 75, category: 'Frontend & UI Architecture', icon: '🔷' },
+  { name: 'Tailwind CSS', level: 90, category: 'Frontend & UI Architecture', icon: '🎨' },
+  { name: 'Bootstrap / MUI', level: 85, category: 'Frontend & UI Architecture', icon: '📐' },
+  { name: 'Redux / Zustand', level: 88, category: 'Frontend & UI Architecture', icon: '📦' },
 
-  // Beginner Skills
-  { name: 'Java', level: 45, category: 'Beginner Skills', icon: '☕' },
-  { name: 'Golang (Go)', level: 40, category: 'Beginner Skills', icon: '🐹' },
-  { name: 'Spring Boot', level: 45, category: 'Beginner Skills', icon: '🌱' },
-  { name: 'Three.js', level: 45, category: 'Beginner Skills', icon: '🎮' },
-  { name: 'Python', level: 45, category: 'Beginner Skills', icon: '🐍' },
+  // 02. Backend, APIs & AI Systems
+  { name: 'Node.js', level: 70, category: 'Backend, APIs & AI Systems', icon: '🟢' },
+  { name: 'NestJS', level: 70, category: 'Backend, APIs & AI Systems', icon: '🦁' },
+  { name: 'JWT Auth', level: 70, category: 'Backend, APIs & AI Systems', icon: '🔐' },
+  { name: 'Socket.io', level: 70, category: 'Backend, APIs & AI Systems', icon: '🔌' },
+  { name: 'AI Tools / Chatbots', level: 85, category: 'Backend, APIs & AI Systems', icon: '🤖' },
+
+  // 03. Databases & Data Storage
+  { name: 'PostgreSQL / SQL', level: 70, category: 'Databases & Data Storage', icon: '🐘' },
+  { name: 'MongoDB', level: 70, category: 'Databases & Data Storage', icon: '🍃' },
+  { name: 'MySQL', level: 70, category: 'Databases & Data Storage', icon: '🐬' },
+
+  // 04. Cloud, DevOps & Engineering Tools
+  { name: 'AWS / Azure', level: 70, category: 'Cloud, DevOps & Engineering Tools', icon: '☁️' },
+  { name: 'Docker', level: 70, category: 'Cloud, DevOps & Engineering Tools', icon: '🐳' },
+  { name: 'CI/CD', level: 70, category: 'Cloud, DevOps & Engineering Tools', icon: '🔄' },
+  { name: 'Git / GitHub', level: 80, category: 'Cloud, DevOps & Engineering Tools', icon: '🐙' },
+  { name: 'Vite / Webpack', level: 70, category: 'Cloud, DevOps & Engineering Tools', icon: '⚡' },
+  { name: 'Agile / Scrum', level: 70, category: 'Cloud, DevOps & Engineering Tools', icon: '🏃' },
+
+  // 05. Core & Emerging Stack
+  { name: 'Java', level: 45, category: 'Core & Emerging Stack', icon: '☕' },
+  { name: 'Golang (Go)', level: 40, category: 'Core & Emerging Stack', icon: '🐹' },
+  { name: 'Spring Boot', level: 45, category: 'Core & Emerging Stack', icon: '🌱' },
+  { name: 'Three.js', level: 45, category: 'Core & Emerging Stack', icon: '🎮' },
+  { name: 'Python', level: 45, category: 'Core & Emerging Stack', icon: '🐍' },
 ];
 
 export const experience = [

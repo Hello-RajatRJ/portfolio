@@ -1,414 +1,369 @@
-import React, { useRef, useState } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { ExternalLink, Code2, ChevronRight, Sparkles } from 'lucide-react';
-import projectsData from '../../data/projects.json';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { Gamepad2, Layers } from 'lucide-react';
+import { useStore } from '../../store/useStore';
+import {
+  projectUniverseItems,
+  type ProjectUniverseItem,
+} from '../../data/projectUniverseData';
+import type { ParallaxSignalState } from '../../components/projects/projectTypes';
+import { ProjectParallaxBackdrop } from '../../components/projects/ProjectParallaxBackdrop';
+import { ProjectUniverseCanvas } from '../../components/projects/ProjectUniverseCanvas';
+import { PinnedProjectGallery } from '../../components/projects/PinnedProjectGallery';
+import { ProjectHoloCard } from '../../components/projects/ProjectHoloCard';
+import { ProjectCursorHUD } from '../../components/projects/ProjectCursorHUD';
+import { CinematicProjectModal } from '../../components/projects/CinematicProjectModal';
+import '../../components/projects/projectUniverse.css';
 
-type Project = (typeof projectsData)[0];
+const HEADING_EYEBROW = '04. PROJECTS';
 
-/* ─── Animation Variants ─── */
-const sectionHeader = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
-};
-
-const cardVariant = {
-  hidden: { opacity: 0, y: 40, scale: 0.92 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 200, damping: 18 },
-  },
-};
-
-const ProjectCard: React.FC<{ project: Project; index: number; inView: boolean; onClick: () => void }> = ({
-  project, index, inView, onClick,
-}) => {
-  const accentColor = '#dc2626';
-  return (
-    <motion.div
-      variants={cardVariant}
-      initial="hidden"
-      animate={inView ? 'visible' : 'hidden'}
-      transition={{ delay: index * 0.06 }}
-      whileHover={{
-        scale: 1.04,
-        y: -8,
-        rotateY: 2,
-        rotateX: -1,
-        boxShadow: `0 24px 60px ${accentColor}25`,
-        borderColor: accentColor,
-        transition: { type: 'spring', stiffness: 350, damping: 14 },
-      }}
-      whileTap={{ scale: 0.98 }}
-      className="group relative bg-neutral-950 border border-neutral-800 rounded-2xl overflow-hidden transition-colors duration-300 cursor-pointer flex flex-col shadow-sm"
-      style={{ '--accent': accentColor, transformStyle: 'preserve-3d' } as React.CSSProperties}
-      onClick={onClick}
-    >
-      {/* Top accent bar */}
-      <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${accentColor}, ${accentColor}44)` }} />
-
-      {/* Card content */}
-      <div className="p-6 flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <div>
-            <span
-              className="font-orbitron text-xs tracking-widest px-2 py-0.5 rounded-full border mb-2 inline-block"
-              style={{ borderColor: `${accentColor}40`, color: accentColor, background: `${accentColor}15` }}
-            >
-              {project.category}
-            </span>
-            <h3 className="font-orbitron text-white font-bold text-xl leading-tight">{project.name}</h3>
-            <p className="font-inter text-neutral-500 text-sm mt-0.5">{project.tagline}</p>
-          </div>
-          <motion.div
-            animate={{ x: [0, 4, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          >
-            <ChevronRight
-              size={20}
-              className="text-neutral-600 group-hover:text-red-500 transition-colors duration-300 shrink-0 mt-1"
-            />
-          </motion.div>
-        </div>
-
-        {/* Description */}
-        <p className="font-inter text-neutral-400 text-sm leading-relaxed mb-4 line-clamp-3 flex-1">
-          {project.description}
-        </p>
-
-        {/* Tech tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tech.slice(0, 4).map((t) => (
-            <motion.span
-              key={t}
-              whileHover={{ scale: 1.08, y: -2 }}
-              className="font-orbitron text-xs bg-neutral-900 border border-neutral-700 rounded-md px-2 py-0.5 text-neutral-400"
-            >
-              {t}
-            </motion.span>
-          ))}
-          {project.tech.length > 4 && (
-            <span className="font-orbitron text-xs text-neutral-500">+{project.tech.length - 4}</span>
-          )}
-        </div>
-
-        {/* Links */}
-        <div className="flex items-center gap-3 pt-3 border-t border-neutral-800">
-          {project.liveDemo && (
-            <a
-              href={project.liveDemo}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 font-orbitron text-xs text-red-500 hover:opacity-80 transition-opacity"
-            >
-              <ExternalLink size={12} /> Live Site
-            </a>
-          )}
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1.5 font-orbitron text-xs text-neutral-400 hover:text-red-500 transition-colors"
-            >
-              <Code2 size={12} /> GitHub
-            </a>
-          )}
-          <span className="ml-auto font-orbitron text-xs text-neutral-500 group-hover:text-red-400">View Details →</span>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const ProjectDetailModal: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
-  const accentColor = '#dc2626';
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.85, opacity: 0, y: 30, rotateX: 5 }}
-        animate={{ scale: 1, opacity: 1, y: 0, rotateX: 0 }}
-        exit={{ scale: 0.85, opacity: 0, y: 30, rotateX: 5 }}
-        transition={{ type: 'spring', damping: 22, stiffness: 250 }}
-        className="bg-neutral-950 border border-neutral-800 rounded-2xl max-w-2xl w-full max-h-[92vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl"
-        style={{ borderTopWidth: '3px', borderTopColor: accentColor }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-5 sm:p-8">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <span className="font-orbitron text-xs tracking-widest mb-2 inline-block font-bold text-red-500">
-                {project.category}
-              </span>
-              <h2 className="font-orbitron text-2xl font-black text-white">{project.name}</h2>
-              <p className="font-inter text-neutral-500 mt-1">{project.tagline}</p>
-            </div>
-            <motion.button
-              whileHover={{ rotate: 90, scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={onClose}
-              className="text-neutral-500 hover:text-white text-3xl leading-none p-1 transition-colors"
-              aria-label="Close"
-            >
-              ×
-            </motion.button>
-          </div>
-
-          {/* Tech tags */}
-          <motion.div
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04 } } }}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-wrap gap-2 mb-6"
-          >
-            {project.tech.map((t) => (
-              <motion.span
-                key={t}
-                variants={{
-                  hidden: { opacity: 0, scale: 0.7 },
-                  visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 300 } },
-                }}
-                className="font-orbitron text-xs px-3 py-1 rounded-full border"
-                style={{ borderColor: `${accentColor}40`, color: accentColor, background: `${accentColor}10` }}
-              >
-                {t}
-              </motion.span>
-            ))}
-          </motion.div>
-
-          <p className="font-inter text-neutral-300 leading-relaxed mb-6">{project.description}</p>
-
-          {/* Features */}
-          <h3 className="font-orbitron text-xs tracking-widest text-neutral-500 mb-3 font-semibold">KEY FEATURES</h3>
-          <motion.ul
-            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.05 } } }}
-            initial="hidden"
-            animate="visible"
-            className="space-y-2 mb-6"
-          >
-            {project.features.map((f, i) => (
-              <motion.li
-                key={i}
-                variants={{
-                  hidden: { opacity: 0, x: -10 },
-                  visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
-                }}
-                className="flex items-start gap-2 font-inter text-sm text-neutral-400"
-              >
-                <span className="mt-0.5 shrink-0 text-red-500">◆</span> {f}
-              </motion.li>
-            ))}
-          </motion.ul>
-
-          {/* Role */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 mb-6"
-          >
-            <h3 className="font-orbitron text-xs tracking-widest text-neutral-500 mb-2 font-semibold">MY ROLE</h3>
-            <p className="font-inter text-sm text-neutral-300">{project.role}</p>
-          </motion.div>
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            {project.liveDemo && (
-              <motion.a
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                href={project.liveDemo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-orbitron text-xs tracking-widest text-white font-bold transition-all hover:brightness-110"
-                style={{ background: accentColor }}
-              >
-                <ExternalLink size={14} /> LIVE SITE
-              </motion.a>
-            )}
-            {project.github && (
-              <motion.a
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-orbitron text-xs tracking-widest border transition-all hover:bg-neutral-900"
-                style={{ borderColor: `${accentColor}50`, color: accentColor }}
-              >
-                <Code2 size={14} /> GITHUB
-              </motion.a>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
+function checkWebGLSupport(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+  } catch {
+    return false;
+  }
+}
 
 export const Projects: React.FC = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
-  const [selected, setSelected] = useState<Project | null>(null);
+  const launchGame = useStore((s) => s.launchGame);
 
-  // Quadruple projects list for seamless infinite horizontal scroll
-  const marqueeProjects = [...projectsData, ...projectsData, ...projectsData, ...projectsData];
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const introInView = useInView(sectionRef, { once: true, margin: '-80px' });
+
+  const signalRef = useRef<ParallaxSignalState>({
+    pointerX: 0,
+    pointerY: 0,
+    scrollProgress: 0,
+    scrollVelocity: 0,
+    active: false,
+  });
+
+  const [selectedProject, setSelectedProject] = useState<ProjectUniverseItem | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
+  const [sectionActive, setSectionActive] = useState(false);
+  const [webglSupported] = useState(() => checkWebGLSupport());
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false
+  );
+
+  const uniqueCategories = useMemo(
+    () => ['ALL', ...Array.from(new Set(projectUniverseItems.map((p) => p.category)))],
+    []
+  );
+
+  const filteredGridProjects = useMemo(() => {
+    if (selectedCategory === 'ALL') return projectUniverseItems;
+    return projectUniverseItems.filter((p) => p.category === selectedCategory);
+  }, [selectedCategory]);
+
+  // Listen live to OS reduced-motion setting
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // Pause WebGL render loop and parallax RAF cleanly when section is offscreen or tab hidden
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    let tabVisible = !document.hidden;
+    let inRange = false;
+
+    const syncActive = () => {
+      const active = tabVisible && inRange;
+      signalRef.current.active = active;
+      setSectionActive(active);
+    };
+
+    const mountObs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldMountCanvas(true);
+          mountObs.disconnect();
+        }
+      },
+      { rootMargin: '260px 0px' }
+    );
+    mountObs.observe(el);
+
+    const activeObs = new IntersectionObserver(
+      (entries) => {
+        inRange = Boolean(entries[0]?.isIntersecting);
+        syncActive();
+      },
+      { threshold: 0.04 }
+    );
+    activeObs.observe(el);
+
+    const onVisibility = () => {
+      tabVisible = !document.hidden;
+      syncActive();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      mountObs.disconnect();
+      activeObs.disconnect();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
+
+  const handleSectionPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (reducedMotion || e.pointerType === 'touch') return;
+    const el = sectionRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    signalRef.current.pointerX = ((e.clientX - rect.left) / Math.max(1, rect.width) - 0.5) * 2;
+    signalRef.current.pointerY = ((e.clientY - rect.top) / Math.max(1, rect.height) - 0.5) * 2;
+  };
+
+  const handleSectionPointerLeave = () => {
+    signalRef.current.pointerX = 0;
+    signalRef.current.pointerY = 0;
+  };
+
+  const handleLaunch3DWorld = () => {
+    const heroBtn = document.getElementById('hero-play-game-btn');
+    if (heroBtn) {
+      heroBtn.click();
+    } else {
+      launchGame();
+    }
+  };
 
   return (
-    <section id="projects" ref={ref} className="py-20 sm:py-32 bg-dark-900 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-[0.02] pointer-events-none"
-        style={{
-          backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-          backgroundSize: '40px 40px',
-        }}
+    <section
+      id="projects"
+      ref={sectionRef}
+      onPointerMove={handleSectionPointerMove}
+      onPointerLeave={handleSectionPointerLeave}
+      className="relative overflow-x-clip bg-[#080808] py-20 sm:py-28 text-white"
+    >
+      {/* Layer 1: Multi-Layer Parallax Atmospheric Environment */}
+      <ProjectParallaxBackdrop
+        signalRef={signalRef}
+        introVisible={introInView}
+        reducedMotion={reducedMotion}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          variants={sectionHeader}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-12"
-        >
-          <p className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3">04. PROJECTS</p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
-            Featured <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Work</span>
-          </h2>
-          <p className="font-inter text-neutral-400 max-w-xl mx-auto">
-            Real-world enterprise solutions across FinTech, AI, Healthcare, EdTech, and 3D web applications — explore the infinite project scroller or select cards below!
-          </p>
-        </motion.div>
+      {/* Layer 2: Single Shared R3F WebGL Depth Canvas */}
+      <ProjectUniverseCanvas
+        signalRef={signalRef}
+        shouldMount={shouldMountCanvas}
+        sectionActive={sectionActive}
+        webglSupported={webglSupported}
+        reducedMotion={reducedMotion}
+      />
 
-        {/* INFINITE SCROLLER PROJECT MARQUEE */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full overflow-hidden mb-16 py-5 bg-black/80 rounded-2xl border border-neutral-800 shadow-2xl backdrop-blur-md"
-        >
-          {/* Gradient Edge Blurs */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-28 bg-gradient-to-l from-black via-black/80 to-transparent z-10 pointer-events-none" />
-          
-          <div className="flex items-center justify-between px-6 mb-4">
-            <div className="flex items-center gap-2 text-xs font-orbitron text-red-400 font-bold uppercase tracking-widest">
-              <Sparkles size={14} className="text-red-500 animate-pulse" />
-              <span>INFINITE PROJECT SHOWCASE (HOVER TO PAUSE)</span>
-            </div>
-            <span className="text-[10px] font-mono text-neutral-500 hidden sm:inline-block">
-              SWIPE / CONTINUOUS AUTO-SCROLL
-            </span>
+      {/* Custom Magnetic Desktop Project Cursor HUD */}
+      <ProjectCursorHUD
+        scopeRef={sectionRef}
+        disabled={reducedMotion || Boolean(selectedProject)}
+      />
+
+      {/* Layer 3: Foreground Interactive Content */}
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Cinematic Section Intro Header */}
+        <div className="relative text-center">
+          {/* Horizontal Crimson Energy Laser Line */}
+          <div className="mx-auto mb-7 h-[2px] max-w-2xl overflow-hidden rounded-full bg-white/5">
+            <div
+              className={`h-full w-full bg-gradient-to-r from-transparent via-[#FF3038] to-transparent shadow-[0_0_16px_rgba(255,48,56,0.9)] ${
+                introInView ? 'pu-energy-line' : 'opacity-0'
+              }`}
+            />
           </div>
 
-          <motion.div
-            className="flex gap-5 w-max"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ repeat: Infinity, ease: 'linear', duration: 40 }}
+          {/* Character-by-character Reveal for "04. PROJECTS" */}
+          <p
+            aria-label={HEADING_EYEBROW}
+            className="font-orbitron text-xs sm:text-sm font-semibold tracking-[0.32em] text-[#FF3038]"
           >
-            {marqueeProjects.map((project, idx) => (
-              <motion.div
-                key={`${project.id}-marquee-${idx}`}
-                onClick={() => setSelected(project)}
-                whileHover={{
-                  scale: 1.04,
-                  y: -4,
-                  borderColor: 'rgba(220,38,38,0.5)',
-                  boxShadow: '0 12px 30px rgba(220,38,38,0.15)',
-                  transition: { type: 'spring', stiffness: 400, damping: 15 },
+            {HEADING_EYEBROW.split('').map((ch, idx) => (
+              <motion.span
+                key={`${ch}-${idx}`}
+                initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
+                animate={introInView ? { opacity: 1, y: 0 } : undefined}
+                transition={{
+                  duration: 0.35,
+                  delay: reducedMotion ? 0 : idx * 0.032,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
-                className="w-[300px] sm:w-[340px] shrink-0 p-5 rounded-xl bg-neutral-950/90 border border-neutral-800 transition-colors duration-300 group cursor-pointer shadow-lg"
+                className="inline-block"
               >
-                <div className="flex items-center justify-between gap-2 mb-2.5">
-                  <span
-                    className="font-orbitron text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded border text-red-500 border-red-900/40 bg-red-950/30"
+                {ch === ' ' ? '\u00A0' : ch}
+              </motion.span>
+            ))}
+          </p>
+
+          {/* Upward Cinematic Reveal for "Featured Work" */}
+          <div className="mt-3 overflow-hidden">
+            <motion.h2
+              initial={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 42 }}
+              animate={introInView ? { opacity: 1, y: 0 } : undefined}
+              transition={{
+                duration: 0.72,
+                delay: reducedMotion ? 0 : 0.22,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="font-orbitron text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl"
+            >
+              Featured{' '}
+              <span className="bg-gradient-to-r from-[#FF3038] to-[#C91520] bg-clip-text text-transparent">
+                Work
+              </span>
+            </motion.h2>
+          </div>
+
+          {/* Subtitle Fade-in */}
+          <motion.p
+            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 14 }}
+            animate={introInView ? { opacity: 1, y: 0 } : undefined}
+            transition={{
+              duration: 0.65,
+              delay: reducedMotion ? 0 : 0.38,
+            }}
+            className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#A0A0A0] sm:text-base"
+          >
+            Production web applications, tax engines, AI knowledge hubs, and enterprise SaaS
+            systems engineered for speed, scalability, and crisp user interaction.
+          </motion.p>
+        </div>
+
+        {/* Center-Expanding Pinned Horizontal Showcase Container */}
+        <motion.div
+          initial={
+            reducedMotion
+              ? { opacity: 1, scaleX: 1 }
+              : { opacity: 0, scaleX: 0.9, scaleY: 0.96 }
+          }
+          animate={
+            introInView
+              ? { opacity: 1, scaleX: 1, scaleY: 1 }
+              : undefined
+          }
+          transition={{
+            duration: 0.78,
+            delay: reducedMotion ? 0 : 0.3,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          className="mt-8 origin-center"
+        >
+          <PinnedProjectGallery
+            projects={projectUniverseItems}
+            onSelectProject={setSelectedProject}
+            reducedMotion={reducedMotion}
+            signalRef={signalRef}
+          />
+        </motion.div>
+
+        {/* Individual 3D Floating Project Cards Grid Below Showcase */}
+        <div className="mt-16 sm:mt-20">
+          <div className="flex flex-col items-start justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold tracking-[0.22em] text-[#FF3038]">
+                <Layers className="h-3.5 w-3.5" />
+                SYSTEMS MATRIX
+              </p>
+              <h3 className="mt-1 font-orbitron text-xl font-bold text-white sm:text-2xl">
+                Interactive Project Cards
+              </h3>
+            </div>
+
+            {/* Category Filter Pills (Strictly Preserved Real Project Categories) */}
+            <div className="flex flex-wrap gap-2">
+              {uniqueCategories.map((cat) => {
+                const active = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`rounded-lg border px-3 py-1.5 font-mono text-[11px] transition-all ${
+                      active
+                        ? 'border-[#FF3038] bg-[#FF3038]/20 text-white shadow-[0_0_14px_rgba(255,48,56,0.28)]'
+                        : 'border-white/12 bg-white/[0.025] text-[#A0A0A0] hover:border-[#FF3038]/45 hover:text-white'
+                    }`}
                   >
-                    {project.category}
-                  </span>
-                  <span className="font-orbitron text-[10px] text-neutral-500 group-hover:text-red-400 flex items-center gap-1 transition-colors">
-                    View <ChevronRight size={12} />
-                  </span>
-                </div>
-                <h4 className="font-orbitron text-neutral-100 font-bold text-base group-hover:text-red-400 transition-colors line-clamp-1">
-                  {project.name}
-                </h4>
-                <p className="font-inter text-neutral-500 text-xs mt-1.5 line-clamp-2 leading-relaxed">
-                  {project.tagline}
-                </p>
-                <div className="flex flex-wrap gap-1.5 mt-3.5 pt-3 border-t border-neutral-800/80">
-                  {project.tech.slice(0, 3).map((t) => (
-                    <span key={t} className="font-orbitron text-[9px] bg-neutral-900 text-neutral-400 px-2 py-0.5 rounded border border-neutral-700">
-                      {t}
-                    </span>
-                  ))}
-                  {project.tech.length > 3 && (
-                    <span className="font-orbitron text-[9px] text-neutral-600 font-bold">+{project.tech.length - 3}</span>
-                  )}
-                </div>
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredGridProjects.map((project, idx) => (
+              <motion.div
+                key={project.id}
+                initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{
+                  duration: 0.52,
+                  delay: reducedMotion ? 0 : Math.min(idx * 0.06, 0.36),
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="h-full"
+              >
+                <ProjectHoloCard
+                  project={project}
+                  onSelect={setSelectedProject}
+                  reducedMotion={reducedMotion}
+                  variant="grid"
+                />
               </motion.div>
             ))}
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Grid View of Projects — staggered */}
+        {/* Preserved 3D Driving World Launch CTA */}
         <motion.div
-          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } } }}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.6 }}
+          className="mt-16 sm:mt-20 rounded-2xl border border-[#FF3038]/30 bg-gradient-to-r from-[#FF3038]/12 via-[#100a0b] to-[#C91520]/12 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-md"
         >
-          {projectsData.map((project, i) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={i}
-              inView={inView}
-              onClick={() => setSelected(project)}
-            />
-          ))}
-        </motion.div>
+          <div className="text-center md:text-left">
+            <h4 className="font-orbitron text-xl sm:text-2xl font-bold text-white">
+              Drive Through Every Project Zone in 3D
+            </h4>
+            <p className="mt-1.5 text-sm text-[#A0A0A0] max-w-xl">
+              Enter the interactive 3D world to physically drive up to each project building,
+              explore the AI Intelligence Factory, and unlock live architecture panels.
+            </p>
+          </div>
 
-        {/* Game CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-          transition={{ delay: 0.8, type: 'spring', stiffness: 200, damping: 20 }}
-          whileHover={{ scale: 1.02, y: -3, boxShadow: '0 16px 40px rgba(220,38,38,0.15)' }}
-          className="text-center mt-16 p-8 rounded-2xl border border-red-900/30 bg-red-950/20"
-        >
-          <p className="font-orbitron text-white text-lg font-bold mb-2">Want a more immersive experience?</p>
-          <p className="font-inter text-neutral-400 mb-6">Drive to each project's dedicated building in the 3D portfolio world!</p>
-          <motion.button
-            whileHover={{ scale: 1.06, y: -3, boxShadow: '0 12px 35px rgba(220,38,38,0.4)' }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => document.getElementById('hero-play-game-btn')?.click()}
-            className="px-8 py-3 rounded-xl font-orbitron text-sm tracking-widest text-white font-bold"
-            style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 4px 12px rgba(220,38,38,0.3)' }}
+          <button
+            type="button"
+            onClick={handleLaunch3DWorld}
+            className="shrink-0 inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#FF3038] to-[#C91520] px-6 py-3.5 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-white shadow-lg shadow-red-600/30 transition-all hover:scale-[1.03] hover:shadow-red-500/45"
           >
+            <Gamepad2 className="h-4 w-4" />
             ▶ LAUNCH 3D WORLD
-          </motion.button>
+          </button>
         </motion.div>
       </div>
 
-      {/* Detail modal */}
-      <AnimatePresence>
-        {selected && <ProjectDetailModal project={selected} onClose={() => setSelected(null)} />}
-      </AnimatePresence>
+      {/* Effect Five & Six: Cinematic Project Case Study Modal + Prev/Next Switching */}
+      <CinematicProjectModal
+        project={selectedProject}
+        projects={projectUniverseItems}
+        onClose={() => setSelectedProject(null)}
+        onSelectProject={setSelectedProject}
+        onLaunch3DWorld={handleLaunch3DWorld}
+        reducedMotion={reducedMotion}
+      />
     </section>
   );
 };

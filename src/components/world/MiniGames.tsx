@@ -36,9 +36,7 @@ export const MiniGames: React.FC = () => {
   const [localCoinsCollected, setLocalCoinsCollected] = useState<Set<number>>(new Set());
 
   // Update loop for mini-game logic
-  useFrame((_, delta) => {
-    const dt = Math.min(delta, 0.1);
-
+  useFrame(() => {
     // 1. Coin Collection Logic
     if (gameState.activeMiniGame === 'coins') {
       let newlyCollected = false;
@@ -90,39 +88,6 @@ export const MiniGames: React.FC = () => {
         }
       }
     }
-
-    // 3. Drift Challenge Logic
-    if (gameState.activeMiniGame === 'drift') {
-      const isDrifting = gameState.drift > 15;
-      const addedPoints = isDrifting ? Math.round(gameState.drift * dt * 4) : 0;
-      const newTimeLeft = Math.max(0, gameState.driftTimeLeft - dt);
-
-      if (newTimeLeft <= 0) {
-        // Complete Drift Game
-        const finalScore = gameState.driftPoints + addedPoints;
-        setGameState(prev => ({
-          ...prev,
-          activeMiniGame: 'none',
-          driftPoints: 0,
-          driftTimeLeft: 30
-        }));
-
-        if (finalScore >= 1000) {
-          triggerAchievement(`Drift King: Scored ${finalScore} points!`);
-        } else {
-          triggerAchievement(`Drift Complete! Score: ${finalScore} pts`);
-        }
-      } else {
-        // Continue Drift Game
-        if (addedPoints > 0 || Math.abs(gameState.driftTimeLeft - newTimeLeft) > 0.05) {
-          setGameState(prev => ({
-            ...prev,
-            driftPoints: prev.driftPoints + addedPoints,
-            driftTimeLeft: newTimeLeft
-          }));
-        }
-      }
-    }
   });
 
   return (
@@ -169,14 +134,6 @@ export const MiniGames: React.FC = () => {
                 setGameState(s => ({ ...s, activeMiniGame: 'race', checkpointsCleared: 0, raceStartTime: Date.now() }));
               }} 
             />
-            <MinigameTrigger 
-              position={[0, 0, -8]} 
-              title="DRIFT" 
-              color="#ff007f" 
-              onTrigger={() => {
-                setGameState(s => ({ ...s, activeMiniGame: 'drift', driftPoints: 0, driftTimeLeft: 30 }));
-              }} 
-            />
           </>
         )}
       </group>
@@ -193,35 +150,18 @@ export const MiniGames: React.FC = () => {
           index={gameState.checkpointsCleared} 
         />
       )}
-      
-      {/* Render Drift Arena (just some cones in the center) */}
-      {gameState.activeMiniGame === 'drift' && (
-        <group position={[0, 0, 0]}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-            <ringGeometry args={[10, 10.5, 32]} />
-            <meshBasicMaterial color="#ff007f" toneMapped={false} />
-          </mesh>
-          <Text position={[0, 4.5, 0]} fontSize={0.8} color="#ff007f">DRIFT KING</Text>
-          <Text position={[0, 3.7, 0]} fontSize={0.3} color="#ffffff">Drift around the circle to score points!</Text>
-          <Text position={[0, 3.0, 0]} fontSize={0.3} color="#ffff00">Score: {gameState.driftPoints}</Text>
-          <Text position={[0, 2.5, 0]} fontSize={0.3} color="#00f0ff">Time Left: {Math.ceil(gameState.driftTimeLeft)}s</Text>
-          
-          <DriftCone position={[4, 0, 4]} />
-          <DriftCone position={[-4, 0, 4]} />
-          <DriftCone position={[4, 0, -4]} />
-          <DriftCone position={[-4, 0, -4]} />
-          <DriftCone position={[0, 0, 0]} />
-        </group>
-      )}
     </group>
   );
 };
 
 const MinigameTrigger: React.FC<{ position: [number, number, number], title: string, color: string, onTrigger: () => void }> = ({ position, title, color, onTrigger }) => {
+  const worldPos = React.useMemo(
+    () => new Vector3(position[0] + 13, position[1], position[2] - 12),
+    [position]
+  );
+
   useFrame(() => {
-    // Offset by parent group position (13, 0, -12)
-    const pos = new Vector3(...position).add(new Vector3(13, 0, -12));
-    if (carGlobalPosition.distanceTo(pos) < 2) {
+    if (carGlobalPosition.distanceTo(worldPos) < 2) {
       onTrigger();
     }
   });
@@ -262,21 +202,6 @@ const Checkpoint: React.FC<{ position: Vector3, index: number }> = ({ position, 
       <Text position={[0, 6, 0]} fontSize={1} color="#00f0ff">
         CHECKPOINT {index + 1}
       </Text>
-    </group>
-  );
-};
-
-const DriftCone: React.FC<{ position: [number, number, number] }> = ({ position }) => {
-  return (
-    <group position={position}>
-      <mesh castShadow position={[0, 0.5, 0]}>
-        <coneGeometry args={[0.4, 1.0, 8]} />
-        <meshStandardMaterial color="#ff007f" emissive="#ff007f" emissiveIntensity={0.8} toneMapped={false} />
-      </mesh>
-      <mesh position={[0, 0.05, 0]}>
-        <boxGeometry args={[0.8, 0.1, 0.8]} />
-        <meshStandardMaterial color="#0c0c1e" roughness={0.5} />
-      </mesh>
     </group>
   );
 };

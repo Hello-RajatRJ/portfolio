@@ -122,11 +122,11 @@ export const Navbar: React.FC = () => {
               <button
                 id="nav-play-game-btn"
                 onClick={launchGame}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-white transition-all hover:brightness-110"
-                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 4px 12px rgba(220,38,38,0.35)' }}
+                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-white transition-all hover:scale-105 hover:brightness-110 cursor-pointer shadow-lg"
+                style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)', boxShadow: '0 4px 16px rgba(239,68,68,0.45)' }}
               >
-                <Gamepad2 size={14} />
-                PLAY GAME
+                <Gamepad2 size={15} />
+                3D RACING WORLD
               </button>
 
               {/* Mobile menu toggle */}
@@ -176,10 +176,10 @@ export const Navbar: React.FC = () => {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => { setMobileOpen(false); launchGame(); }}
-              className="flex items-center justify-center gap-2 mt-2 py-3 rounded-xl font-orbitron text-sm font-bold text-white shadow-md"
-              style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}
+              className="flex items-center justify-center gap-2 mt-2 py-3 rounded-xl font-orbitron text-sm font-bold text-white shadow-md cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
             >
-              <Gamepad2 size={16} /> PLAY PORTFOLIO GAME
+              <Gamepad2 size={16} /> ENTER 3D RACING WORLD
             </motion.button>
           </motion.div>
         )}

@@ -42,9 +42,9 @@ export const Terrain: React.FC = () => {
   return (
     <mesh geometry={geometry} receiveShadow position={[0, -0.05, 0]}>
       <meshStandardMaterial 
-        color={new Color('#e5e7eb')} 
-        roughness={0.8} 
-        metalness={0.05}
+        color={new Color('#0c0d1b')} 
+        roughness={0.85} 
+        metalness={0.15}
         wireframe={false}
       />
     </mesh>

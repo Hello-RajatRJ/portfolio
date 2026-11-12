@@ -19,21 +19,21 @@ const fadeUp = {
 };
 
 const slideInLeft = {
-  hidden: { opacity: 0, x: -60 },
+  hidden: { opacity: 0, x: -24 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
 };
 
 const slideInRight = {
-  hidden: { opacity: 0, x: 60, rotateY: 8 },
+  hidden: { opacity: 0, x: 24, rotateY: 4 },
   visible: {
     opacity: 1,
     x: 0,
     rotateY: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   },
 };
 
@@ -66,15 +66,15 @@ const buildGreatThings = async () => {
 
 export const About: React.FC = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const inView = useInView(ref, { once: true, margin: '-40px' });
 
   return (
-    <section id="about" ref={ref} className="py-32 bg-dark-800 relative overflow-hidden">
+    <section id="about" ref={ref} className="py-16 sm:py-24 lg:py-32 bg-dark-800 relative overflow-hidden">
       {/* Animated background glow */}
       <motion.div
         animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.15, 1] }}
         transition={{ repeat: Infinity, duration: 12, ease: 'easeInOut' }}
-        className="absolute top-1/2 left-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"
+        className="absolute top-1/2 left-0 w-56 h-56 sm:w-96 sm:h-96 bg-red-600/5 rounded-full blur-3xl -translate-y-1/2 pointer-events-none"
       />
 
       <motion.div
@@ -84,40 +84,40 @@ export const About: React.FC = () => {
         className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8"
       >
         {/* Section heading */}
-        <motion.div variants={fadeUp} className="text-center mb-16">
+        <motion.div variants={fadeUp} className="text-center mb-10 sm:mb-16">
           <motion.p
             variants={fadeUp}
-            className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3"
+            className="font-orbitron text-red-500 text-xs sm:text-sm tracking-[0.24em] sm:tracking-[0.3em] mb-2 sm:mb-3"
           >
             01. ABOUT ME
           </motion.p>
           <motion.h2
             variants={fadeUp}
-            className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white"
+            className="font-orbitron text-3xl sm:text-4xl lg:text-5xl font-black text-white"
           >
             Who I <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Am</span>
           </motion.h2>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
-          {/* Text side — slide in from left */}
-          <motion.div variants={slideInLeft} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 lg:gap-16 items-center">
+          {/* Text side — slide in from left (min-w-0 prevents mobile grid blowout) */}
+          <motion.div variants={slideInLeft} className="min-w-0 w-full space-y-4 sm:space-y-6">
             <motion.p
               variants={fadeUp}
-              className="font-inter text-neutral-300 text-lg leading-relaxed"
+              className="font-inter text-neutral-300 text-base sm:text-lg leading-relaxed"
             >
               {personal.bio}
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="font-inter text-neutral-400 leading-relaxed"
+              className="font-inter text-neutral-400 text-sm sm:text-base leading-relaxed"
             >
               When I'm not writing code, I'm exploring the intersection of web technology and game design —
               which is why I built this portfolio as an interactive 3D experience you can actually <em className="text-red-500 font-semibold not-italic">drive through</em>.
             </motion.p>
             <motion.p
               variants={fadeUp}
-              className="font-inter text-neutral-400 leading-relaxed"
+              className="font-inter text-neutral-400 text-sm sm:text-base leading-relaxed"
             >
               I've had the privilege of working with clients across <span className="text-white font-semibold">Australia, Taiwan, the United States, India, and Armenia</span> — 
               delivering everything from healthcare platforms to AI-powered communication tools.
@@ -126,7 +126,7 @@ export const About: React.FC = () => {
             {/* Quick facts — staggered spring cards */}
             <motion.div
               variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
-              className="grid grid-cols-2 gap-4 pt-4"
+              className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-3 sm:gap-4 pt-2 sm:pt-4"
             >
               {[
                 { label: 'Location', value: personal.location },
@@ -144,17 +144,17 @@ export const About: React.FC = () => {
                     borderColor: 'rgba(220,38,38,0.6)',
                     transition: { type: 'spring', stiffness: 400, damping: 12 },
                   }}
-                  className="bg-neutral-900 border border-neutral-800 hover:border-red-700 rounded-xl p-4 shadow-sm transition-colors"
+                  className="bg-neutral-900 border border-neutral-800 hover:border-red-700 rounded-xl p-3 sm:p-4 shadow-sm transition-colors"
                 >
-                  <div className="font-orbitron text-xs text-red-500 tracking-widest mb-1 font-bold">{fact.label.toUpperCase()}</div>
-                  <div className="font-inter text-white font-bold text-sm">{fact.value}</div>
+                  <div className="font-orbitron text-[10px] sm:text-xs text-red-500 tracking-widest mb-1 font-bold">{fact.label.toUpperCase()}</div>
+                  <div className="font-inter text-white font-bold text-xs sm:text-sm break-words">{fact.value}</div>
                 </motion.div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Code block side — 3D rotate in from right */}
-          <motion.div variants={slideInRight} className="relative">
+          {/* Code block side — 3D rotate in from right (min-w-0 constrains pre scroll inside mobile viewport) */}
+          <motion.div variants={slideInRight} className="relative min-w-0 w-full">
             {/* Glow border */}
             <motion.div
               animate={{ opacity: [0.4, 0.8, 0.4] }}
@@ -192,8 +192,8 @@ export const About: React.FC = () => {
                 <span className="ml-3 font-mono text-xs text-neutral-500">developer.ts</span>
               </div>
               {/* Code */}
-              <pre className="p-4 sm:p-6 text-xs sm:text-sm font-mono overflow-x-auto">
-                <code className="text-neutral-300 whitespace-pre">
+              <pre className="p-3.5 sm:p-6 text-[11px] sm:text-sm leading-relaxed font-mono overflow-x-auto max-w-full">
+                <code className="text-neutral-300 whitespace-pre block min-w-0">
                   {codeSnippet.split('\n').map((line, i) => (
                     <motion.div
                       key={i}
@@ -202,10 +202,10 @@ export const About: React.FC = () => {
                       transition={{ delay: 0.6 + i * 0.04, duration: 0.4 }}
                       className="flex"
                     >
-                      <span className="text-neutral-600 select-none w-6 mr-4 text-right shrink-0">{i + 1}</span>
+                      <span className="text-neutral-600 select-none w-5 sm:w-6 mr-2.5 sm:mr-4 text-right shrink-0">{i + 1}</span>
                       <span dangerouslySetInnerHTML={{
                         __html: line
-                          .replace(/(\".*?\")/g, '<span style="color:#ef4444">$1</span>')
+                          .replace(/(".*?")/g, '<span style="color:#ef4444">$1</span>')
                           .replace(/\b(const|async|await|while|true|return)\b/g, '<span style="color:#dc2626;font-weight:bold">$1</span>')
                           .replace(/\/\/.*/g, '<span style="color:#525252">$&</span>')
                           .replace(/\b(name|passion|stack|coffeePerDay)\b/g, '<span style="color:#ffffff">$&</span>')

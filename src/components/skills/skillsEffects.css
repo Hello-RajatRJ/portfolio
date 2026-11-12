@@ -1,0 +1,253 @@
+/* Futuristic Tech Arsenal GPU-accelerated CSS effects */
+
+.tech-skill-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.32s ease,
+    box-shadow 0.36s ease,
+    background-color 0.32s ease;
+}
+
+.tech-skill-card:hover,
+.tech-skill-card:focus-visible,
+.tech-skill-card.is-tapped {
+  transform: translate3d(0, -6px, 0);
+  background: rgba(255, 48, 56, 0.04);
+  border-color: rgba(255, 48, 56, 0.85);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.55),
+    0 0 26px rgba(255, 48, 56, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Hover persistent holographic perimeter glow */
+.tech-card-holo-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    220px circle at 24% 35%,
+    rgba(255, 48, 56, 0.16),
+    rgba(201, 21, 32, 0.05) 55%,
+    transparent 80%
+  );
+  transition: opacity 0.35s ease;
+}
+
+.tech-skill-card:hover .tech-card-holo-glow,
+.tech-skill-card:focus-visible .tech-card-holo-glow,
+.tech-skill-card.is-tapped .tech-card-holo-glow {
+  opacity: 1;
+}
+
+/* ─── Effect One: Left-to-Right Red Laser Scanner via pseudo-elements ─── */
+.tech-laser-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ::before -> crisp vertical #FF3038 razor laser beam spanning exact full card width via 100% translate3d */
+.tech-laser-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 94%,
+    rgba(201, 21, 32, 0.32) 97%,
+    rgba(255, 48, 56, 0.95) 99.1%,
+    #ffffff 99.7%,
+    transparent 100%
+  );
+  filter: drop-shadow(0 0 8px rgba(255, 48, 56, 0.95));
+  opacity: 0;
+  transform: translate3d(-100%, 0, 0);
+}
+
+/* ::after -> trailing soft crimson ionization wash & glass specular reflection */
+.tech-laser-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 21, 32, 0.08) 38%,
+    rgba(255, 48, 56, 0.22) 86%,
+    rgba(255, 255, 255, 0.14) 100%
+  );
+  opacity: 0;
+  transform: translate3d(-140%, 0, 0) skewX(-14deg);
+}
+
+@keyframes techLaserBeamSweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+  8% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(102%, 0, 0);
+  }
+}
+
+@keyframes techLaserTrailSweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-120%, 0, 0) skewX(-12deg);
+  }
+  14% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(320%, 0, 0) skewX(-12deg);
+  }
+}
+
+/* Trigger scan ONLY on hover / keyboard focus / mobile tap */
+.tech-skill-card:hover .tech-laser-overlay::before,
+.tech-skill-card:focus-visible .tech-laser-overlay::before,
+.tech-skill-card.is-tapped .tech-laser-overlay::before {
+  animation: techLaserBeamSweep 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.tech-skill-card:hover .tech-laser-overlay::after,
+.tech-skill-card:focus-visible .tech-laser-overlay::after,
+.tech-skill-card.is-tapped .tech-laser-overlay::after {
+  animation: techLaserTrailSweep 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Brief red scanner spark dots around logo when laser passes */
+@keyframes scanSparkBurst {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.4);
+  }
+  30% {
+    opacity: 1;
+    transform: translate3d(var(--sx, 6px), var(--sy, -6px), 0) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(calc(var(--sx, 6px) * 1.9), calc(var(--sy, -6px) * 1.9), 0) scale(0.2);
+  }
+}
+
+.tech-scan-spark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: #ff3038;
+  box-shadow: 0 0 8px #ff3038;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tech-skill-card:hover .tech-scan-spark,
+.tech-skill-card:focus-visible .tech-scan-spark,
+.tech-skill-card.is-tapped .tech-scan-spark {
+  animation: scanSparkBurst 0.62s ease-out var(--sd, 0.14s) forwards;
+}
+
+/* ─── Effect Two: Energy Charging Progress System ─── */
+@keyframes energyParticlesFlow {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(160%, 0, 0);
+  }
+}
+
+@keyframes energyEndpointPulse {
+  0%,
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(0.95);
+    opacity: 0.78;
+  }
+  50% {
+    transform: translate3d(-50%, -50%, 0) scale(1.25);
+    opacity: 1;
+  }
+}
+
+.energy-stream-particles {
+  position: absolute;
+  inset: 0;
+  width: 65%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.85) 1px, transparent 2px),
+    radial-gradient(circle at 48% 35%, rgba(255, 160, 165, 0.9) 1.2px, transparent 2.4px),
+    radial-gradient(circle at 78% 60%, rgba(255, 255, 255, 0.75) 1px, transparent 2px),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  opacity: 0;
+}
+
+.energy-stream-particles.is-charging {
+  opacity: 1;
+  animation: energyParticlesFlow 0.95s ease-in-out infinite;
+}
+
+.energy-endpoint-node {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow:
+    0 0 8px 2px #ff3038,
+    0 0 16px 3px rgba(255, 48, 56, 0.7);
+  animation: energyEndpointPulse 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Respect prefers-reduced-motion across all CSS animations */
+@media (prefers-reduced-motion: reduce) {
+  .tech-skill-card,
+  .tech-card-holo-glow {
+    transition: none;
+  }
+  .tech-skill-card:hover .tech-laser-overlay::before,
+  .tech-skill-card:focus-visible .tech-laser-overlay::before,
+  .tech-skill-card.is-tapped .tech-laser-overlay::before,
+  .tech-skill-card:hover .tech-laser-overlay::after,
+  .tech-skill-card:focus-visible .tech-laser-overlay::after,
+  .tech-skill-card.is-tapped .tech-laser-overlay::after,
+  .tech-skill-card:hover .tech-scan-spark,
+  .tech-skill-card:focus-visible .tech-scan-spark,
+  .tech-skill-card.is-tapped .tech-scan-spark,
+  .energy-stream-particles.is-charging,
+  .energy-endpoint-node {
+    animation: none !important;
+  }
+}

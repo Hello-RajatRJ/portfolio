@@ -93,10 +93,13 @@ const CursorAvatar: React.FC = () => {
   }, [mouseX, mouseY, rotateX, rotateY, isVisible, scale]);
 
   // Only show on desktop (pointer devices)
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== 'undefined'
+      ? window.matchMedia('(pointer: fine) and (min-width: 768px)').matches
+      : false
+  );
   useEffect(() => {
     const mq = window.matchMedia('(pointer: fine) and (min-width: 768px)');
-    setIsDesktop(mq.matches);
     const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
@@ -120,54 +123,25 @@ const CursorAvatar: React.FC = () => {
       }}
       transition={{ opacity: { duration: 0.3 } }}
     >
-      {/* Outer glow ring */}
-      <div className="relative">
-        {/* Pulsing red glow */}
-        <motion.div
-          animate={{
-            boxShadow: [
-              '0 0 20px rgba(220,38,38,0.3), 0 0 40px rgba(220,38,38,0.1)',
-              '0 0 30px rgba(220,38,38,0.5), 0 0 60px rgba(220,38,38,0.2)',
-              '0 0 20px rgba(220,38,38,0.3), 0 0 40px rgba(220,38,38,0.1)',
-            ],
-          }}
-          transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-          className="absolute -inset-1 rounded-full"
-        />
-
-        {/* Avatar container */}
-        <div
-          className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-red-600/60"
+      {/* Borderless feathered 3D cursor follower (no card border or overlay text) */}
+      <div
+        className="relative w-14 h-14 overflow-hidden"
+        style={{
+          maskImage: 'radial-gradient(circle, black 48%, transparent 96%)',
+          WebkitMaskImage: 'radial-gradient(circle, black 48%, transparent 96%)',
+        }}
+      >
+        <video
+          src="/video/Man_rolling_neck_movements_98e1ec5b_1080p.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-center"
           style={{
-            background: 'radial-gradient(circle at 30% 30%, rgba(220,38,38,0.15), rgba(0,0,0,0.9))',
-            boxShadow: '0 0 25px rgba(220,38,38,0.4), inset 0 0 15px rgba(0,0,0,0.5)',
+            filter: isHoveringInteractive ? 'brightness(1.2)' : 'brightness(1.04)',
+            transition: 'filter 0.3s ease',
           }}
-        >
-          <img
-            src="/avatar_transparent/front.webp"
-            alt="Avatar"
-            className="w-full h-full object-cover"
-            style={{
-              filter: isHoveringInteractive ? 'brightness(1.2)' : 'brightness(1)',
-              transition: 'filter 0.3s ease',
-            }}
-            draggable={false}
-          />
-
-          {/* Shine overlay */}
-          <motion.div
-            animate={{ opacity: [0, 0.3, 0] }}
-            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-            className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent rounded-full"
-          />
-        </div>
-
-        {/* Status dot */}
-        <motion.div
-          animate={{ scale: [1, 1.3, 1] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-          className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-black"
-          style={{ boxShadow: '0 0 8px rgba(220,38,38,0.8)' }}
         />
       </div>
     </motion.div>

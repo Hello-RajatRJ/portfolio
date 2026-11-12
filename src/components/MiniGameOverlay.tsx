@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
-import { Trophy, Timer, Coins } from 'lucide-react';
+import { Timer, Coins } from 'lucide-react';
 
 export const MiniGameOverlay: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
@@ -30,8 +30,6 @@ export const MiniGameOverlay: React.FC = () => {
     setGameState((prev) => ({
       ...prev,
       activeMiniGame: 'none',
-      driftPoints: 0,
-      driftTimeLeft: 30,
       coinsCollected: 0,
       checkpointsCleared: 0,
       raceStartTime: null,
@@ -76,28 +74,6 @@ export const MiniGameOverlay: React.FC = () => {
             </div>
             <p className="text-[10px] text-white/50 tracking-wide text-center">
               Drive through the cyan rings as quickly as possible!
-            </p>
-          </>
-        )}
-
-        {activeGame === 'drift' && (
-          <>
-            <div className="flex items-center gap-2 text-rose-400 text-sm font-semibold tracking-wider">
-              <Trophy className="animate-pulse" size={18} />
-              <span>DRIFT CHALLENGE</span>
-            </div>
-            <div className="flex justify-between w-full mt-2 px-2 gap-8">
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] text-rose-300/70">SCORE</span>
-                <span className="text-xl font-bold text-rose-400 font-mono">{gameState.driftPoints} / 1000</span>
-              </div>
-              <div className="flex flex-col items-center">
-                <span className="text-[10px] text-cyan-300/70">TIME LEFT</span>
-                <span className="text-xl font-bold text-cyan-400 font-mono">{Math.ceil(gameState.driftTimeLeft)}s</span>
-              </div>
-            </div>
-            <p className="text-[10px] text-white/50 tracking-wide text-center mt-1">
-              Drift inside the pink arena (center-south grid) using handbrake [SPACE] to score!
             </p>
           </>
         )}

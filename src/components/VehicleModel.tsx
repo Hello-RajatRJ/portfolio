@@ -1,9 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { Group, Mesh, Object3D } from 'three';
-
+import { Group, Mesh, Object3D, MeshStandardMaterial, SpotLight, PointLight, CylinderGeometry } from 'three';
 import type { CarPhysicsState, CarVisualState } from './CarState';
+import { NitroExhaustFlame } from './car/CarFX';
 
 interface VehicleModelProps {
   physicsRef: React.MutableRefObject<CarPhysicsState>;
@@ -11,131 +11,245 @@ interface VehicleModelProps {
 }
 
 export const VehicleModel: React.FC<VehicleModelProps> = ({
-  physicsRef,
   visualRef,
 }) => {
   const { scene } = useGLTF('/models/cyberpunk_car.glb');
-  const bodyRef = useRef<Group>(null);
+  const clonedScene = useMemo(() => scene.clone(true), [scene]);
 
-  // Cache wheel references
-  const wheelRefs = useRef<{
-    frontLeft: Object3D | null;
-    frontRight: Object3D | null;
-    rearLeft: Object3D | null;
-    rearRight: Object3D | null;
-  }>({
-    frontLeft: null,
-    frontRight: null,
-    rearLeft: null,
-    rearRight: null,
-  });
+  // Rear axle pivot for authentic wheelie lift + chassis suspension group
+  const wheeliePivotRef = useRef<Group>(null);
+  const chassisRef = useRef<Group>(null);
 
-  // Enable shadows on all meshes and try to find wheel nodes
+  // Spotlight targets placed forward down the road
+  const targetLeftRef = useRef<Object3D>(null);
+  const targetRightRef = useRef<Object3D>(null);
+
+  // SpotLight refs to link with targets
+  const spotLeftRef = useRef<SpotLight>(null);
+  const spotRightRef = useRef<SpotLight>(null);
+
+  // Tail brake lights ref
+  const tailLightRef = useRef<PointLight>(null);
+  const tailBarRef = useRef<Mesh>(null);
+  const reverseLightRef = useRef<PointLight>(null);
+
+  // Preserve authentic cyberpunk car textures while enhancing automotive sheen & neon emissive strips
   useEffect(() => {
-    if (!scene) return;
+    if (!clonedScene) return;
+    try {
+      clonedScene.traverse((child) => {
+        if ((child as Mesh).isMesh) {
+          const mesh = child as Mesh;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
 
-    scene.traverse((child) => {
-      if ((child as Mesh).isMesh) {
-        const mesh = child as Mesh;
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-
-        // Fix for black materials (if it's highly metallic without an HDRI, it looks pitch black)
-        if (mesh.material) {
-          const mat = mesh.material as import('three').MeshStandardMaterial;
-          // Reduce metalness so it doesn't reflect the black void
-          if (mat.metalness !== undefined) mat.metalness = 0.2;
-          if (mat.roughness !== undefined) mat.roughness = 0.8;
-          mat.needsUpdate = true;
-        }
-      }
-
-      const name = child.name.toLowerCase();
-      
-      // Hide the giant ground shadow plane that comes with stylized_car
-      if (name.includes('ground')) {
-        child.visible = false;
-        return;
-      }
-
-      // Stylized car wheel mapping
-      if (name.includes('wheels_left')) {
-        wheelRefs.current.frontLeft = child;
-      } else if (name.includes('wheels_right')) {
-        wheelRefs.current.frontRight = child;
-      }
-      
-      // Legacy luaz wheel mapping
-      if (name.includes('wheel') || name.includes('tire') || name.includes('tyre') || name.includes('koleso')) {
-        if (name.includes('front') || name.includes('fl') || name.includes('lf') || name.includes('передн')) {
-          if (name.includes('left') || name.includes('fl') || name.includes('lf') || name.includes('лев')) {
-            wheelRefs.current.frontLeft = child;
-          } else if (name.includes('right') || name.includes('fr') || name.includes('rf') || name.includes('прав')) {
-            wheelRefs.current.frontRight = child;
-          } else if (!wheelRefs.current.frontLeft) {
-            wheelRefs.current.frontLeft = child;
-          } else if (!wheelRefs.current.frontRight) {
-            wheelRefs.current.frontRight = child;
-          }
-        } else if (name.includes('rear') || name.includes('back') || name.includes('rl') || name.includes('rr') || name.includes('задн')) {
-          if (name.includes('left') || name.includes('rl') || name.includes('lr') || name.includes('лев')) {
-            wheelRefs.current.rearLeft = child;
-          } else if (name.includes('right') || name.includes('rr') || name.includes('lr') || name.includes('прав')) {
-            wheelRefs.current.rearRight = child;
-          } else if (!wheelRefs.current.rearLeft) {
-            wheelRefs.current.rearLeft = child;
-          } else if (!wheelRefs.current.rearRight) {
-            wheelRefs.current.rearRight = child;
+          if (mesh.material) {
+            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+            mats.forEach((m) => {
+              if (m && 'metalness' in m) {
+                const mat = m as MeshStandardMaterial;
+                mat.metalness = 0.55;
+                mat.roughness = 0.28;
+                mat.envMapIntensity = 1.8;
+                if (mat.emissiveMap) {
+                  mat.emissiveIntensity = 1.65;
+                }
+                mat.needsUpdate = true;
+              }
+            });
           }
         }
-      }
-    });
-  }, [scene]);
+      });
+    } catch {
+      // Safe fallback
+    }
+  }, [clonedScene]);
 
-  // Apply steering + rotation to wheels via useFrame
+  // Reusable volumetric beam geometry: narrow at -5 (z=1.05 near car), wide at +5 (z=11.05 far)
+  const beamGeo = useMemo(() => {
+    const geo = new CylinderGeometry(1.6, 0.12, 10, 16, 1, true);
+    geo.rotateX(Math.PI / 2);
+    return geo;
+  }, []);
+
+  // Reusable materials
+  const { beamMat, lensMat, tailMat, groundPuddleMat, underglowMat } = useMemo(
+    () => ({
+      beamMat: new MeshStandardMaterial({
+        color: '#e0f2fe',
+        emissive: '#bae6fd',
+        emissiveIntensity: 0.8,
+        transparent: true,
+        opacity: 0.1,
+        roughness: 0.6,
+        depthWrite: false,
+      }),
+      groundPuddleMat: new MeshStandardMaterial({
+        color: '#e0f2fe',
+        emissive: '#bae6fd',
+        emissiveIntensity: 1.2,
+        transparent: true,
+        opacity: 0.18,
+        roughness: 0.4,
+        depthWrite: false,
+      }),
+      lensMat: new MeshStandardMaterial({
+        color: '#ffffff',
+        emissive: '#e0f2fe',
+        emissiveIntensity: 3.5,
+        toneMapped: false,
+      }),
+      tailMat: new MeshStandardMaterial({
+        color: '#ff003c',
+        emissive: '#dc2626',
+        emissiveIntensity: 1.5,
+        toneMapped: false,
+      }),
+      underglowMat: new MeshStandardMaterial({
+        color: '#a855f7',
+        emissive: '#7c3aed',
+        emissiveIntensity: 2.2,
+        transparent: true,
+        opacity: 0.4,
+        depthWrite: false,
+      }),
+    }),
+    []
+  );
+
+  // Update chassis dynamics, spotlight targets & tail lights on frame
   useFrame(() => {
-    const wheels = wheelRefs.current;
     const v = visualRef.current;
-    const p = physicsRef.current;
 
-    if (wheels.frontLeft) {
-      wheels.frontLeft.rotation.x = v.wheelRot;
-      // Skip steering if it's the stylized car since left wheels are a single mesh
-      if (!scene.getObjectByName('Plane.007_wheels_left_0')) {
-        wheels.frontLeft.rotation.y = p.steeringAngle;
-      }
-    }
-    
-    if (wheels.frontRight) {
-      wheels.frontRight.rotation.x = v.wheelRot;
-      if (!scene.getObjectByName('Plane.007_wheels_right_0')) {
-        wheels.frontRight.rotation.y = p.steeringAngle;
-      }
-    }
-    if (wheels.rearLeft) {
-      wheels.rearLeft.rotation.x = v.wheelRot;
-    }
-    if (wheels.rearRight) {
-      wheels.rearRight.rotation.x = v.wheelRot;
+    if (wheeliePivotRef.current) {
+      wheeliePivotRef.current.rotation.x = -v.wheelieAngle;
     }
 
-    if (bodyRef.current) {
-      bodyRef.current.rotation.x = v.wheelieAngle;
+    // Apply suspension pitch (dive on brake, squat on accel) and lateral roll (cornering lean)
+    if (chassisRef.current) {
+      chassisRef.current.rotation.x = v.bodyPitch;
+      chassisRef.current.rotation.z = -v.bodyRoll;
+    }
+
+    // Ensure SpotLight targets remain properly bound in Three.js scene graph
+    if (spotLeftRef.current && targetLeftRef.current && spotLeftRef.current.target !== targetLeftRef.current) {
+      spotLeftRef.current.target = targetLeftRef.current;
+    }
+    if (spotRightRef.current && targetRightRef.current && spotRightRef.current.target !== targetRightRef.current) {
+      spotRightRef.current.target = targetRightRef.current;
+    }
+
+    // Dynamic brake light brightness
+    if (tailLightRef.current) {
+      tailLightRef.current.intensity = v.isBraking ? 5.5 : 1.4;
+      tailLightRef.current.color.set(v.isBraking ? '#ff003c' : '#dc2626');
+    }
+
+    // Flare rear light bar
+    if (tailBarRef.current && tailBarRef.current.material) {
+      const mat = tailBarRef.current.material as MeshStandardMaterial;
+      mat.emissive.set(v.isBraking ? '#ff1e56' : '#991b1b');
+      mat.emissiveIntensity = v.isBraking ? 4.5 : 1.2;
+    }
+
+    // Reverse light
+    if (reverseLightRef.current) {
+      const isReversing = v.isBraking && v.wheelRot < -0.1;
+      reverseLightRef.current.intensity = isReversing ? 2.5 : 0;
     }
   });
 
   return (
-    <group ref={bodyRef}>
-      {/* The Luaz GLB — scale tuned to match physics collider radius ~1.1 */}
-      <primitive
-        object={scene}
-        scale={[0.004, 0.004, 0.004]}
-        position={[0, 0, 0]}
-        rotation={[0, Math.PI, 0]}
-      />
+    <group position={[0, 0, 0]}>
+      <group ref={wheeliePivotRef} position={[0, 0.28, -0.95]}>
+        <group ref={chassisRef} position={[0, -0.28, 0.95]}>
+          {/* ── 3D CYBERPUNK NIGHT RUNNER MODEL ──────────────────────────── */}
+          {/* Scaled 0.0068 to real car dimensions: ~3.67m length, ~1.51m width, ground flush */}
+          <primitive
+            object={clonedScene}
+            scale={[0.0068, 0.0068, 0.0068]}
+            position={[0, 0, 0]}
+            rotation={[0, Math.PI, 0]}
+          />
+
+          {/* ── HEADLIGHTS ────────────────────────────────────────────────── */}
+          <object3D ref={targetLeftRef} position={[-0.46, 0.05, 18.0]} />
+          <object3D ref={targetRightRef} position={[0.46, 0.05, 18.0]} />
+
+          <spotLight
+            ref={spotLeftRef}
+            position={[-0.46, 0.44, 1.75]}
+            angle={0.42}
+            penumbra={0.65}
+            intensity={36}
+            distance={32}
+            color="#e0f2fe"
+            castShadow={false}
+          />
+          <spotLight
+            ref={spotRightRef}
+            position={[0.46, 0.44, 1.75]}
+            angle={0.42}
+            penumbra={0.65}
+            intensity={36}
+            distance={32}
+            color="#e0f2fe"
+            castShadow={false}
+          />
+
+          {/* Sleek Headlight Lenses aligned with front nose */}
+          <mesh position={[-0.46, 0.44, 1.78]} rotation={[0, 0.1, 0]} material={lensMat}>
+            <boxGeometry args={[0.2, 0.045, 0.03]} />
+          </mesh>
+          <mesh position={[0.46, 0.44, 1.78]} rotation={[0, -0.1, 0]} material={lensMat}>
+            <boxGeometry args={[0.2, 0.045, 0.03]} />
+          </mesh>
+
+          {/* Volumetric 3D Light Projector Beams */}
+          <group position={[-0.46, 0.34, 6.75]} rotation={[0.02, -0.02, 0]}>
+            <mesh geometry={beamGeo} material={beamMat} />
+          </group>
+          <group position={[0.46, 0.34, 6.75]} rotation={[0.02, 0.02, 0]}>
+            <mesh geometry={beamGeo} material={beamMat} />
+          </group>
+
+          {/* Road Surface Illuminated Light Puddle */}
+          <mesh position={[0, 0.03, 7.2]} rotation={[-Math.PI / 2, 0, 0]} material={groundPuddleMat}>
+            <planeGeometry args={[3.2, 10.5]} />
+          </mesh>
+
+          {/* ── TAIL LIGHTS ───────────────────────────────────────────────── */}
+          <mesh ref={tailBarRef} position={[0, 0.54, -1.78]} material={tailMat}>
+            <boxGeometry args={[1.18, 0.045, 0.02]} />
+          </mesh>
+
+          <pointLight
+            ref={tailLightRef}
+            position={[0, 0.54, -1.86]}
+            color="#dc2626"
+            intensity={1.6}
+            distance={5.0}
+          />
+
+          <pointLight
+            ref={reverseLightRef}
+            position={[0, 0.4, -1.86]}
+            color="#ffffff"
+            intensity={0}
+            distance={3.0}
+          />
+
+          {/* ── CYBERPUNK CHASSIS UNDERGLOW ───────────────────────────────── */}
+          <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} material={underglowMat}>
+            <planeGeometry args={[1.35, 3.1]} />
+          </mesh>
+
+          {/* ── NITRO EXHAUST FLAMES ── */}
+          <group position={[0, 0.28, 0]}>
+            <NitroExhaustFlame visualRef={visualRef} />
+          </group>
+        </group>
+      </group>
     </group>
   );
 };
-
-// Preload the model so it's ready before the game starts
-useGLTF.preload('/models/cyberpunk_car.glb');

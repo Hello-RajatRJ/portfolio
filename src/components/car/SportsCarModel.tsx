@@ -1,7 +1,8 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group, MeshStandardMaterial, MeshBasicMaterial } from 'three';
 import { Text } from '@react-three/drei';
+import { CanvasErrorBoundary } from '../CanvasErrorBoundary';
 import type { CarPhysicsState, CarVisualState } from '../CarState';
 import { NitroExhaustFlame } from './CarFX';
 
@@ -225,16 +226,20 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
           </mesh>
 
           {/* Chrome "GT" Center Emblem */}
-          <Text
-            position={[0, 0.12, -1.67]}
-            rotation={[0, Math.PI, 0]}
-            fontSize={0.16}
-            color="#f8fafc"
-            anchorX="center"
-            anchorY="middle"
-          >
-            GT
-          </Text>
+          <CanvasErrorBoundary fallback={null}>
+            <Suspense fallback={null}>
+              <Text
+                position={[0, 0.12, -1.67]}
+                rotation={[0, Math.PI, 0]}
+                fontSize={0.16}
+                color="#f8fafc"
+                anchorX="center"
+                anchorY="middle"
+              >
+                GT
+              </Text>
+            </Suspense>
+          </CanvasErrorBoundary>
 
           {/* Tri-Bar Iconic LED Taillights (Left & Right) */}
           {[-0.56, -0.48, -0.4, 0.4, 0.48, 0.56].map((tx) => (

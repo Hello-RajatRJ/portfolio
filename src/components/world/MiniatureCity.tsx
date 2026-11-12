@@ -622,11 +622,19 @@ export const MiniatureCity: React.FC = () => {
           {/* Modern Night Skyscraper (Grounded firmly at y = -0.05) */}
           <ModernNightBuilding position={[34, 0, 22]} name="QUANTUM RESIDENCE" />
           <ModernNightBuilding position={[-36, 0, -26]} name="NEO METROPOLIS" />
+        </Suspense>
+      </CanvasErrorBoundary>
 
+      <CanvasErrorBoundary fallback={null}>
+        <Suspense fallback={null}>
           {/* Office Commercial Building Complex */}
           <OfficeBuildingModel position={[28, 0, -34]} name="CYBERTECH HQ" />
           <OfficeBuildingModel position={[-34, 0, 32]} rotation={[0, Math.PI, 0]} name="ENTERPRISE CENTER" />
+        </Suspense>
+      </CanvasErrorBoundary>
 
+      <CanvasErrorBoundary fallback={null}>
+        <Suspense fallback={null}>
           {/* Asian Themed Night City Skyline Backdrops (Grounded outside north & south border walls) */}
           <AsianNightSkyline position={[10, 0, -138]} />
           <AsianNightSkyline position={[160, 0, -138]} />

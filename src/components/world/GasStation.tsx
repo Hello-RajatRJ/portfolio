@@ -1,7 +1,7 @@
 import React, { useRef, Suspense } from 'react';
 import { useGLTF, Billboard, Text } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
-import { Mesh } from 'three';
+import { Mesh, PointLight } from 'three';
 import { CanvasErrorBoundary } from '../CanvasErrorBoundary';
 
 interface GasStationProps {
@@ -11,16 +11,23 @@ interface GasStationProps {
   onRefuelComplete?: () => void;
 }
 
+const GasStationModel: React.FC = () => {
+  const { scene } = useGLTF('/lowpoly_gas_station.glb');
+  const clonedScene = React.useMemo(() => scene.clone(true), [scene]);
+
+  return (
+    <group position={[1.29, 0.18, 0.66]} rotation={[0, Math.PI, 0]} scale={[0.36, 0.48, 0.44]}>
+      <primitive object={clonedScene} />
+    </group>
+  );
+};
+
 export const GasStation: React.FC<GasStationProps> = ({
   position = [26.5, 0, -18.5],
   rotation = [0, 0, 0],
 }) => {
-  const { scene } = useGLTF('/lowpoly_gas_station.glb');
   const ringRef = useRef<Mesh>(null);
-  const glowLightRef = useRef<any>(null);
-
-  // Clone scene so it can be reused safely if needed
-  const clonedScene = React.useMemo(() => scene.clone(true), [scene]);
+  const glowLightRef = useRef<PointLight>(null);
 
   useFrame((state, delta) => {
     // Pulse refuel ring
@@ -38,9 +45,7 @@ export const GasStation: React.FC<GasStationProps> = ({
       {/* ── 3D LOW POLY GAS STATION MODEL (Normalized 11.2m x 4.9m x 8.6m fit inside E-Ave block) ── */}
       <CanvasErrorBoundary fallback={null}>
         <Suspense fallback={null}>
-          <group position={[1.29, 0.18, 0.66]} rotation={[0, Math.PI, 0]} scale={[0.36, 0.48, 0.44]}>
-            <primitive object={clonedScene} />
-          </group>
+          <GasStationModel />
         </Suspense>
       </CanvasErrorBoundary>
 

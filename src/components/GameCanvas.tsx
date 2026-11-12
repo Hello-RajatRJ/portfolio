@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Car } from './Car';
 import { World } from './World';
@@ -13,6 +13,18 @@ interface GameCanvasProps {
 }
 
 export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState, projects, onReady }) => {
+  const [recoveryAttempt, setRecoveryAttempt] = useState(0);
+  const [contextLost, setContextLost] = useState(false);
+  const cleanupListenersRef = useRef<(() => void) | null>(null);
+  const isSafeMode = recoveryAttempt > 0;
+
+  useEffect(() => {
+    return () => {
+      cleanupListenersRef.current?.();
+      cleanupListenersRef.current = null;
+    };
+  }, []);
+
   const handlePositionUpdate = (pos: number, total: number) => {
     setGameState((prev) => {
       if (prev.racePosition === pos && prev.totalRacers === total) return prev;
@@ -31,25 +43,53 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
     });
   };
 
+  const handleReset = () => {
+    setContextLost(false);
+    setRecoveryAttempt((prev) => prev + 1);
+  };
+
   return (
-    <CanvasErrorBoundary>
+    <CanvasErrorBoundary onReset={handleReset}>
       <Canvas
-        shadows
-        dpr={[1, 1.5]}
+        key={recoveryAttempt}
+        shadows={!isSafeMode}
+        dpr={isSafeMode ? 1 : [1, 1.5]}
         camera={{ position: [0, 2.0, -8.7], fov: 60, near: 0.5, far: 560 }}
         style={{ background: '#070a12' }}
         onCreated={({ gl }) => {
-          gl.domElement.addEventListener('webglcontextlost', (e) => {
+          cleanupListenersRef.current?.();
+          const canvas = gl.domElement;
+          const onContextLost = (e: Event) => {
             e.preventDefault();
-          });
+            setContextLost(true);
+          };
+          const onContextRestored = () => {
+            setContextLost(false);
+          };
+          canvas.addEventListener('webglcontextlost', onContextLost);
+          canvas.addEventListener('webglcontextrestored', onContextRestored);
+          cleanupListenersRef.current = () => {
+            canvas.removeEventListener('webglcontextlost', onContextLost);
+            canvas.removeEventListener('webglcontextrestored', onContextRestored);
+          };
+          setContextLost(false);
           onReady?.();
         }}
-        gl={{
-          antialias: true,
-          powerPreference: 'high-performance',
-          failIfMajorPerformanceCaveat: false,
-          precision: 'highp',
-        }}
+        gl={
+          isSafeMode
+            ? {
+                antialias: false,
+                powerPreference: 'default',
+                failIfMajorPerformanceCaveat: false,
+                precision: 'mediump',
+              }
+            : {
+                antialias: true,
+                powerPreference: 'high-performance',
+                failIfMajorPerformanceCaveat: false,
+                precision: 'highp',
+              }
+        }
       >
         {/* Sleek midnight atmospheric depth fog (tuned for large City + AI Factory world) */}
         <fog attach="fog" args={['#070a12', 110, 380]} />
@@ -92,7 +132,9 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
             onPositionUpdate={handlePositionUpdate}
             onBowlingScoreUpdate={handleBowlingScoreUpdate}
           />
+        </Suspense>
 
+        <Suspense fallback={null}>
           {/* Player car */}
           <Car
             gameState={gameState}
@@ -101,6 +143,48 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
           />
         </Suspense>
       </Canvas>
+
+      {contextLost && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(7, 10, 18, 0.92)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#f8fafc',
+            fontFamily: 'Orbitron, sans-serif',
+            padding: '20px',
+            textAlign: 'center',
+            zIndex: 45,
+          }}
+        >
+          <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#38bdf8', marginBottom: '10px' }}>
+            WEBGL CONTEXT INTERRUPTED
+          </div>
+          <div style={{ fontSize: '0.8rem', color: '#94a3b8', maxWidth: '420px', marginBottom: '18px', lineHeight: 1.5 }}>
+            Your browser paused the 3D GPU context. Re-initialize below to resume driving in compatibility mode.
+          </div>
+          <button
+            onClick={handleReset}
+            style={{
+              padding: '10px 24px',
+              background: '#38bdf8',
+              color: '#082f49',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: 900,
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              letterSpacing: '0.1em',
+            }}
+          >
+            RE-INITIALIZE SPEEDWAY
+          </button>
+        </div>
+      )}
     </CanvasErrorBoundary>
   );
 };

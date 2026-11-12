@@ -3,6 +3,7 @@ import React, { Component, type ReactNode } from 'react';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
@@ -26,7 +27,7 @@ export class CanvasErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      if (this.props.fallback) {
+      if (this.props.fallback !== undefined) {
         return this.props.fallback;
       }
       return (
@@ -51,7 +52,10 @@ export class CanvasErrorBoundary extends Component<Props, State> {
             A temporary WebGL resource interruption occurred. Click below to re-initialize the 3D scene.
           </div>
           <button
-            onClick={() => this.setState({ hasError: false, error: null })}
+            onClick={() => {
+              this.props.onReset?.();
+              this.setState({ hasError: false, error: null });
+            }}
             style={{
               padding: '10px 24px',
               background: '#38bdf8',

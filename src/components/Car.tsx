@@ -534,12 +534,13 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
     if (inAir) {
       airTimeRef.current += dt;
       jumpDistRef.current += Math.hypot(p.vx, p.vz) * dt;
-    } else if (airTimeRef.current > 0.4) {
-      // Just landed from high jump!
-      const points = Math.round(airTimeRef.current * 250 + jumpDistRef.current * 20);
-      stuntScoreRef.current += points;
-      stuntMsgRef.current = `AIR TIME ${airTimeRef.current.toFixed(1)}s! +${points} PTS 🔥`;
-      cameraShake.current = Math.min(0.5, 0.15 + airTimeRef.current * 0.1);
+    } else {
+      if (airTimeRef.current > 0.4) {
+        // Just landed from high jump
+        const points = Math.round(airTimeRef.current * 250 + jumpDistRef.current * 20);
+        stuntScoreRef.current += points;
+        cameraShake.current = Math.min(0.5, 0.15 + airTimeRef.current * 0.1);
+      }
       airTimeRef.current = 0;
       jumpDistRef.current = 0;
     }

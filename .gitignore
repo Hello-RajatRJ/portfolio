@@ -25,6 +25,14 @@ dist-ssr
 *.sln
 *.sw?
 
-# 3D assets over GitHub file size limit
+# 3D assets over GitHub file size limit (allowlist active portfolio models)
 *.glb
+!public/fast__furious_night_race_3d_scene.glb
+!public/lowpoly_gas_station.glb
+!public/modern_night_building_game-ready.glb
+!public/officeBuilding.glb
+!public/asian_themed_low_poly_night_city_buildings.glb
+!public/models/cyberpunk_car.glb
+!public/models/stylized_car.glb
+!public/models/luaz.glb
 

@@ -9,8 +9,17 @@ export default {
       fontFamily: {
         orbitron: ['Orbitron', 'monospace'],
         inter: ['Inter', 'sans-serif'],
+        bangers: ['Bangers', 'cursive'],
       },
       colors: {
+        deadpool: {
+          black: '#000000',
+          dark: '#0A0A0A',
+          red: '#E62429',
+          darkRed: '#8B0000',
+          glow: '#FF2D2D',
+          muted: '#9CA3AF',
+        },
         primary: {
           50:  '#fef2f2', // red-50
           100: '#fee2e2', // red-100

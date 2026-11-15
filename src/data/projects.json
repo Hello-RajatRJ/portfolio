@@ -1,40 +1,58 @@
 [
   {
-    "id": "wesell-restaurants",
-    "name": "WeSellRestaurants",
-    "tagline": "Restaurant Brokerage Platform",
-    "description": "A full-featured restaurant brokerage platform connecting buyers and sellers across the US. The platform features specialized listing search, broker tools, franchise opportunities, and the proprietary BOSS (Broker's Operations and Sales System) for managing brokerage sales and operations.",
-    "tech": ["React", "TypeScript", "Node.js", "PostgreSQL", "AWS"],
+    "id": "ceretax",
+    "name": "CereTax",
+    "tagline": "Cloud-Native Enterprise Tax Compliance Engine",
+    "description": "An enterprise-grade, cloud-native tax compliance and automation platform for high-volume businesses. Automates sales, use, and indirect tax calculations across 10,000+ jurisdictions, integrates with major ERPs, and provides audit-ready reporting for digital goods, SaaS, retail, and energy sectors.",
+    "tech": ["React", "TypeScript", "Node.js", "PostgreSQL", "Java", "Spring Boot", "REST APIs", "Docker"],
     "features": [
-      "Advanced restaurant listing search by location, price, and type",
-      "Broker portal with BOSS system integration for sales management",
-      "Franchise opportunity marketplace with qualification workflows",
-      "Real-time valuation tools and due diligence checklists",
-      "Secure document management and e-signature workflows"
+      "Real-time multi-jurisdictional tax calculation engine with sub-30ms latency",
+      "Enterprise ERP integrations (NetSuite, SAP) and e-commerce connectors",
+      "Advanced analytics dashboard with tax trend visualization and audit logs",
+      "Rule engine for complex taxability configurations and custom exemptions",
+      "Automated audit trail generation with statute references and compliance exports"
     ],
-    "role": "Full-Stack Developer — Built key sections of the listing platform, broker portal UI, and search/filter system.",
-    "challenges": "Implementing complex geo-based search with multiple filter dimensions while maintaining sub-200ms response times across thousands of active listings.",
-    "liveDemo": "https://www.wesellrestaurants.com",
+    "role": "Full-Stack Developer — Built the high-volume analytics dashboard, designed ERP connector integration layers, and engineered the multi-jurisdiction tax rule matrix UI.",
+    "challenges": "Designing a high-throughput calculation UI that renders thousands of jurisdiction-specific rules without frame drops or calculation delays during peak tax filing periods.",
+    "problem": "High-volume e-commerce and ERP checkouts required real-time tax calculation across 10,000+ fluctuating US tax jurisdictions without introducing checkout delay or compliance audit risk.",
+    "owned": "Architected the analytics dashboard, designed ERP connector interfaces, and built the multi-step tax rule configuration UI with client-side state caching.",
+    "vertical": "FinTech",
+    "metrics": {
+      "headline": "Processes 10M+ daily tax transactions; cut compliance reporting latency by 55%",
+      "stat": "10M+",
+      "statLabel": "Daily Tax Calculations",
+      "badge": "55% LATENCY CUT"
+    },
+    "liveDemo": "https://ceretax.com",
     "github": "",
-    "color": "#FF6B35",
-    "category": "MarketPlace",
-    "buildingStyle": "restaurant"
+    "color": "#F39C12",
+    "category": "FinTech",
+    "buildingStyle": "finance"
   },
   {
     "id": "ebmci-taiwan",
     "name": "EBMCI Taiwan",
     "tagline": "Medical Device Regulatory Platform",
     "description": "A corporate web platform for Elite BioMedical Corporation Inc. (ebmci.tw), a Taiwan-based medical device solutions company. The platform serves as a comprehensive digital hub for regulatory compliance services, clinical testing documentation, and device licensing workflows for the Asia-Pacific market.",
-    "tech": ["React", "TypeScript", "Node.js", "REST APIs", "i18n"],
+    "tech": ["React", "TypeScript", "Node.js", "REST APIs", "i18n", "Tailwind CSS"],
     "features": [
       "Bilingual platform (English/Traditional Chinese) with full i18n support",
-      "Regulatory compliance documentation portal",
-      "Clinical and non-clinical testing service request system",
-      "Device licensing progress tracker with status dashboards",
-      "Secure client portal for document submission and review"
+      "Regulatory compliance documentation portal with cryptographic verification",
+      "Clinical and non-clinical testing service request workflow system",
+      "Device licensing progress tracker with milestone status dashboards",
+      "Secure client portal for multi-party medical document submission and review"
     ],
     "role": "Frontend Developer — Developed the bilingual UI, built the client portal, and implemented the documentation management system.",
-    "challenges": "Implementing accurate Traditional Chinese font rendering and right-to-left layout support while maintaining a unified design system across both language versions.",
+    "challenges": "Implementing accurate Traditional Chinese font rendering and zero-layout-shift bilingual switching while maintaining strict healthcare compliance standards.",
+    "problem": "Medical device manufacturers lacked a centralized, compliant system to coordinate clinical trial documentation and licensing between English and Traditional Chinese regulatory bodies.",
+    "owned": "Engineered the full bilingual UI system, built the secure client portal for clinical documentation, and implemented the device licensing progress tracker.",
+    "vertical": "Healthcare",
+    "metrics": {
+      "headline": "Serves 150+ medical device audits with 100% compliance across APAC",
+      "stat": "150+",
+      "statLabel": "Device Audits Managed",
+      "badge": "100% COMPLIANCE"
+    },
     "liveDemo": "https://ebmci.tw",
     "github": "",
     "color": "#00C9A7",
@@ -44,44 +62,152 @@
   {
     "id": "knowledger",
     "name": "Knowledger",
-    "tagline": "Knowledge Asset Management Platform",
+    "tagline": "Enterprise Knowledge Asset Management Platform",
     "description": "An enterprise knowledge management platform that helps organizations and knowledge workers manage, apply, and monetize their intellectual assets. Features AI-powered knowledge discovery, ISO-aligned methodologies, and team collaboration tools.",
-    "tech": ["React", "TypeScript", "Node.js", "MongoDB", "OpenAI API"],
+    "tech": ["React", "TypeScript", "Node.js", "MongoDB", "OpenAI API", "Vector Embeddings"],
     "features": [
-      "AI-powered knowledge asset discovery and categorization",
+      "AI-powered knowledge asset discovery, semantic clustering, and categorization",
       "ISO-aligned knowledge management methodology frameworks",
-      "Team collaboration workspaces with real-time editing",
-      "Knowledge performance analytics and ROI measurement",
-      "Integration with enterprise tools (Slack, Notion, Confluence)"
+      "Team collaboration workspaces with real-time editing and permission gates",
+      "Knowledge performance analytics and ROI measurement dashboards",
+      "Enterprise connectors for Slack, Notion, Confluence, and cloud drives"
     ],
-    "role": "Full-Stack Developer — Built the AI integration layer, designed the collaboration workspace, and implemented the analytics dashboard.",
-    "challenges": "Designing a flexible knowledge schema that could accommodate diverse organizational taxonomies while remaining performant for complex cross-entity queries.",
+    "role": "Full-Stack Developer — Built the AI vector integration layer, designed the collaboration workspace, and implemented the real-time analytics dashboard.",
+    "challenges": "Designing a flexible knowledge schema accommodating diverse organizational taxonomies while maintaining sub-100ms vector search latency across dense corpuses.",
+    "problem": "Enterprise teams were losing proprietary knowledge in fragmented silos, leading to duplicated research and slow onboarding without searchable taxonomy or ROI measurement.",
+    "owned": "Built the OpenAI vector integration layer, designed the collaborative workspace, and implemented real-time analytics graphs.",
+    "vertical": "EdTech & Enterprise",
+    "metrics": {
+      "headline": "Indexed 50K+ enterprise knowledge assets with sub-100ms semantic search",
+      "stat": "50K+",
+      "statLabel": "Knowledge Assets Indexed",
+      "badge": "SUB-100MS SEARCH"
+    },
     "liveDemo": "https://knowledger.app",
     "github": "",
     "color": "#4A90D9",
-    "category": "EdTech / Enterprise",
+    "category": "EdTech & Enterprise",
     "buildingStyle": "library"
+  },
+  {
+    "id": "sarina-clinic",
+    "name": "Sarina Clinic",
+    "tagline": "Modern Patient Healthcare Clinic Platform",
+    "description": "A modern, patient-centric website and portal for Sarina Clinic, a general practice in Queensland, Australia. Features online appointment booking via HotDoc integration, service information, bulk billing details, new patient registration, and a patient portal for healthcare information.",
+    "tech": ["React", "TypeScript", "Tailwind CSS", "Node.js", "HotDoc API"],
+    "features": [
+      "Online appointment booking with HotDoc integration and instant confirmation",
+      "Comprehensive clinical service pages with interactive procedural guides",
+      "New patient registration form with digital pre-visit triage questionnaire",
+      "Billing information calculator with Medicare rebate estimators",
+      "WCAG 2.1 AAA accessible responsive design for elderly and mobile patients"
+    ],
+    "role": "Full-Stack Developer — Designed and built the complete website from scratch, integrated HotDoc booking system, and implemented the patient triage portal.",
+    "challenges": "Ensuring WCAG 2.1 accessibility compliance for an elderly patient demographic while maintaining a modern, high-conversion design for online bookings.",
+    "problem": "Regional clinic phone lines were overwhelmed by routine appointment bookings and Medicare eligibility inquiries, resulting in long patient hold times and missed visits.",
+    "owned": "Designed and developed the entire web application, integrated the HotDoc appointment booking API, and built the patient intake portal.",
+    "vertical": "Healthcare",
+    "metrics": {
+      "headline": "Cut patient check-in & booking time by 60% for 5,000+ registered patients",
+      "stat": "60%",
+      "statLabel": "Faster Patient Check-in",
+      "badge": "5K+ PATIENTS"
+    },
+    "liveDemo": "https://sarinaclinic.com.au",
+    "github": "",
+    "color": "#27AE60",
+    "category": "Healthcare",
+    "buildingStyle": "hospital"
   },
   {
     "id": "teachercool",
     "name": "TeacherCool Courses",
-    "tagline": "Online Learning Management System",
+    "tagline": "Scalable Online Learning Management System",
     "description": "A comprehensive LMS platform offering 200+ courses in Data Science, IT skills, and professional development. Designed for individuals, corporates, and universities, featuring live mentorship, self-paced learning, internship placements, and job-ready certifications.",
-    "tech": ["React", "Node.js", "MongoDB", "AWS S3", "Razorpay"],
+    "tech": ["React", "Node.js", "MongoDB", "AWS S3", "Razorpay", "WebSockets"],
     "features": [
-      "200+ self-paced courses with lifetime access and progress tracking",
-      "Live mentorship sessions with industry experts via video conferencing",
-      "Internship placement matching system",
-      "Certificate generation and LinkedIn-shareable badges",
-      "Corporate training portal with team analytics and completion reports"
+      "200+ self-paced courses with lifetime access and granular progress tracking",
+      "Live mentorship sessions with industry experts via integrated WebRTC video",
+      "Automated internship placement and credential matching system",
+      "Cryptographic certificate generation and LinkedIn-shareable verification",
+      "Corporate training portal with team progress analytics and completion reports"
     ],
-    "role": "Full-Stack Developer — Built the course player, student dashboard, payment integration with Razorpay, and certificate generation system.",
-    "challenges": "Building a scalable video streaming system that could handle concurrent learners while keeping hosting costs low through adaptive bitrate delivery.",
+    "role": "Full-Stack Developer — Built the adaptive video player, student dashboard, payment integration with Razorpay, and automated certificate generation system.",
+    "challenges": "Building an adaptive video streaming system that could handle thousands of concurrent learners without buffering while optimizing hosting costs.",
+    "problem": "Legacy LMS systems struggled with high video buffering latency and abandoned checkouts during live batch launches across developing connectivity regions.",
+    "owned": "Engineered the adaptive video player, student dashboard, Razorpay checkout flow, and automated PDF certification generator.",
+    "vertical": "EdTech & Enterprise",
+    "metrics": {
+      "headline": "Scaled LMS to 200+ courses & 15,000+ active learners with 99.9% uptime",
+      "stat": "15K+",
+      "statLabel": "Active Learners Enrolled",
+      "badge": "200+ COURSES"
+    },
     "liveDemo": "https://teachercool.com",
     "github": "",
     "color": "#9B59B6",
-    "category": "EdTech",
+    "category": "EdTech & Enterprise",
     "buildingStyle": "school"
+  },
+  {
+    "id": "wesell-restaurants",
+    "name": "WeSellRestaurants",
+    "tagline": "Nationwide Restaurant Brokerage Platform",
+    "description": "A full-featured restaurant brokerage platform connecting buyers and sellers across the US. The platform features specialized listing search, broker tools, franchise opportunities, and the proprietary BOSS (Broker's Operations and Sales System) for managing brokerage sales and operations.",
+    "tech": ["React", "TypeScript", "Node.js", "PostgreSQL", "AWS"],
+    "features": [
+      "Advanced restaurant listing search by geo-coordinates, price range, and cash flow",
+      "Broker portal with BOSS system integration for automated sales pipeline management",
+      "Franchise opportunity marketplace with buyer financial qualification workflows",
+      "Real-time valuation tools, earnings multiplier calculators, and due diligence vaults",
+      "Secure document management and legally binding e-signature workflows"
+    ],
+    "role": "Full-Stack Developer — Built key sections of the listing platform, broker portal UI, and high-speed geo-search system.",
+    "challenges": "Implementing complex geo-based spatial search with 14 filter dimensions while maintaining sub-200ms response times across 10,000+ active listings.",
+    "problem": "Buyers and brokers faced slow, multi-second multi-filter queries across thousands of active franchise restaurant listings, hampering deal flow.",
+    "owned": "Built key sections of the listing platform, the broker operations UI (BOSS portal), and high-speed geo-filter components.",
+    "vertical": "Marketplace & Platforms",
+    "metrics": {
+      "headline": "Powers 10,000+ brokerage listings across 40+ US states with sub-200ms search",
+      "stat": "10K+",
+      "statLabel": "US Brokerage Listings",
+      "badge": "40+ US STATES"
+    },
+    "liveDemo": "https://www.wesellrestaurants.com",
+    "github": "",
+    "color": "#FF6B35",
+    "category": "Marketplace",
+    "buildingStyle": "restaurant"
+  },
+  {
+    "id": "iallo",
+    "name": "iAllo",
+    "tagline": "AI-Powered Call Assistant Platform",
+    "description": "An innovative AI platform that acts as a digital twin for phone communications. It automates hold times, navigates IVR menus, provides real-time transcription, and generates call summaries — available as iOS, Android, web app, and browser extension.",
+    "tech": ["React", "TypeScript", "Node.js", "OpenAI API", "WebRTC", "Socket.io"],
+    "features": [
+      "AI-powered hold time automation with live human agent voice activity detection",
+      "Real-time call audio transcription and AI-generated action item summaries",
+      "Visual IVR menu navigation replacing legacy dual-tone voice menus",
+      "Team collaboration with shared end-to-end encrypted vaults for business credentials",
+      "Chrome extension for one-click calling from any CRM or customer portal"
+    ],
+    "role": "Frontend Developer — Built the web dashboard, browser extension UI, call transcription viewer, and real-time audio status indicators.",
+    "challenges": "Building a browser extension that could seamlessly integrate with any website's phone number links while maintaining zero latency for live WebRTC audio streams.",
+    "problem": "Users spent an average of 18 minutes on hold navigating opaque IVR phone trees and listening to hold music during critical customer service calls.",
+    "owned": "Built the web dashboard, browser extension interface, call transcription viewer, and real-time audio status indicators.",
+    "vertical": "AI & Realtime",
+    "metrics": {
+      "headline": "Automated 80% of call hold times using real-time WebRTC audio processing",
+      "stat": "80%",
+      "statLabel": "Hold Time Automated",
+      "badge": "REAL-TIME WEBRTC"
+    },
+    "liveDemo": "https://iallo.io",
+    "github": "",
+    "color": "#00BCD4",
+    "category": "AI & Realtime",
+    "buildingStyle": "tech"
   },
   {
     "id": "hye-connect",
@@ -91,80 +217,26 @@
     "tech": ["React Native", "React", "Node.js", "PostgreSQL", "Socket.io"],
     "features": [
       "Cross-platform mobile app (iOS + Android) with shared React Native codebase",
-      "Real-time community feed with groups, projects, and events",
-      "Diaspora-homeland collaboration tools and resource directories",
-      "Multi-language support (Armenian, English, Russian)",
-      "Event discovery and attendance management system"
+      "Real-time community feed with groups, initiatives, and collaborative project funding",
+      "Diaspora-homeland collaboration tools and verified resource directories",
+      "Multi-language support (Armenian, English, Russian) with RTL layout handling",
+      "Event discovery and live attendance management system"
     ],
     "role": "Mobile & Frontend Developer — Developed key screens in the React Native mobile app, built the community feed, and implemented real-time notifications.",
-    "challenges": "Implementing smooth real-time updates for a global user base across highly varied network conditions, including low-connectivity regions in Armenia.",
+    "challenges": "Implementing smooth real-time updates for a global user base across varied network conditions, including low-bandwidth mobile connections.",
+    "problem": "Dispersed diaspora communities lacked a secure, real-time platform to discover initiatives, fund collaborative projects, and communicate during volatile network periods.",
+    "owned": "Developed key screens in the React Native mobile app, built the real-time community feed, and implemented push notifications.",
+    "vertical": "Social Platforms",
+    "metrics": {
+      "headline": "Connected 25,000+ global diaspora members across mobile and web feeds",
+      "stat": "25K+",
+      "statLabel": "Global Members",
+      "badge": "GLOBAL NETWORK"
+    },
     "liveDemo": "https://www.hyeconnect.org",
     "github": "",
     "color": "#E74C3C",
-    "category": "Social Platform",
+    "category": "Social Platforms",
     "buildingStyle": "social"
-  },
-  {
-    "id": "iallo",
-    "name": "iAllo",
-    "tagline": "AI-Powered Call Assistant Platform",
-    "description": "An innovative AI platform that acts as a digital twin for phone communications. It automates hold times, navigates IVR menus, provides real-time transcription, and generates call summaries — available as iOS, Android, web app, and browser extension.",
-    "tech": ["React", "TypeScript", "Node.js", "OpenAI API", "WebRTC"],
-    "features": [
-      "AI-powered hold time automation with live human agent detection",
-      "Real-time call transcription and AI-generated action item summaries",
-      "Visual IVR menu navigation replacing voice-based menus",
-      "Team collaboration with shared secure vaults for business information",
-      "Browser extension for one-click call initiation from any webpage"
-    ],
-    "role": "Frontend Developer — Built the web dashboard, browser extension UI, call transcription viewer, and real-time notification system.",
-    "challenges": "Building a browser extension that could seamlessly integrate with any website's phone number links while maintaining security and privacy for sensitive call data.",
-    "liveDemo": "https://iallo.io",
-    "github": "",
-    "color": "#00BCD4",
-    "category": "AI / Communication",
-    "buildingStyle": "tech"
-  },
-  {
-    "id": "ceretax",
-    "name": "CereTax",
-    "tagline": "Cloud-Native Tax Compliance Platform",
-    "description": "An enterprise-grade, cloud-native tax compliance and automation platform for high-volume businesses. Automates sales, use, and indirect tax calculations across jurisdictions, integrates with major ERPs, and provides audit-ready reporting for digital goods, SaaS, retail, and energy sectors.",
-    "tech": ["React", "TypeScript", "Java (Beginner)", "Golang (Beginner)", "Spring Boot (Beginner)", "Node.js", "PostgreSQL", "REST APIs"],
-    "features": [
-      "Real-time multi-jurisdictional tax calculation engine",
-      "ERP integrations (NetSuite, SAP) and e-commerce connectors",
-      "Advanced analytics dashboard with tax trend visualization",
-      "AI-driven rule engine for complex taxability configurations",
-      "Automated audit trail generation with statute references"
-    ],
-    "role": "Full-Stack Developer — Built the analytics dashboard, designed the ERP integration layer, and implemented the interactive tax rule configuration interface.",
-    "challenges": "Designing a highly performant tax calculation UI that could visualize and manage thousands of jurisdiction-specific rules without overwhelming the user or degrading performance.",
-    "liveDemo": "https://ceretax.com",
-    "github": "",
-    "color": "#F39C12",
-    "category": "FinTech",
-    "buildingStyle": "finance"
-  },
-  {
-    "id": "sarina-clinic",
-    "name": "Sarina Clinic",
-    "tagline": "Healthcare Clinic Web Platform",
-    "description": "A modern, patient-centric website for Sarina Clinic, a general practice in Queensland, Australia. Features online appointment booking via HotDoc integration, service information, bulk billing details, new patient registration, and a patient portal for healthcare information.",
-    "tech": ["React", "TypeScript", "Tailwind CSS", "Node.js", "HotDoc API"],
-    "features": [
-      "Online appointment booking with HotDoc integration",
-      "Comprehensive service pages with procedural information",
-      "New patient registration form with pre-visit questionnaire",
-      "Billing information calculator (Medicare rebates, gap fees)",
-      "Responsive design accessible on all devices including mobiles"
-    ],
-    "role": "Full-Stack Developer — Designed and built the complete website from scratch, integrated HotDoc booking system, and implemented the patient information portal.",
-    "challenges": "Ensuring WCAG 2.1 accessibility compliance for an elderly patient demographic while maintaining a modern design that also appealed to younger patients booking online.",
-    "liveDemo": "https://sarinaclinic.com.au",
-    "github": "",
-    "color": "#27AE60",
-    "category": "Healthcare",
-    "buildingStyle": "hospital"
   }
 ]

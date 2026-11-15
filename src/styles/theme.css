@@ -1,0 +1,169 @@
+/* ==========================================================================
+   DEADPOOL CINEMATIC DESIGN SYSTEM
+   Theme variables, Comic Accents, Halftones, and Katana Slash Effects
+   ========================================================================== */
+
+:root {
+  --dp-black: #000000;
+  --dp-dark: #0a0a0a;
+  --dp-surface: #111113;
+  --dp-card-bg: rgba(18, 18, 22, 0.75);
+  --dp-card-border: rgba(230, 36, 41, 0.25);
+  
+  --dp-red: #e62429;
+  --dp-dark-red: #8b0000;
+  --dp-glow-red: #ff2d2d;
+  --dp-neon-glow: rgba(255, 45, 45, 0.55);
+  
+  --dp-text: #ffffff;
+  --dp-text-muted: #9ca3af;
+  
+  --font-comic: 'Bangers', cursive;
+  --font-tech: 'Orbitron', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* Film Grain Overlay */
+.dp-film-grain {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Subtle Vignette with faint Crimson Ambient Tint */
+.dp-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 98;
+  background: radial-gradient(circle at center, transparent 40%, rgba(10, 2, 3, 0.45) 80%, rgba(0, 0, 0, 0.95) 100%);
+}
+
+/* Comic Halftone Dot Pattern */
+.dp-halftone {
+  background-image: radial-gradient(rgba(230, 36, 41, 0.18) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+.dp-halftone-dense {
+  background-image: radial-gradient(rgba(255, 45, 45, 0.22) 1.2px, transparent 1.2px);
+  background-size: 10px 10px;
+}
+
+/* Katana Slash Wipe Line & Mask */
+.dp-katana-slash {
+  position: relative;
+  overflow: hidden;
+}
+
+.dp-katana-slash::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -20%;
+  width: 140%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #ff2d2d 30%, #ffffff 50%, #e62429 70%, transparent 100%);
+  transform: rotate(-7deg) translateY(-50%);
+  box-shadow: 0 0 18px #ff2d2d, 0 0 35px #e62429;
+  pointer-events: none;
+}
+
+/* Neon Red Glow Borders & Hover */
+.dp-glow-box {
+  border: 1px solid var(--dp-card-border);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dp-glow-box:hover {
+  border-color: var(--dp-red);
+  box-shadow: 0 0 24px -2px var(--dp-neon-glow), inset 0 0 14px -4px rgba(230, 36, 41, 0.25);
+}
+
+.dp-neon-text {
+  text-shadow: 0 0 10px rgba(255, 45, 45, 0.75), 0 0 25px rgba(230, 36, 41, 0.5);
+}
+
+/* Comic Speech Bubble with 4th-Wall Breaking Styling */
+.dp-speech-bubble {
+  position: relative;
+  background: #ffffff;
+  color: #000000;
+  border: 3px solid #000000;
+  box-shadow: 5px 5px 0px #e62429;
+  font-family: var(--font-comic);
+  letter-spacing: 0.05em;
+  transform: rotate(-1.5deg);
+  transition: transform 0.2s ease;
+}
+
+.dp-speech-bubble:hover {
+  transform: rotate(0deg) scale(1.03);
+}
+
+.dp-speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 26px;
+  border-width: 14px 12px 0 0;
+  border-style: solid;
+  border-color: #000000 transparent transparent transparent;
+}
+
+.dp-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 28px;
+  border-width: 10px 8px 0 0;
+  border-style: solid;
+  border-color: #ffffff transparent transparent transparent;
+}
+
+/* Deadpool Mask Eye Shape Divider */
+.dp-mask-eye {
+  width: 48px;
+  height: 28px;
+  background: #e62429;
+  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+  transform: rotate(18deg);
+  position: relative;
+  display: inline-block;
+  box-shadow: 0 0 14px rgba(230, 36, 41, 0.6);
+}
+
+.dp-mask-eye::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 7px;
+  width: 32px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+}
+
+/* Katana Slash Transition Overlays */
+.dp-slash-panel-top {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4vw), 0 100%);
+}
+
+.dp-slash-panel-bottom {
+  clip-path: polygon(0 4vw, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Giant Parallax Outlined Watermark Text */
+.dp-watermark-text {
+  font-family: var(--font-tech);
+  font-weight: 900;
+  -webkit-text-stroke: 1.5px rgba(230, 36, 41, 0.12);
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  line-height: 0.85;
+}

@@ -10,9 +10,11 @@ import {
   Gamepad2,
   GitBranch,
   Layers,
+  Scale,
   ShieldCheck,
   Sparkles,
   X,
+  Zap,
 } from 'lucide-react';
 import type { ProjectUniverseItem } from '../../data/projectUniverseData';
 import { ProjectPreview3D } from '../ProjectPreview3D';
@@ -163,18 +165,38 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                   {/* Hero Intro Grid: Left Details + Right Interactive 3D Hologram Preview */}
                   <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
                     <div className="lg:col-span-7 space-y-3">
-                      {project.flagshipLabel && (
-                        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#FF3038]/40 bg-[#FF3038]/15 px-3 py-1 font-mono text-[10px] tracking-wider text-red-200">
-                          <Sparkles className="h-3 w-3 text-[#FF3038]" />
-                          {project.flagshipLabel}
-                        </div>
-                      )}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {project.flagshipLabel && (
+                          <div className="inline-flex items-center gap-1.5 rounded-full border border-[#FF3038]/40 bg-[#FF3038]/15 px-3 py-1 font-mono text-[10px] tracking-wider text-red-200">
+                            <Sparkles className="h-3 w-3 text-[#FF3038]" />
+                            {project.flagshipLabel}
+                          </div>
+                        )}
+                        {project.metrics && (
+                          <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/30 px-3 py-1 font-mono text-[10px] font-bold tracking-wider text-emerald-300">
+                            <Zap className="h-3 w-3 text-emerald-400" />
+                            {project.metrics.badge}
+                          </div>
+                        )}
+                      </div>
                       <h2 className="font-orbitron text-2xl font-black text-white sm:text-3xl lg:text-4xl">
                         {project.name}
                       </h2>
                       <p className="font-orbitron text-xs tracking-wider text-[#FF3038] sm:text-sm">
                         {project.tagline}
                       </p>
+
+                      {/* Measurable Proof Metric Banner (Item 2 Requirement) */}
+                      {project.metrics && (
+                        <div className="rounded-xl border border-[#FF3038]/30 bg-gradient-to-r from-red-950/40 via-black to-black p-3.5">
+                          <p className="font-mono text-[10px] uppercase tracking-wider text-red-400 font-bold">
+                            VERIFIED METRIC &amp; IMPACT:
+                          </p>
+                          <p className="mt-1 font-inter text-sm sm:text-base font-semibold text-white">
+                            {project.metrics.headline}
+                          </p>
+                        </div>
+                      )}
 
                       {/* Quick Action Buttons */}
                       <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -212,7 +234,7 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                     </div>
                   </div>
 
-                  {/* 01 PROJECT OVERVIEW & 02 MY CONTRIBUTION */}
+                  {/* 01 THE PROBLEM & 02 WHAT I OWNED */}
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <motion.section
                       custom={1}
@@ -222,10 +244,10 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                       className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"
                     >
                       <p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-[#FF3038]">
-                        01 // PROJECT OVERVIEW
+                        01 // THE PROBLEM &amp; CONTEXT
                       </p>
                       <p className="mt-2.5 text-sm leading-relaxed text-neutral-200">
-                        {project.caseStudy.overview}
+                        {project.problem || project.caseStudy.overview}
                       </p>
                     </motion.section>
 
@@ -237,11 +259,11 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                       className="rounded-2xl border border-red-500/20 bg-red-950/15 p-5"
                     >
                       <p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-[#FF3038]">
-                        02 // MY CONTRIBUTION
+                        02 // WHAT I OWNED
                       </p>
                       <div className="mt-2.5 flex items-center gap-2 text-xs font-bold text-white font-orbitron">
                         <ShieldCheck className="h-4 w-4 shrink-0 text-[#FF3038]" />
-                        {project.caseStudy.contributionRole}
+                        {project.owned || project.caseStudy.contributionRole}
                       </div>
                       <p className="mt-2 text-sm leading-relaxed text-neutral-300">
                         {project.caseStudy.challengeSolved}
@@ -345,7 +367,7 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                     </div>
                   </motion.section>
 
-                  {/* 06 PROJECT LINKS & 3D WORLD ACTION */}
+                  {/* 06 KEY ARCHITECTURAL DECISIONS & TRADE-OFFS (Item 2 Requirement) */}
                   <motion.section
                     custom={6}
                     initial="hidden"
@@ -353,8 +375,59 @@ export const CinematicProjectModal: React.FC<CinematicProjectModalProps> = ({
                     variants={sectionStagger}
                     className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"
                   >
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-[#FF3038]">
+                        06 // KEY DECISIONS &amp; ENGINEERING TRADE-OFFS
+                      </p>
+                      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] text-neutral-400">
+                        <Scale className="h-3 w-3 text-red-400" />
+                        FULL-STACK TRADE-OFF RIGOR
+                      </span>
+                    </div>
+
+                    <div className="mt-3.5 grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+                      {project.caseStudy.keyDecisions.map((kd, idx) => (
+                        <div
+                          key={kd.title || idx}
+                          className="rounded-xl border border-white/10 bg-black/60 p-4 flex flex-col justify-between"
+                        >
+                          <div>
+                            <h5 className="font-orbitron text-xs font-bold text-white leading-snug">
+                              {kd.title}
+                            </h5>
+                            <div className="mt-2.5 rounded-lg border border-emerald-500/30 bg-emerald-950/20 p-2.5">
+                              <p className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                                Decision Made:
+                              </p>
+                              <p className="mt-1 text-xs text-neutral-200 leading-relaxed">
+                                {kd.decision}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-2.5 rounded-lg border border-amber-500/30 bg-amber-950/20 p-2.5">
+                            <p className="text-[10px] font-mono font-bold text-amber-300 uppercase tracking-wider">
+                              Engineering Trade-Off:
+                            </p>
+                            <p className="mt-1 text-xs text-neutral-300 leading-relaxed">
+                              {kd.tradeOff}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.section>
+
+                  {/* 07 PROJECT LINKS & 3D WORLD ACTION */}
+                  <motion.section
+                    custom={7}
+                    initial="hidden"
+                    animate="visible"
+                    variants={sectionStagger}
+                    className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"
+                  >
                     <p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-[#FF3038]">
-                      06 // PROJECT LINKS & SIMULATION
+                      07 // PROJECT LINKS &amp; SIMULATION
                     </p>
                     <div className="mt-3.5 flex flex-wrap items-center gap-3">
                       {project.liveDemo && (

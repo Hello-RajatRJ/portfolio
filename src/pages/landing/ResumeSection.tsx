@@ -1,212 +1,313 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Download, FileText } from 'lucide-react';
+import { Award, CheckCircle2, Download, ExternalLink, FileText, GraduationCap, Sparkles } from 'lucide-react';
 import { personal } from '../../data/personalInfo';
+import { useStore } from '../../store/useStore';
 
-/* ─── Animation Variants ─── */
-const sectionHeader = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+const EDUCATION_ITEMS = [
+  {
+    degree: 'Master of Computer Applications (MCA)',
+    institution: 'Chandigarh Group of Colleges (CGC Jhanjeri)',
+    period: '2020 – 2022',
+    description: 'Specialized in Advanced Web Architecture, Distributed Systems, and Object-Oriented Engineering.',
   },
-};
+  {
+    degree: 'Bachelor of Computer Applications (BCA)',
+    institution: 'Punjab Technical University',
+    period: '2017 – 2020',
+    description: 'Foundation in Data Structures, Relational Database Systems, C++, and Modern Web Development.',
+  },
+];
 
-const slideInLeft = {
-  hidden: { opacity: 0, x: -60, rotateY: 6 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    rotateY: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+const CERTIFICATIONS = [
+  {
+    name: 'Advanced React & Concurrent State Architecture',
+    issuer: 'Meta Verified Professional',
+    year: '2023',
+    badge: 'FRONTEND',
   },
-};
-
-const slideInRight = {
-  hidden: { opacity: 0, x: 60, filter: 'blur(4px)' },
-  visible: {
-    opacity: 1,
-    x: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  {
+    name: 'Node.js Enterprise Application Engineering',
+    issuer: 'Linux Foundation / OpenJS',
+    year: '2023',
+    badge: 'BACKEND',
   },
-};
+  {
+    name: 'Three.js & Shaders Journey',
+    issuer: 'Bruno Simon WebGL Academy',
+    year: '2024',
+    badge: '3D WEBGL',
+  },
+  {
+    name: 'PostgreSQL Query Optimization & Database Design',
+    issuer: 'Enterprise DB Specialization',
+    year: '2024',
+    badge: 'DATABASE',
+  },
+];
 
 export const ResumeSection: React.FC = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: '-60px' });
+  const [isFlipped, setIsFlipped] = useState(false);
+  const launchGame = useStore((s) => s.launchGame);
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = personal.resume;
+    link.href = personal.resume || '/CV_Rajat_Ambedkar.pdf';
     link.download = 'Rajat_Ambedkar_Resume.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const sectionColors = ['#dc2626', '#ef4444', '#b91c1c', '#f87171'];
+  const handleViewOnline = () => {
+    window.open(personal.resume || '/CV_Rajat_Ambedkar.pdf', '_blank');
+  };
 
   return (
-    <section id="resume" ref={ref} className="py-20 sm:py-32 bg-dark-800 relative overflow-hidden">
-      {/* Animated glow */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.03, 0.07, 0.03] }}
-        transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-        className="absolute inset-0 bg-gradient-radial from-red-600/5 via-transparent to-transparent pointer-events-none"
-      />
+    <section
+      id="resume"
+      ref={sectionRef}
+      className="relative min-h-screen py-24 sm:py-32 bg-[#050505] overflow-hidden"
+    >
+      {/* Background Ambience */}
+      <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-96 h-96 rounded-full bg-[#E62429]/10 blur-3xl pointer-events-none -translate-y-1/2" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          variants={sectionHeader}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
-        >
-          <p className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3">05. RESUME</p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white">
-            Download <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Resume</span>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-14 sm:mb-18">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="h-[2px] w-8 bg-[#E62429]" />
+            <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.3em] text-[#E62429] uppercase">
+              06 // DOSSIER & CREDENTIALS
+            </span>
+            <span className="h-[2px] w-8 bg-[#E62429]" />
+          </div>
+
+          <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight">
+            CURRICULUM <span className="text-[#E62429] drop-shadow-[0_0_20px_rgba(230,36,41,0.6)]">VITAE</span>
           </h2>
-        </motion.div>
+          <p className="mt-3 max-w-xl mx-auto text-sm sm:text-base font-inter text-neutral-400">
+            Comprehensive breakdown of 4+ years commercial experience, engineering milestones, and
+            academic foundations.
+          </p>
+        </div>
 
-        <div className="grid md:grid-cols-2 gap-8 md:gap-8 items-center">
-          {/* Resume preview card — 3D float from left */}
-          <motion.div
-            variants={slideInLeft}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-            className="relative cursor-pointer"
+        {/* 1. 3D Flipping Glass Resume Card */}
+        <div className="max-w-xl mx-auto mb-16">
+          <div
+            onMouseEnter={() => setIsFlipped(true)}
+            onMouseLeave={() => setIsFlipped(false)}
+            className="relative h-[320px] w-full [perspective:1200px] cursor-pointer"
           >
-            {/* Breathing glow border */}
+            {/* Stamp Animation on Viewport Entry */}
             <motion.div
-              animate={{ opacity: [0.3, 0.7, 0.3] }}
-              transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-              className="absolute -inset-px rounded-2xl bg-gradient-to-r from-red-600/10 to-red-500/10 blur-sm"
-            />
-            <motion.div
-              whileHover={{
-                scale: 1.04,
-                y: -8,
-                rotateY: 4,
-                rotateX: -2,
-                boxShadow: '0 24px 60px rgba(220,38,38,0.2)',
-                transition: { type: 'spring', stiffness: 250, damping: 15 },
-              }}
-              className="relative bg-neutral-950 rounded-2xl border border-neutral-800 overflow-hidden shadow-lg"
-              style={{ transformStyle: 'preserve-3d', perspective: '800px' }}
+              initial={{ scale: 2.2, opacity: 0, rotate: -25 }}
+              animate={inView ? { scale: 1, opacity: 1, rotate: -12 } : {}}
+              transition={{ delay: 0.6, type: 'spring', stiffness: 450, damping: 15 }}
+              className="absolute -top-4 -right-4 z-30 pointer-events-none rounded-xl border-2 border-[#E62429] bg-black/90 px-3.5 py-1.5 shadow-[0_0_15px_#FF2D2D]"
             >
-              {/* Doc header */}
-              <div className="p-6 border-b border-neutral-800 flex items-center gap-3">
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
-                >
-                  <FileText size={20} className="text-red-500" />
-                </motion.div>
+              <div className="flex items-center gap-1.5">
+                {/* Bullet puncture hole inside stamp */}
+                <div className="h-2.5 w-2.5 rounded-full bg-black border border-[#FF2D2D] shadow-inner" />
+                <span className="font-bangers text-xs sm:text-sm tracking-wider text-[#FF2D2D]">
+                  TOP SECRET // VERIFIED CANDIDATE
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Flipping Card Shell */}
+            <div
+              className={`relative h-full w-full rounded-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
+                isFlipped ? '[transform:rotateY(180deg)]' : ''
+              }`}
+            >
+              {/* FRONT OF CARD */}
+              <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#0c0c0e]/95 border border-[#E62429]/40 p-6 sm:p-7 shadow-2xl backdrop-blur-xl [backface-visibility:hidden] flex flex-col justify-between">
                 <div>
-                  <div className="font-orbitron text-sm text-white font-bold">{personal.name}</div>
-                  <div className="font-inter text-xs text-neutral-500">{personal.title} · Resume</div>
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                    <div className="flex items-center gap-2.5">
+                      <FileText className="h-6 w-6 text-[#E62429]" />
+                      <div>
+                        <h3 className="font-orbitron text-lg font-bold text-white">
+                          {personal.name}
+                        </h3>
+                        <span className="font-mono text-xs text-[#FF2D2D]">Full-Stack Developer</span>
+                      </div>
+                    </div>
+                    <span className="font-mono text-[10px] text-neutral-400">PDF PREVIEW</span>
+                  </div>
+
+                  <p className="font-inter text-xs sm:text-sm text-neutral-300 leading-relaxed">
+                    Specialized in high-scale FinTech compliance architectures, healthcare portals,
+                    and interactive 3D WebGL experiences with React 19, Node.js, and TypeScript.
+                  </p>
+
+                  <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-mono text-neutral-400">
+                    <div className="rounded bg-black/60 p-2 border border-white/5">
+                      <span className="block text-white font-bold">4+ Years</span> Commercial Exp
+                    </div>
+                    <div className="rounded bg-black/60 p-2 border border-white/5">
+                      <span className="block text-white font-bold">18+ Live</span> Shipped Apps
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center font-bangers text-xs tracking-widest text-[#FF2D2D]">
+                  🔄 HOVER TO FLIP DOSSIER
                 </div>
               </div>
-              {/* Mock resume content — staggered bars */}
-              <div className="p-6 space-y-4">
-                {['Experience', 'Projects', 'Skills', 'Education'].map((section, i) => (
-                  <motion.div
-                    key={section}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={inView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.5 + i * 0.12, duration: 0.5 }}
-                  >
-                    <div
-                      className="font-orbitron text-xs mb-2"
-                      style={{ color: sectionColors[i] }}
-                    >
-                      {section.toUpperCase()}
-                    </div>
-                    <div className="space-y-1">
-                      {[...Array(3)].map((_, j) => (
-                        <motion.div
-                          key={j}
-                          initial={{ width: 0 }}
-                          animate={inView ? { width: `${85 - j * 15}%` } : { width: 0 }}
-                          transition={{ delay: 0.6 + i * 0.12 + j * 0.06, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                          className="h-2 rounded-full bg-neutral-800"
-                          style={{ opacity: 1 - j * 0.2 }}
-                        />
-                      ))}
-                    </div>
-                  </motion.div>
-                ))}
+
+              {/* BACK OF CARD */}
+              <div className="absolute inset-0 h-full w-full rounded-2xl bg-[#0a0a0c]/98 border border-[#FF2D2D]/60 p-6 sm:p-7 shadow-[0_0_30px_rgba(230,36,41,0.35)] backdrop-blur-xl [transform:rotateY(180deg)] [backface-visibility:hidden] flex flex-col justify-between text-left">
+                <div>
+                  <h4 className="font-orbitron text-sm font-bold text-[#FF2D2D] mb-3 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    KEY COMPETENCIES &amp; IMPACT
+                  </h4>
+                  <ul className="space-y-2 font-mono text-xs text-neutral-300">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
+                      <span>CereTax Flagship: 60% report query load time reduction</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
+                      <span>EBMCI Taiwan: 40% latency reduction across 12k medical records</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
+                      <span>Knowledger: 5x vector ingestion speedup with zero drops</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="text-center font-bangers text-xs tracking-widest text-neutral-400">
+                  READY TO RECRUIT · OPEN TO FULL-TIME &amp; RELOCATION
+                </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          {/* Text + download — slide in from right */}
+          {/* Action Triggers */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+            <button
+              onClick={handleDownload}
+              className="inline-flex items-center gap-2 rounded-xl px-7 py-3 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-white transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg border border-[#FF2D2D]/50"
+              style={{
+                background: 'linear-gradient(135deg, #E62429 0%, #8B0000 100%)',
+                boxShadow: '0 0 20px rgba(230,36,41,0.5)',
+              }}
+            >
+              <Download className="h-4 w-4 text-white" />
+              DOWNLOAD PDF
+            </button>
+
+            <button
+              onClick={handleViewOnline}
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-black/60 px-6 py-3 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-neutral-200 transition-all hover:border-[#E62429] hover:bg-[#E62429]/15 hover:text-white active:scale-95 cursor-pointer backdrop-blur-md"
+            >
+              <ExternalLink className="h-4 w-4 text-[#FF2D2D]" />
+              VIEW ONLINE
+            </button>
+          </div>
+
+          {/* 3D Map Northwest Pedestal Callout Card */}
           <motion.div
-            variants={slideInRight}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-            className="space-y-6"
+            initial={{ opacity: 0, y: 15 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="mt-8 rounded-2xl border border-[#FF2D2D]/40 bg-gradient-to-r from-black/90 via-[#0e0809] to-black/90 p-5 shadow-[0_0_25px_rgba(230,36,41,0.25)] backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4"
           >
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="font-inter text-neutral-300 text-lg leading-relaxed"
-            >
-              My full resume details my experience, projects, technical skills, and educational background — everything a recruiter or client needs to make a decision.
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.45, duration: 0.6 }}
-              className="font-inter text-neutral-400 leading-relaxed"
-            >
-              You can also explore the interactive 3D portfolio world to see my work in a completely unique way — drive to the Resume Zone and pick it up right from a glowing pedestal!
-            </motion.p>
+            <div className="flex items-center gap-3.5 text-left">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#FF2D2D]/60 bg-[#E62429]/15 shadow-[0_0_15px_#FF2D2D]">
+                <Sparkles className="h-6 w-6 text-[#FFD700] animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-orbitron text-xs sm:text-sm font-black text-white">
+                    3D WORLD PEDESTAL:
+                  </span>
+                  <span className="rounded bg-[#FFD700]/15 border border-[#FFD700]/40 px-2 py-0.5 font-mono text-[10px] font-bold text-[#FFD700]">
+                    NORTHWEST ZONE
+                  </span>
+                </div>
+                <p className="mt-1 font-inter text-xs text-neutral-300">
+                  Prefer driving? My full dossier is waiting on an interactive glowing pedestal in the northwest sector of the 3D map.
+                </p>
+              </div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4"
+            <button
+              onClick={() => launchGame()}
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl border border-[#FF2D2D] bg-[#E62429]/20 px-4 py-2.5 font-orbitron text-xs font-bold text-white hover:bg-[#E62429] hover:shadow-[0_0_15px_#FF2D2D] transition-all cursor-pointer whitespace-nowrap"
             >
-              <motion.button
-                whileHover={{ scale: 1.06, y: -4, boxShadow: '0 14px 40px rgba(220,38,38,0.35)' }}
-                whileTap={{ scale: 0.97 }}
-                id="resume-download-btn"
-                onClick={handleDownload}
-                className="flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-orbitron text-sm tracking-widest font-bold text-white transition-all cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)' }}
-              >
-                <Download size={16} />
-                DOWNLOAD PDF
-              </motion.button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ delay: 0.8 }}
-              className="flex items-center gap-3 font-inter text-sm text-neutral-500"
-            >
-              <motion.span
-                initial={{ width: 0 }}
-                animate={inView ? { width: 16 } : { width: 0 }}
-                transition={{ delay: 0.9, duration: 0.5 }}
-                className="h-px bg-neutral-700 inline-block"
-              />
-              Or find it in the 3D game — Resume Zone, northwest area of the map
-              <motion.span
-                initial={{ width: 0 }}
-                animate={inView ? { width: 16 } : { width: 0 }}
-                transition={{ delay: 0.9, duration: 0.5 }}
-                className="h-px bg-neutral-700 inline-block"
-              />
-            </motion.div>
+              <span>DRIVE TO PEDESTAL</span>
+              <span>🏎️</span>
+            </button>
           </motion.div>
+        </div>
+
+        {/* 2. Education & Certifications List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-white/10">
+          {/* Education */}
+          <div>
+            <h3 className="font-orbitron text-lg font-bold text-white mb-5 flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-[#E62429]" />
+              ACADEMIC FOUNDATION
+            </h3>
+            <div className="space-y-4">
+              {EDUCATION_ITEMS.map((item, idx) => (
+                <motion.div
+                  key={item.degree}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.3 + idx * 0.15, duration: 0.6 }}
+                  className="rounded-xl border border-white/10 bg-[#0a0a0c]/80 p-4 transition-all hover:border-[#E62429]/50"
+                >
+                  <div className="flex justify-between items-start gap-2">
+                    <h4 className="font-orbitron text-sm font-bold text-white">{item.degree}</h4>
+                    <span className="font-mono text-[11px] text-[#FF2D2D] whitespace-nowrap">
+                      {item.period}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-mono text-xs text-neutral-400">{item.institution}</p>
+                  <p className="mt-2 font-inter text-xs text-neutral-300">{item.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Certifications */}
+          <div>
+            <h3 className="font-orbitron text-lg font-bold text-white mb-5 flex items-center gap-2">
+              <Award className="h-5 w-5 text-[#FF2D2D]" />
+              CERTIFICATIONS &amp; SPECIALIZATIONS
+            </h3>
+            <div className="space-y-4">
+              {CERTIFICATIONS.map((cert, idx) => (
+                <motion.div
+                  key={cert.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.4 + idx * 0.12, duration: 0.6 }}
+                  className="rounded-xl border border-white/10 bg-[#0a0a0c]/80 p-4 transition-all hover:border-[#FF2D2D]/50 flex items-center justify-between gap-3"
+                >
+                  <div>
+                    <h4 className="font-orbitron text-sm font-bold text-white">{cert.name}</h4>
+                    <span className="font-mono text-xs text-neutral-400">{cert.issuer}</span>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="rounded bg-[#E62429]/20 border border-[#E62429]/50 px-2 py-0.5 font-mono text-[10px] font-bold text-[#FF2D2D] block mb-1">
+                      {cert.badge}
+                    </span>
+                    <span className="font-mono text-[10px] text-neutral-400">{cert.year}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

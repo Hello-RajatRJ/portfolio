@@ -1,3 +1,10 @@
+export interface ProjectProofMetrics {
+  headline: string;
+  stat: string;
+  statLabel: string;
+  badge: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -11,6 +18,10 @@ export interface Project {
   challenges: string;
   color: string;
   category: string;
+  vertical?: string;
+  problem?: string;
+  owned?: string;
+  metrics?: ProjectProofMetrics;
   buildingStyle: string;
 }
 

@@ -9,11 +9,11 @@ interface SEOProps {
 }
 
 export const SEO: React.FC<SEOProps> = ({
-  title = 'Rajat Ambedkar | Senior Full-Stack Developer & UI Architect Portfolio',
-  description = 'Official portfolio of Rajat Ambedkar, Senior Full-Stack Developer & UI Architect specializing in React, TypeScript, Node.js, Three.js 3D WebGL, CereTax, and high-performance web applications.',
-  keywords = 'Rajat Ambedkar, Rajat Ambedkar Portfolio, Rajat Ambedkar Developer, Rajat Ambedkar Full Stack Engineer, React Developer, Three.js Developer, TypeScript Architect, CereTax Developer',
+  title = 'Rajat Ambedkar | Full-Stack Developer Portfolio',
+  description = 'Full-stack developer building React/Node products for FinTech, Healthcare, and EdTech teams. 4 years of experience delivering high-performance web applications, interactive 3D WebGL, and scalable APIs.',
+  keywords = 'Rajat Ambedkar, Rajat Ambedkar Portfolio, Rajat Ambedkar Developer, Full Stack Developer, React Developer, Node.js Developer, TypeScript Developer, CereTax Developer, FinTech Developer, Healthcare Web Development',
   author = 'Rajat Ambedkar',
-  url = 'https://github.com/Hello-RajatRJ/portfolio',
+  url = 'https://rj-ambedkar-portfolio.netlify.app/',
 }) => {
   useEffect(() => {
     // 1. Title
@@ -35,17 +35,23 @@ export const SEO: React.FC<SEOProps> = ({
     setMeta('keywords', keywords);
     setMeta('author', author);
 
+    const ogImage = 'https://rj-ambedkar-portfolio.netlify.app/og-image.png';
+
     // Open Graph
     setMeta('og:title', title, true);
     setMeta('og:description', description, true);
     setMeta('og:type', 'website', true);
     setMeta('og:site_name', 'Rajat Ambedkar Portfolio', true);
     setMeta('og:url', url, true);
+    setMeta('og:image', ogImage, true);
+    setMeta('og:image:width', '1200', true);
+    setMeta('og:image:height', '630', true);
 
     // Twitter
     setMeta('twitter:card', 'summary_large_image');
     setMeta('twitter:title', title);
     setMeta('twitter:description', description);
+    setMeta('twitter:image', ogImage);
 
     // 3. Structured Data JSON-LD
     let scriptTag = document.getElementById('json-ld-schema');
@@ -64,7 +70,7 @@ export const SEO: React.FC<SEOProps> = ({
           '@id': `${url}#person`,
           name: 'Rajat Ambedkar',
           alternateName: ['Rajat', 'Rajat Ambedkar Developer'],
-          jobTitle: 'Senior Full-Stack Developer & UI Architect',
+          jobTitle: 'Full-Stack Developer',
           description,
           url,
           sameAs: [
@@ -76,12 +82,13 @@ export const SEO: React.FC<SEOProps> = ({
             'React.js',
             'TypeScript',
             'Node.js',
+            'PostgreSQL',
             'Three.js / 3D WebGL',
             'Spring Boot',
             'Golang',
             'Java',
             'CereTax Platform',
-            'UI Architecture',
+            'API Architecture',
           ],
         },
         {

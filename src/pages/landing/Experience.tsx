@@ -1,181 +1,181 @@
-import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { Briefcase, Calendar } from 'lucide-react';
 import { experience } from '../../data/personalInfo';
 
-/* ─── Animation Variants ─── */
-const sectionHeader = {
-  hidden: { opacity: 0, y: 50, filter: 'blur(6px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
-};
+interface ExperienceCardProps {
+  exp: (typeof experience)[0];
+  index: number;
+  inView: boolean;
+}
 
-const cardSlideLeft = {
-  hidden: { opacity: 0, x: -80, rotateY: 5 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    rotateY: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
-};
+const ExperienceCard: React.FC<ExperienceCardProps> = ({ exp, index, inView }) => {
+  const isEven = index % 2 === 0;
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
 
-const cardSlideRight = {
-  hidden: { opacity: 0, x: 80, rotateY: -5 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    rotateY: 0,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ rx: -y * 8, ry: x * 8 });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ rx: 0, ry: 0 });
+  };
+
+  return (
+    <div
+      className={`relative flex flex-col md:flex-row items-center mb-12 sm:mb-16 ${
+        isEven ? 'md:flex-row-reverse' : ''
+      }`}
+    >
+      {/* 1. Center Glowing Timeline Node */}
+      <div className="absolute left-4 md:left-1/2 -translate-x-1/2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-black border-2 border-[#E62429] shadow-[0_0_16px_#FF2D2D]">
+        <div className="h-2.5 w-2.5 rounded-full bg-[#FF2D2D] animate-ping" />
+      </div>
+
+      {/* 2. Interactive 3D Card with Slash Reveal */}
+      <motion.div
+        initial={{ opacity: 0, x: isEven ? 80 : -80 }}
+        animate={inView ? { opacity: 1, x: 0 } : {}}
+        transition={{
+          duration: 0.75,
+          delay: 0.15 + index * 0.12,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+          transition: 'transform 0.15s ease-out',
+        }}
+        className={`ml-12 md:ml-0 w-full md:w-[calc(50%-2.5rem)] dp-glow-box group relative rounded-2xl bg-[#0a0a0c]/90 p-5 sm:p-7 backdrop-blur-xl border border-[#E62429]/30 shadow-2xl`}
+      >
+        {/* Subtle Katana Slash Top Line */}
+        <div className="absolute top-0 left-6 right-6 h-[1.5px] bg-gradient-to-r from-transparent via-[#FF2D2D]/60 to-transparent" />
+
+        {/* Header: Company & Dates */}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 mb-4">
+          <div>
+            <span className="font-mono text-xs font-bold text-[#FF2D2D] tracking-wider uppercase flex items-center gap-1.5">
+              <Briefcase className="h-3.5 w-3.5" />
+              {exp.company}
+            </span>
+            <h3 className="mt-1 font-orbitron text-base sm:text-lg font-black text-white group-hover:text-[#FF2D2D] transition-colors">
+              {exp.role}
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-1.5 rounded-full bg-white/[0.04] border border-white/10 px-3 py-1 font-mono text-[10px] text-neutral-300">
+            <Calendar className="h-3 w-3 text-[#E62429]" />
+            <span>{exp.period}</span>
+          </div>
+        </div>
+
+        {/* Bullet Achievements */}
+        <ul className="space-y-2 text-xs sm:text-sm text-neutral-300">
+          {exp.highlights?.map((hl, i) => (
+            <li key={i} className="flex items-start gap-2">
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#E62429]" />
+              <span className="leading-relaxed">{hl}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Tech Stack Chips */}
+        <div className="mt-5 flex flex-wrap gap-1.5 pt-3 border-t border-white/5">
+          {exp.tech?.map((tech) => (
+            <span
+              key={tech}
+              className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 font-mono text-[10px] text-neutral-300 transition-colors group-hover:border-[#E62429]/50 group-hover:text-white"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 export const Experience: React.FC = () => {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: '-60px' });
 
-  // Map experience colors to red shades
-  const redShades = ['#dc2626', '#ef4444', '#b91c1c', '#f87171', '#991b1b'];
-  const getRedColor = (index: number) => redShades[index % redShades.length];
+  // Scrubbed Glowing Red Line that draws itself down on scroll
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start center', 'end center'],
+  });
+  const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
   return (
-    <section id="experience" ref={ref} className="py-20 sm:py-32 bg-dark-800 relative overflow-hidden">
-      {/* Animated glow */}
-      <motion.div
-        animate={{ x: [0, 20, 0], scale: [1, 1.1, 1] }}
-        transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-        className="absolute bottom-0 left-0 w-80 h-80 bg-red-600/5 rounded-full blur-3xl pointer-events-none"
-      />
+    <section
+      id="experience"
+      ref={sectionRef}
+      className="relative min-h-screen py-24 sm:py-32 bg-[#050505] overflow-hidden"
+    >
+      {/* Background Ambience */}
+      <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
+      <div className="absolute top-1/2 left-0 w-80 h-80 rounded-full bg-[#E62429]/10 blur-3xl pointer-events-none -translate-y-1/2" />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          variants={sectionHeader}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-16"
-        >
-          <p className="font-orbitron text-red-500 text-sm tracking-[0.3em] mb-3">03. EXPERIENCE</p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white">
-            Work <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">History</span>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="h-[2px] w-8 bg-[#E62429]" />
+            <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.3em] text-[#E62429] uppercase">
+              03 // BATTLE LOGS
+            </span>
+            <span className="h-[2px] w-8 bg-[#E62429]" />
+          </div>
+
+          <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight">
+            WORK <span className="text-[#E62429] drop-shadow-[0_0_20px_rgba(230,36,41,0.6)]">HISTORY</span>
           </h2>
-        </motion.div>
+          <p className="mt-3 max-w-xl mx-auto text-sm sm:text-base font-inter text-neutral-400">
+            Proven commercial track record architecting high-availability platforms, tax compliance
+            engines, and fluid reactive UI.
+          </p>
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line — draw down animation */}
+          {/* Animated 4+ Years Commercial Badge */}
           <motion.div
-            initial={{ scaleY: 0 }}
-            animate={inView ? { scaleY: 1 } : {}}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute left-0 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-red-600/50 via-red-500/30 to-transparent origin-top"
-            style={{ transform: 'translateX(-50%)' }}
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={inView ? { scale: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-6 inline-flex items-center gap-3 rounded-full border border-[#FF2D2D]/60 bg-black/90 px-5 py-2 shadow-[0_0_25px_rgba(230,36,41,0.45)] backdrop-blur-md"
+          >
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF2D2D] opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#E62429]" />
+            </span>
+            <span className="font-orbitron text-xs sm:text-sm font-black tracking-wider text-white">
+              <span className="text-[#FF2D2D]">4+ YEARS</span> COMMERCIAL TRACK RECORD
+            </span>
+            <span className="rounded bg-[#E62429]/25 px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#FF2D2D] border border-[#E62429]/50">
+              COMMERCIAL BATTLES
+            </span>
+          </motion.div>
+        </div>
+
+        {/* Timeline Container */}
+        <div className="relative">
+          {/* Timeline Track (Muted Grey) */}
+          <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2 bg-neutral-900" />
+
+          {/* Animated Glowing Red Line Drawn on Scroll */}
+          <motion.div
+            style={{ height: lineHeight }}
+            className="absolute left-4 md:left-1/2 top-0 w-[2px] -translate-x-1/2 bg-gradient-to-b from-[#8B0000] via-[#E62429] to-[#FF2D2D] shadow-[0_0_12px_#FF2D2D] origin-top"
           />
 
-          {experience.map((exp, i) => {
-            const accentColor = getRedColor(i);
-            return (
-              <motion.div
-                key={exp.id}
-                initial="hidden"
-                animate={inView ? 'visible' : 'hidden'}
-                variants={i % 2 === 0 ? cardSlideLeft : cardSlideRight}
-                transition={{ delay: i * 0.25 + 0.3 }}
-                className={`relative flex flex-col md:flex-row gap-4 md:gap-8 mb-10 md:mb-16 ${
-                  i % 2 === 0 ? 'md:flex-row-reverse' : ''
-                }`}
-              >
-                {/* Content card */}
-                <div className="flex-1 md:max-w-[calc(50%-2rem)]">
-                  <motion.div
-                    whileHover={{
-                      scale: 1.03,
-                      y: -6,
-                      boxShadow: `0 20px 50px ${accentColor}20`,
-                      borderColor: accentColor,
-                      transition: { type: 'spring', stiffness: 300, damping: 15 },
-                    }}
-                    className="bg-neutral-950 border border-neutral-800 hover:border-red-700 rounded-2xl p-6 transition-colors duration-300 shadow-sm group cursor-default"
-                    style={{ '--accent': accentColor } as React.CSSProperties}
-                  >
-                    {/* Role & period */}
-                    <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-                      <div>
-                        <h3 className="font-orbitron text-white font-bold text-lg">{exp.role}</h3>
-                        <p className="font-inter text-sm mt-0.5" style={{ color: accentColor }}>{exp.company}</p>
-                      </div>
-                      <span className="font-orbitron text-xs text-neutral-500 border border-neutral-700 rounded-full px-3 py-1 bg-neutral-900">
-                        {exp.period}
-                      </span>
-                    </div>
-
-                    <p className="font-inter text-neutral-400 text-sm leading-relaxed mb-4">{exp.description}</p>
-
-                    {/* Highlights — staggered reveal */}
-                    <motion.ul
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06, delayChildren: i * 0.2 + 0.5 } } }}
-                      initial="hidden"
-                      animate={inView ? 'visible' : 'hidden'}
-                      className="space-y-2 mb-4"
-                    >
-                      {exp.highlights.map((h, hi) => (
-                        <motion.li
-                          key={hi}
-                          variants={{
-                            hidden: { opacity: 0, x: -15 },
-                            visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
-                          }}
-                          className="flex items-start gap-2 font-inter text-sm text-neutral-400"
-                        >
-                          <span className="mt-1 shrink-0" style={{ color: accentColor }}>◆</span>
-                          {h}
-                        </motion.li>
-                      ))}
-                    </motion.ul>
-
-                    {/* Tech tags — stagger pop */}
-                    <motion.div
-                      variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.04, delayChildren: i * 0.2 + 0.7 } } }}
-                      initial="hidden"
-                      animate={inView ? 'visible' : 'hidden'}
-                      className="flex flex-wrap gap-2"
-                    >
-                      {exp.tech.map((t) => (
-                        <motion.span
-                          key={t}
-                          variants={{
-                            hidden: { opacity: 0, scale: 0.7 },
-                            visible: { opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 350, damping: 15 } },
-                          }}
-                          whileHover={{ scale: 1.1, y: -2 }}
-                          className="font-orbitron text-xs px-2 py-0.5 rounded-md border"
-                          style={{ borderColor: `${accentColor}40`, color: accentColor, background: `${accentColor}10` }}
-                        >
-                          {t}
-                        </motion.span>
-                      ))}
-                    </motion.div>
-                  </motion.div>
-                </div>
-
-                {/* Timeline dot (desktop) — pulsing glow */}
-                <div className="hidden md:flex items-start justify-center w-16 shrink-0">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={inView ? { scale: 1 } : {}}
-                    transition={{ delay: i * 0.25 + 0.4, type: 'spring', stiffness: 300, damping: 12 }}
-                    className="w-4 h-4 rounded-full mt-6 border-2 border-black pulse-glow-node"
-                    style={{ background: accentColor, boxShadow: `0 0 16px ${accentColor}` }}
-                  />
-                </div>
-
-                {/* Spacer for alternating layout */}
-                <div className="hidden md:block flex-1" />
-              </motion.div>
-            );
-          })}
+          {/* Experience Cards */}
+          <div className="relative z-10 pt-4">
+            {experience.map((exp, idx) => (
+              <ExperienceCard key={exp.id || idx} exp={exp} index={idx} inView={inView} />
+            ))}
+          </div>
         </div>
       </div>
     </section>

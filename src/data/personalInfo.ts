@@ -6,8 +6,9 @@ export const personal = {
   name: 'Rajat Ambedkar',
   firstName: 'Rajat',
   title: 'Full-Stack Developer',
-  tagline: 'Building immersive web experiences that push boundaries',
-  bio: "I'm a passionate full-stack developer with expertise in modern web technologies, 3D graphics, and interactive user experiences. I love turning complex problems into elegant, performant solutions — from real-time data dashboards to immersive 3D worlds.",
+  tagline: 'Full-stack developer building React & Node.js products for FinTech, Healthcare, and EdTech teams.',
+  valueProposition: 'Full-stack developer building React/Node products for FinTech, Healthcare, and EdTech teams.',
+  bio: "I'm a full-stack developer with 4 years of experience delivering robust web applications, enterprise dashboards, and scalable APIs for international teams. I specialize in React, TypeScript, Node.js, and PostgreSQL, focusing on performance, clean architecture, and measurable business impact.",
   location: 'India',
   email: 'rajatgautam179@gmail.com',
   linkedin: 'https://www.linkedin.com/in/rajat-ambedker-961974231',
@@ -15,6 +16,8 @@ export const personal = {
   resume: '/cv/Rajat_Ambedkar_Resume.pdf',
   yearsOfExperience: 4,
   availableForWork: true,
+  openToRelocation: true,
+  statusBadge: 'Open to Full-Time Roles · Relocation & Freelance',
 };
 
 export const skills = [

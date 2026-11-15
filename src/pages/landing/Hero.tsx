@@ -1,388 +1,334 @@
 import React, { useEffect, useRef, useState } from 'react';
-import AnimationShowcaseButton from '../../components/AnimationShowcaseButton';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowDown, Gamepad2, Sparkles } from 'lucide-react';
+import { scrollToTarget } from '../../hooks/useLenisScroll';
 import { useStore } from '../../store/useStore';
-import { personal } from '../../data/personalInfo';
 
-const roles = [
+const HERO_ROLES = [
   'Full-Stack Developer',
+  'UI Architect',
   '3D Web Engineer',
-  'React Specialist',
-  'UI/UX Builder',
-  'Open-Source Enthusiast',
+  'Problem Slayer',
 ];
 
-/* ─── Stagger Container ─── */
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-  },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40, filter: 'blur(8px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
-};
-
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 200, damping: 20 },
-  },
-};
-
-const slideRight = {
-  hidden: { opacity: 0, x: -30 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
-  },
-};
-
-import { AvatarCanvas3D } from '../../components/AvatarCanvas3D';
-
-/* ─── 3D Avatar Component (React Three Fiber WebGL) ─── */
-const Avatar3D: React.FC = () => {
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, scale: 0.8, y: 40 },
-        visible: {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          transition: {
-            type: 'spring',
-            stiffness: 160,
-            damping: 20,
-            delay: 0.1,
-          },
-        },
-      }}
-      className="w-full flex justify-center items-center"
-    >
-      <AvatarCanvas3D />
-    </motion.div>
-  );
-};
+const HERO_TECH_CHIPS = [
+  { name: 'React 19', badge: 'Frontend' },
+  { name: 'TypeScript', badge: 'Strict' },
+  { name: 'Node.js', badge: 'Backend' },
+  { name: 'Python', badge: 'AI & Data' },
+  { name: 'AWS / Azure', badge: 'Cloud' },
+  { name: 'Gemini AI', badge: 'LLMs' },
+];
 
 export const Hero: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const launchGame = useStore((s) => s.launchGame);
+
   const [roleIndex, setRoleIndex] = useState(0);
-  const [displayed, setDisplayed] = useState('');
-  const [deleting, setDeleting] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [displayedText, setDisplayedText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [statsCounted, setStatsCounted] = useState(false);
+
+  // Mouse Parallax Offsets
+  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+
+  // Scroll Progress across 200vh
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end start'],
+  });
+
+  // Scroll-linked transforms
+  const videoScale = useTransform(scrollYProgress, [0, 1], [1, 1.18]);
+  const videoY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
+  const textSplitLeft = useTransform(scrollYProgress, [0, 0.8], ['0%', '-38%']);
+  const textSplitRight = useTransform(scrollYProgress, [0, 0.8], ['0%', '38%']);
+  const foregroundY = useTransform(scrollYProgress, [0, 1], ['0%', '-45%']);
+  const foregroundOpacity = useTransform(scrollYProgress, [0, 0.75, 0.95], [1, 0.85, 0]);
+  const chipsDrift = useTransform(scrollYProgress, [0, 1], ['0px', '-90px']);
+  const slashWipeScale = useTransform(scrollYProgress, [0.65, 0.98], [0, 1.4]);
+  const slashWipeOpacity = useTransform(scrollYProgress, [0.65, 0.9, 1], [0, 1, 1]);
 
   // Typewriter effect
   useEffect(() => {
-    const target = roles[roleIndex];
-    if (!deleting) {
-      if (displayed.length < target.length) {
-        const t = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), 65);
-        return () => clearTimeout(t);
+    const currentWord = HERO_ROLES[roleIndex];
+    let timer: ReturnType<typeof setTimeout>;
+
+    if (!isDeleting) {
+      if (displayedText.length < currentWord.length) {
+        timer = setTimeout(() => {
+          setDisplayedText(currentWord.slice(0, displayedText.length + 1));
+        }, 75);
       } else {
-        const t = setTimeout(() => setDeleting(true), 2000);
-        return () => clearTimeout(t);
+        timer = setTimeout(() => setIsDeleting(true), 2200);
       }
     } else {
-      if (displayed.length > 0) {
-        const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35);
-        return () => clearTimeout(t);
+      if (displayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedText(displayedText.slice(0, -1));
+        }, 40);
       } else {
-        const t = setTimeout(() => {
-          setDeleting(false);
-          setRoleIndex((i) => (i + 1) % roles.length);
-        }, 50);
-        return () => clearTimeout(t);
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+          setRoleIndex((prev) => (prev + 1) % HERO_ROLES.length);
+        }, 250);
       }
     }
-  }, [displayed, deleting, roleIndex]);
 
-  // Particle canvas background
+    return () => clearTimeout(timer);
+  }, [displayedText, isDeleting, roleIndex]);
+
+  // Trigger stats count up after initial intro
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let animId: number;
-    const particles: Array<{ x: number; y: number; vx: number; vy: number; size: number; opacity: number }> = [];
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Create particles
-    for (let i = 0; i < 80; i++) {
-      particles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        vx: (Math.random() - 0.5) * 0.3,
-        vy: (Math.random() - 0.5) * 0.3,
-        size: Math.random() * 2 + 0.5,
-        opacity: Math.random() * 0.5 + 0.1,
-      });
-    }
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 0) p.x = canvas.width;
-        if (p.x > canvas.width) p.x = 0;
-        if (p.y < 0) p.y = canvas.height;
-        if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(220, 38, 38, ${p.opacity})`;
-        ctx.fill();
-      });
-
-      // Draw connections
-      particles.forEach((a, i) => {
-        particles.slice(i + 1).forEach((b) => {
-          const dist = Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-          if (dist < 120) {
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(220, 38, 38, ${0.12 * (1 - dist / 120)})`;
-            ctx.lineWidth = 0.5;
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        });
-      });
-
-      animId = requestAnimationFrame(draw);
-    };
-    draw();
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('resize', resize);
-    };
+    const timer = setTimeout(() => setStatsCounted(true), 1200);
+    return () => clearTimeout(timer);
   }, []);
 
-  const scrollToProjects = () => {
-    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const x = (clientX / innerWidth - 0.5) * 2;
+    const y = (clientY / innerHeight - 0.5) * 2;
+    setMouseOffset({ x, y });
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-dark-900 pt-16 pb-4 sm:pt-20 sm:pb-6 lg:pt-20 lg:pb-6">
-      {/* Particle canvas */}
-      <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none" />
-
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-radial from-red-600/10 via-transparent to-transparent pointer-events-none" />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }}
-        transition={{ repeat: Infinity, duration: 8, ease: 'easeInOut' }}
-        className="absolute top-0 left-0 w-96 h-96 bg-red-600/5 rounded-full blur-3xl pointer-events-none"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.08, 0.05] }}
-        transition={{ repeat: Infinity, duration: 10, ease: 'easeInOut', delay: 2 }}
-        className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/5 rounded-full blur-3xl pointer-events-none"
-      />
-
-      {/* Grid lines overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(220,38,38,1) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,1) 1px, transparent 1px)',
-          backgroundSize: '60px 60px',
-        }}
-      />
-
-      {/* Content — Responsive Hero Grid */}
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center py-2 lg:py-4">
-          
-          {/* ═══ LEFT COLUMN: Information & CTAs (7 cols on Desktop) ═══ */}
-          <div className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
-            {/* Availability badge */}
-            <motion.div
-              variants={scaleIn}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-red-800/40 bg-red-950/30 text-red-400 text-sm font-inter mb-6 shadow-lg shadow-red-950/20"
-            >
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-              Available for opportunities
-            </motion.div>
-
-            {/* Name */}
-            <motion.h1
-              variants={fadeUp}
-              className="font-orbitron text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-black text-white mb-4 leading-tight tracking-tight"
-            >
-              <span className="animated-gradient-text">
-                {personal.name}
-              </span>
-            </motion.h1>
-
-            {/* Typewriter role */}
-            <motion.div
-              variants={fadeUp}
-              className="font-orbitron text-xl sm:text-2xl md:text-3xl text-neutral-300 mb-4 h-9 flex items-center font-bold"
-            >
-              <span>{displayed}</span>
-              <span className="ml-1.5 w-0.5 h-7 bg-red-600 animate-pulse" />
-            </motion.div>
-
-            {/* Levitating Tech Badges */}
-            <motion.div
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
-              className="flex flex-wrap justify-center lg:justify-start gap-2.5 my-4 max-w-2xl"
-            >
-              {['⚛️ React 19', '🔷 TypeScript', '🟢 Node.js', '🐍 Python', '☁️ AWS/Azure', '🤖 Gemini AI'].map((tech) => (
-                <motion.span
-                  key={tech}
-                  variants={{
-                    hidden: { opacity: 0, y: 20, scale: 0.7, rotate: -5 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      scale: 1,
-                      rotate: 0,
-                      transition: { type: 'spring', stiffness: 300, damping: 15 },
-                    },
-                  }}
-                  whileHover={{
-                    scale: 1.12,
-                    y: -4,
-                    rotate: 2,
-                    boxShadow: '0 8px 25px rgba(220,38,38,0.35)',
-                    transition: { type: 'spring', stiffness: 400, damping: 10 },
-                  }}
-                  className="levitate-badge px-3.5 py-1.5 rounded-full bg-black/80 border border-red-900/40 text-neutral-200 text-xs sm:text-sm font-mono font-semibold shadow-lg backdrop-blur-md cursor-default transition-colors hover:border-red-600/60"
-                >
-                  {tech}
-                </motion.span>
-              ))}
-            </motion.div>
-
-            {/* Tagline */}
-            <motion.p
-              variants={fadeUp}
-              className="font-inter text-neutral-400 text-base sm:text-lg md:text-xl max-w-2xl mb-8 leading-relaxed"
-            >
-              {personal.tagline}
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.12 } } }}
-              className="flex flex-wrap gap-4 justify-center lg:justify-start items-center w-full"
-            >
-              {/* View Work button */}
-              <motion.button
-                variants={slideRight}
-                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 30px rgba(220,38,38,0.25)' }}
-                whileTap={{ scale: 0.97 }}
-                onClick={scrollToProjects}
-                id="hero-view-work-btn"
-                className="group px-7 py-3.5 rounded-xl border border-red-700/50 text-red-400 font-orbitron text-xs sm:text-sm tracking-widest hover:bg-red-950/40 transition-all duration-300 hover:shadow-lg"
-              >
-                VIEW MY WORK
-              </motion.button>
-
-              {/* Play Game button */}
-              <motion.button
-                variants={slideRight}
-                whileHover={{ scale: 1.05, y: -3, boxShadow: '0 12px 35px rgba(239,68,68,0.55)' }}
-                whileTap={{ scale: 0.97 }}
-                onClick={launchGame}
-                id="hero-play-game-btn"
-                className="group relative px-7 py-3.5 rounded-xl font-orbitron text-xs sm:text-sm tracking-widest font-bold overflow-hidden cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444, #b91c1c)',
-                  boxShadow: '0 4px 20px rgba(239,68,68,0.4)',
-                }}
-              >
-                <span className="relative z-10 flex items-center gap-2.5 text-white">
-                  <span className="text-base">▶</span>
-                  EXPLORE 3D RACING WORLD
-                </span>
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
-
-              {/* Animation Showcase button */}
-              <motion.div variants={slideRight}>
-                <AnimationShowcaseButton />
-              </motion.div>
-            </motion.div>
-
-            {/* Quick Stats */}
-            <motion.div
-              variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15, delayChildren: 0.3 } } }}
-              className="flex flex-wrap justify-center lg:justify-start gap-8 sm:gap-12 mt-6 pt-5 border-t border-neutral-800/80 w-full max-w-xl"
-            >
-              {[
-                { value: `${personal.yearsOfExperience}+`, label: 'Years Experience' },
-                { value: '8+', label: 'Projects Delivered' },
-                { value: '5+', label: 'Countries Served' },
-              ].map((stat) => (
-                <motion.div
-                  key={stat.label}
-                  variants={{
-                    hidden: { opacity: 0, y: 20, scale: 0.8 },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      scale: 1,
-                      transition: { type: 'spring', stiffness: 200, damping: 15 },
-                    },
-                  }}
-                  whileHover={{ scale: 1.1, y: -3, transition: { type: 'spring', stiffness: 400 } }}
-                  className="text-center lg:text-left cursor-default"
-                >
-                  <div className="font-orbitron text-2xl sm:text-3xl font-black bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <div className="font-inter text-neutral-500 text-xs sm:text-sm mt-0.5">{stat.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* ═══ RIGHT COLUMN: Large 3D Avatar (5 cols on Desktop, Hero Centerpiece) ═══ */}
-          <div className="lg:col-span-5 flex justify-center items-center order-1 lg:order-2 lg:pr-6 xl:pr-10">
-            <Avatar3D />
-          </div>
-
-        </div>
-      </motion.div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-neutral-500 text-xs font-orbitron tracking-widest"
-      >
-        <span>SCROLL</span>
+    <div
+      id="hero"
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative h-[200vh] w-full bg-black select-none"
+    >
+      {/* Pinned 100vh Sticky Viewport */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center items-center">
+        {/* 1. Full-Bleed Video Background with Duotone Red Tint, Scanlines & Grain */}
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-          className="w-px h-8 bg-gradient-to-b from-neutral-500 to-transparent"
-        />
-      </motion.div>
-    </section>
+          style={{
+            scale: videoScale,
+            y: videoY,
+            x: mouseOffset.x * 12,
+          }}
+          className="absolute inset-0 h-full w-full pointer-events-none overflow-hidden"
+        >
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/myimage.png"
+            className="h-full w-full object-cover object-center brightness-60 contrast-125"
+          >
+            <source src="/video/Man_rolling_neck_movements_98e1ec5b_1080p.mp4" type="video/mp4" />
+          </video>
+
+          {/* Deadpool Crimson Duotone & Vignette Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-[#8B0000]/35 to-[#0A0A0A] mix-blend-multiply" />
+          <div className="absolute inset-0 bg-radial from-transparent via-[#E62429]/10 to-black/90 pointer-events-none" />
+
+          {/* CRT Scanline Shader Effect */}
+          <div
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0px, rgba(0,0,0,0.6) 1px, transparent 1px, transparent 2px)',
+              backgroundSize: '100% 2px',
+            }}
+          />
+        </motion.div>
+
+        {/* 2. Background Huge Outlined Watermark "RAJAT" with Outward Split on Scroll */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-10 overflow-hidden">
+          <div className="flex items-center justify-center font-orbitron font-black text-[18vw] sm:text-[16vw] tracking-tighter leading-none opacity-25">
+            <motion.span
+              style={{
+                x: textSplitLeft,
+                WebkitTextStroke: '2px #E62429',
+                color: 'transparent',
+              }}
+              className="inline-block"
+            >
+              RAJ
+            </motion.span>
+            <motion.span
+              style={{
+                x: textSplitRight,
+                WebkitTextStroke: '2px #FF2D2D',
+                color: 'transparent',
+              }}
+              className="inline-block"
+            >
+              AT
+            </motion.span>
+          </div>
+        </div>
+
+        {/* 3. Foreground Hero Content with Parallax & Text Reveal */}
+        <motion.div
+          style={{
+            y: foregroundY,
+            opacity: foregroundOpacity,
+            x: mouseOffset.x * -18,
+          }}
+          className="relative z-20 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center pt-8 sm:pt-4"
+        >
+          {/* "Available for opportunities" badge with pulsing red dot */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="mb-3.5 inline-flex items-center gap-2 rounded-full border border-[#E62429]/60 bg-black/80 px-4 py-1.5 shadow-[0_0_15px_rgba(230,36,41,0.45)] backdrop-blur-md"
+          >
+            <span className="h-2 w-2 rounded-full bg-[#FF2D2D] animate-ping" />
+            <span className="font-orbitron font-bold text-xs tracking-wider text-white">
+              Available for opportunities · India
+            </span>
+          </motion.div>
+
+          {/* Primary Solid Red Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="font-orbitron text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-tight"
+          >
+            RAJAT{' '}
+            <span className="text-[#E62429] drop-shadow-[0_0_25px_rgba(230,36,41,0.85)]">
+              AMBEDKAR
+            </span>
+          </motion.h1>
+
+          {/* Solid Red Role Line with Typewriter Cycling Roles */}
+          <div className="mt-2 sm:mt-3 h-8 sm:h-10 flex items-center justify-center">
+            <span className="font-mono text-base sm:text-xl font-bold text-[#FF2D2D] tracking-wide">
+              &gt; {displayedText}
+              <span className="animate-pulse text-white">|</span>
+            </span>
+          </div>
+
+          {/* Tagline: "Building immersive web experiences that push boundaries" */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-2.5 max-w-2xl text-sm sm:text-base md:text-lg font-inter text-neutral-300 leading-relaxed"
+          >
+            Building immersive web experiences that push boundaries.
+          </motion.p>
+
+          {/* 6 Hero Floating Tech Chips with Magnetic Hover */}
+          <motion.div
+            style={{ y: chipsDrift }}
+            className="mt-5 flex flex-wrap items-center justify-center gap-2 max-w-2xl"
+          >
+            {HERO_TECH_CHIPS.map((chip, idx) => (
+              <motion.div
+                key={chip.name}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 + idx * 0.05 }}
+                whileHover={{ scale: 1.1, y: -4 }}
+                className="group relative flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/60 px-3 py-1 font-mono text-xs text-neutral-300 backdrop-blur-md transition-colors hover:border-[#E62429] hover:bg-[#E62429]/15 hover:text-white cursor-pointer shadow-sm"
+              >
+                <span>{chip.name}</span>
+                <span className="rounded bg-[#E62429]/20 px-1 py-0.2 text-[9px] font-bold text-[#FF2D2D] group-hover:bg-[#E62429] group-hover:text-white">
+                  {chip.badge}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Hero Standout Stats (4+, 8+, 5+) counting up after intro */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={statsCounted ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7 }}
+            className="mt-5 flex items-center justify-center gap-6 sm:gap-10 font-orbitron"
+          >
+            <div className="text-center">
+              <span className="text-xl sm:text-2xl font-black text-white">
+                <span className="text-[#FF2D2D]">4</span>+
+              </span>
+              <span className="block text-[10px] text-neutral-400 font-mono">Years Exp</span>
+            </div>
+            <div className="h-6 w-px bg-white/15" />
+            <div className="text-center">
+              <span className="text-xl sm:text-2xl font-black text-white">
+                <span className="text-[#FF2D2D]">8</span>+
+              </span>
+              <span className="block text-[10px] text-neutral-400 font-mono">Projects Delivered</span>
+            </div>
+            <div className="h-6 w-px bg-white/15" />
+            <div className="text-center">
+              <span className="text-xl sm:text-2xl font-black text-white">
+                <span className="text-[#FF2D2D]">5</span>+
+              </span>
+              <span className="block text-[10px] text-neutral-400 font-mono">Countries Served</span>
+            </div>
+          </motion.div>
+
+          {/* Action Buttons: "View My Work" (solid red glow) and "Enter 3D World" (outline) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="mt-6 sm:mt-7 flex flex-wrap items-center justify-center gap-4"
+          >
+            <button
+              onClick={() => scrollToTarget('#projects')}
+              className="relative inline-flex items-center gap-2.5 rounded-xl px-7 py-3 font-orbitron text-xs sm:text-sm font-black tracking-wider text-white transition-all hover:scale-105 active:scale-95 cursor-pointer border border-[#FF2D2D]/60"
+              style={{
+                background: 'linear-gradient(135deg, #E62429 0%, #8B0000 100%)',
+                boxShadow: '0 0 25px rgba(230,36,41,0.65), inset 0 0 10px rgba(255,255,255,0.2)',
+              }}
+            >
+              <Sparkles className="h-4 w-4 text-white" />
+              VIEW MY WORK
+            </button>
+
+            <button
+              onClick={launchGame}
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-[#E62429]/70 bg-black/70 px-6 py-3 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-neutral-200 backdrop-blur-md transition-all hover:border-[#FF2D2D] hover:bg-[#E62429]/15 hover:text-white active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(230,36,41,0.25)]"
+            >
+              <Gamepad2 className="h-4 w-4 text-[#FF2D2D]" />
+              ENTER 3D WORLD
+            </button>
+          </motion.div>
+
+          {/* Scroll cue: animated mouse icon with "Scroll, I dare you" */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            onClick={() => scrollToTarget('#about')}
+            className="mt-7 flex flex-col items-center gap-1 cursor-pointer group"
+          >
+            <div className="relative h-8 w-4.5 rounded-full border-2 border-[#E62429]/70 p-1 flex justify-center group-hover:border-[#FF2D2D] transition-colors">
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                className="h-1.5 w-1 rounded-full bg-[#FF2D2D] shadow-[0_0_6px_#FF2D2D]"
+              />
+            </div>
+            <span className="font-bangers text-xs sm:text-sm tracking-wider text-neutral-400 group-hover:text-[#FF2D2D] transition-colors">
+              Scroll, I dare you
+            </span>
+            <ArrowDown className="h-3 w-3 text-[#E62429] animate-bounce" />
+          </motion.div>
+        </motion.div>
+
+        {/* 4. Katana Slash Wipe Overlay transitioning into About */}
+        <motion.div
+          style={{
+            scaleX: slashWipeScale,
+            opacity: slashWipeOpacity,
+          }}
+          className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center overflow-hidden"
+        >
+          <div
+            className="w-[160vw] h-[6px] bg-gradient-to-r from-transparent via-[#FF2D2D] to-transparent shadow-[0_0_35px_#FF2D2D,0_0_70px_#E62429]"
+            style={{ transform: 'rotate(-7deg)' }}
+          />
+        </motion.div>
+      </div>
+    </div>
   );
 };

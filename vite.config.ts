@@ -12,7 +12,7 @@ export default defineConfig({
       manifest: {
         name: 'Rajat Ambedkar | Senior Full-Stack Developer Portfolio',
         short_name: 'Rajat RJ',
-        description: 'Official Portfolio & Resume Builder of Rajat Ambedkar - Senior Full-Stack Developer & UI Architect.',
+        description: 'Official Portfolio & Resume Builder of Rajat Ambedkar - Full-Stack Developer.',
         theme_color: '#0b0f19',
         background_color: '#0b0f19',
         display: 'standalone',

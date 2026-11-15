@@ -1129,7 +1129,7 @@ export const HUD: React.FC<HUDProps> = ({
         <div className="hud-feature-ribbon">
           <div className="ribbon-item"><span>RAJAT AMBEDKAR</span></div>
           <div className="ribbon-divider">·</div>
-          <div className="ribbon-item"><span className="text-zinc-400">SENIOR FULL-STACK & 3D DEVELOPER</span></div>
+          <div className="ribbon-item"><span className="text-zinc-400">FULL-STACK & 3D DEVELOPER</span></div>
           <div className="ribbon-specs">
             <span className="ribbon-chip">THREE.JS 182</span>
             <span className="ribbon-chip">CANNON-ES PBR</span>

@@ -171,7 +171,7 @@ export const PortfolioLandmarks: React.FC = () => {
             anchorX="center"
             anchorY="middle"
           >
-            SENIOR FULL-STACK & 3D CREATIVE DEVELOPER
+            FULL-STACK & 3D CREATIVE DEVELOPER
           </Text>
           {/* Bio text */}
           <Text

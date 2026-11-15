@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Gamepad2, FileText, User, Code2, Briefcase, FolderGit2, Mail } from 'lucide-react';
 import { useStore } from '../../store/useStore';
-
+import { scrollToTarget } from '../../hooks/useLenisScroll';
 
 const navSections = [
   { label: 'About', href: '#about', icon: User },
@@ -21,18 +21,18 @@ export const Navbar: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('about');
 
   useEffect(() => {
-    const sectionIds = ['about', 'skills', 'experience', 'projects', 'resume', 'contact'];
+    const sectionIds = ['hero', 'about', 'skills', 'experience', 'projects', 'resume', 'contact'];
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 40);
 
-      const scrollPosition = window.scrollY + 180;
+      const scrollPosition = window.scrollY + 220;
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const id = sectionIds[i];
         const el = document.getElementById(id);
         if (el) {
           const top = el.offsetTop;
           if (scrollPosition >= top) {
-            setActiveSection(id);
+            setActiveSection(id === 'hero' ? 'about' : id);
             break;
           }
         }
@@ -40,12 +40,13 @@ export const Navbar: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollTo = (href: string) => {
+  const handleNavClick = (href: string) => {
     setMobileOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    scrollToTarget(href);
   };
 
   return (
@@ -53,134 +54,139 @@ export const Navbar: React.FC = () => {
       <motion.nav
         initial={{ y: -80 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled
-          ? 'bg-black/95 backdrop-blur-xl border-b border-red-900/30 shadow-md shadow-black/30'
-          : 'bg-black/90 backdrop-blur-md border-b border-white/5'
-          }`}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+          scrolled
+            ? 'h-14 bg-black/85 backdrop-blur-xl border-b border-[#E62429]/30 shadow-[0_4px_30px_rgba(0,0,0,0.9)]'
+            : 'h-16 bg-transparent border-b border-white/5'
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 gap-2 sm:gap-6">
-            {/* Brand Logo - Red & Black Cyber Aesthetic */}
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-full gap-2 sm:gap-6">
+            {/* Brand Logo - Deadpool Theme Monogram */}
             <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={() => scrollToTarget('#hero')}
               className="flex items-center gap-2.5 cursor-pointer group shrink-0 select-none text-left"
               title="Rajat Ambedkar - Back to top"
             >
-              {/* Cyber Monogram Badge */}
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-black border-2 border-red-600/80 flex items-center justify-center shadow-[0_0_18px_rgba(220,38,38,0.45)] group-hover:border-red-500 group-hover:shadow-[0_0_24px_rgba(220,38,38,0.7)] transition-all duration-300">
-                {/* Inner radial gradient */}
-                <div className="absolute inset-0 rounded-xl bg-radial from-red-600/25 via-transparent to-black pointer-events-none" />
-                {/* Red monogram */}
-                <span className="font-orbitron text-base sm:text-lg font-black text-red-500 tracking-tighter drop-shadow-[0_0_8px_rgba(239,68,68,0.85)] group-hover:scale-105 transition-transform duration-300">
-                  R<span className="text-white text-xs">J</span>
+              {/* Deadpool Monogram Badge */}
+              <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-black border-2 border-[#E62429] flex items-center justify-center shadow-[0_0_15px_rgba(230,36,41,0.5)] group-hover:border-[#FF2D2D] group-hover:shadow-[0_0_22px_rgba(255,45,45,0.75)] transition-all duration-300">
+                <span className="font-orbitron text-sm sm:text-base font-black text-[#E62429] tracking-tighter drop-shadow-[0_0_6px_#FF2D2D] group-hover:scale-105 transition-transform">
+                  R<span className="text-white text-[11px]">J</span>
                 </span>
-                {/* Corner accent LED */}
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_6px_#ef4444]" />
+                {/* Katana cross accent */}
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#FF2D2D] animate-ping" />
               </div>
 
               {/* Text mark */}
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 font-orbitron text-base sm:text-lg font-black tracking-wide leading-none">
-                  <span className="bg-gradient-to-r from-red-500 via-red-600 to-red-400 bg-clip-text text-transparent group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all">
+                <div className="flex items-center gap-1.5 font-orbitron text-sm sm:text-base font-black tracking-wide leading-none">
+                  <span className="bg-gradient-to-r from-white via-neutral-200 to-[#E62429] bg-clip-text text-transparent group-hover:drop-shadow-[0_0_8px_rgba(230,36,41,0.6)] transition-all">
                     RAJAT
                   </span>
-                  <span className="bg-black text-red-400 text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded border border-red-700/60 shadow-[0_0_10px_rgba(220,38,38,0.3)]">
+                  <span className="bg-black text-[#FF2D2D] text-[9px] sm:text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#E62429]/60 shadow-[0_0_8px_rgba(230,36,41,0.4)]">
                     .DEV
                   </span>
                 </div>
-                <span className="text-[9px] font-mono text-neutral-400 tracking-widest uppercase mt-0.5 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-red-600 inline-block animate-ping" />
-                  UI ARCHITECT
+                <span className="text-[8px] font-mono text-[#9CA3AF] tracking-widest uppercase mt-0.5 flex items-center gap-1">
+                  FULL STACK DEVELOPER
                 </span>
               </div>
             </button>
 
-            {/* Desktop Navigation Links — Filling and Center-Aligning the Header */}
-            <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-6 gap-1 lg:gap-3 xl:gap-5">
+            {/* Desktop Navigation Links (ScrollSpy) */}
+            <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-6 gap-1 lg:gap-2 xl:gap-3">
               {navSections.map((sec) => {
                 const IconComp = sec.icon;
                 const isActive = activeSection === sec.href.replace('#', '');
                 return (
                   <button
                     key={sec.label}
-                    onClick={() => scrollTo(sec.href)}
-                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs lg:text-sm font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${isActive
-                      ? 'bg-red-950/60 text-red-400 font-bold shadow-sm border border-red-800/50'
-                      : 'text-neutral-400 hover:text-red-400 hover:bg-red-950/30'
-                      }`}
+                    onClick={() => handleNavClick(sec.href)}
+                    className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${
+                      isActive
+                        ? 'text-white bg-[#E62429]/20 border border-[#E62429]/60 shadow-[0_0_12px_rgba(230,36,41,0.35)]'
+                        : 'text-[#9CA3AF] hover:text-white hover:bg-white/[0.04]'
+                    }`}
                   >
-                    <IconComp size={15} className={isActive ? 'text-red-500' : 'text-neutral-500 group-hover:text-red-400'} />
+                    <IconComp size={13} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-500'} />
                     <span>{sec.label}</span>
+                    {isActive && (
+                      <motion.span
+                        layoutId="nav-active-indicator"
+                        className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#FF2D2D] shadow-[0_0_8px_#FF2D2D]"
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Right side: Action Button + Mobile Toggle */}
+            {/* Right side: 3D Racing World CTA + Mobile Toggle */}
             <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               <button
                 id="nav-play-game-btn"
                 onClick={launchGame}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg font-orbitron text-xs tracking-wider font-bold text-white transition-all hover:scale-105 hover:brightness-110 cursor-pointer shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)', boxShadow: '0 4px 16px rgba(239,68,68,0.45)' }}
+                className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-orbitron text-[11px] tracking-wider font-bold text-white transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg border border-[#FF2D2D]/40"
+                style={{
+                  background: 'linear-gradient(135deg, #E62429 0%, #8B0000 100%)',
+                  boxShadow: '0 0 16px rgba(230,36,41,0.5)',
+                }}
               >
-                <Gamepad2 size={15} />
+                <Gamepad2 size={14} className="text-white" />
                 3D RACING WORLD
               </button>
 
               {/* Mobile menu toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-2 text-neutral-300 hover:text-white rounded-lg bg-neutral-900 border border-neutral-800 hover:bg-neutral-800 transition-all"
+                className="md:hidden p-1.5 text-neutral-300 hover:text-white rounded-lg bg-neutral-900 border border-neutral-800 transition-all"
                 aria-label="Toggle menu"
               >
-                {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-16 left-0 right-0 z-[99] bg-black/98 backdrop-blur-xl border-b border-neutral-800 p-4 flex flex-col gap-2 md:hidden shadow-xl"
+            className="fixed top-14 left-0 right-0 z-[99] bg-black/95 backdrop-blur-2xl border-b border-[#E62429]/30 p-4 flex flex-col gap-2 md:hidden shadow-2xl"
           >
-            {navSections.map((sec, idx) => {
+            {navSections.map((sec) => {
               const IconComp = sec.icon;
+              const isActive = activeSection === sec.href.replace('#', '');
               return (
-                <motion.button
+                <button
                   key={sec.label}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.06, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  whileHover={{ x: 6, backgroundColor: 'rgba(220,38,38,0.08)' }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => scrollTo(sec.href)}
-                  className="flex items-center gap-3 font-orbitron font-semibold text-neutral-200 hover:text-red-400 text-left px-4 py-3 rounded-xl transition-colors text-xs"
+                  onClick={() => handleNavClick(sec.href)}
+                  className={`flex items-center gap-3 font-orbitron text-xs font-semibold px-4 py-2.5 rounded-xl transition-all text-left ${
+                    isActive
+                      ? 'bg-[#E62429]/25 text-white border border-[#E62429]/50'
+                      : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                  }`}
                 >
-                  <IconComp size={16} className="text-red-500" />
+                  <IconComp size={15} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-500'} />
                   <span>{sec.label}</span>
-                </motion.button>
+                </button>
               );
             })}
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: navSections.length * 0.06, duration: 0.4 }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={() => { setMobileOpen(false); launchGame(); }}
-              className="flex items-center justify-center gap-2 mt-2 py-3 rounded-xl font-orbitron text-sm font-bold text-white shadow-md cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
+            <button
+              onClick={() => {
+                setMobileOpen(false);
+                launchGame();
+              }}
+              className="flex items-center justify-center gap-2 mt-2 py-2.5 rounded-xl font-orbitron text-xs font-bold text-white shadow-lg cursor-pointer border border-[#FF2D2D]/50"
+              style={{ background: 'linear-gradient(135deg, #E62429, #8B0000)' }}
             >
-              <Gamepad2 size={16} /> ENTER 3D RACING WORLD
-            </motion.button>
+              <Gamepad2 size={15} /> ENTER 3D RACING WORLD
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

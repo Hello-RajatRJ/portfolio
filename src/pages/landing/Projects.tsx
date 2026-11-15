@@ -1,369 +1,254 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Gamepad2, Layers } from 'lucide-react';
-import { useStore } from '../../store/useStore';
+import React, { useRef, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ArrowUpRight, Eye, Layers } from 'lucide-react';
 import {
   projectUniverseItems,
   type ProjectUniverseItem,
 } from '../../data/projectUniverseData';
-import type { ParallaxSignalState } from '../../components/projects/projectTypes';
-import { ProjectParallaxBackdrop } from '../../components/projects/ProjectParallaxBackdrop';
-import { ProjectUniverseCanvas } from '../../components/projects/ProjectUniverseCanvas';
-import { PinnedProjectGallery } from '../../components/projects/PinnedProjectGallery';
-import { ProjectHoloCard } from '../../components/projects/ProjectHoloCard';
-import { ProjectCursorHUD } from '../../components/projects/ProjectCursorHUD';
 import { CinematicProjectModal } from '../../components/projects/CinematicProjectModal';
-import '../../components/projects/projectUniverse.css';
-
-const HEADING_EYEBROW = '04. PROJECTS';
-
-function checkWebGLSupport(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    const canvas = document.createElement('canvas');
-    return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 export const Projects: React.FC = () => {
-  const launchGame = useStore((s) => s.launchGame);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectUniverseItem | null>(null);
+  const [hoveredCardId, setHoveredCardId] = useState<string | null>(null);
 
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const introInView = useInView(sectionRef, { once: true, margin: '-80px' });
-
-  const signalRef = useRef<ParallaxSignalState>({
-    pointerX: 0,
-    pointerY: 0,
-    scrollProgress: 0,
-    scrollVelocity: 0,
-    active: false,
+  // Scroll Progress across 320vh for smooth horizontal scrub
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start start', 'end end'],
   });
 
-  const [selectedProject, setSelectedProject] = useState<ProjectUniverseItem | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
-  const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
-  const [sectionActive, setSectionActive] = useState(false);
-  const [webglSupported] = useState(() => checkWebGLSupport());
-  const [reducedMotion, setReducedMotion] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
-  );
+  // Calculate track travel distance
+  // 8 projects * ~420px + gap -> translates from 0% to approximately -72%
+  const trackX = useTransform(scrollYProgress, [0, 1], ['2%', '-75%']);
 
-  const uniqueCategories = useMemo(
-    () => ['ALL', ...Array.from(new Set(projectUniverseItems.map((p) => p.category)))],
-    []
-  );
+  // Parallax inner image moves in opposite direction of horizontal travel
+  const innerImageX = useTransform(scrollYProgress, [0, 1], ['12%', '-12%']);
 
-  const filteredGridProjects = useMemo(() => {
-    if (selectedCategory === 'ALL') return projectUniverseItems;
-    return projectUniverseItems.filter((p) => p.category === selectedCategory);
-  }, [selectedCategory]);
-
-  // Listen live to OS reduced-motion setting
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-
-  // Pause WebGL render loop and parallax RAF cleanly when section is offscreen or tab hidden
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    let tabVisible = !document.hidden;
-    let inRange = false;
-
-    const syncActive = () => {
-      const active = tabVisible && inRange;
-      signalRef.current.active = active;
-      setSectionActive(active);
-    };
-
-    const mountObs = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setShouldMountCanvas(true);
-          mountObs.disconnect();
-        }
-      },
-      { rootMargin: '260px 0px' }
-    );
-    mountObs.observe(el);
-
-    const activeObs = new IntersectionObserver(
-      (entries) => {
-        inRange = Boolean(entries[0]?.isIntersecting);
-        syncActive();
-      },
-      { threshold: 0.04 }
-    );
-    activeObs.observe(el);
-
-    const onVisibility = () => {
-      tabVisible = !document.hidden;
-      syncActive();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-
-    return () => {
-      mountObs.disconnect();
-      activeObs.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, []);
-
-  const handleSectionPointerMove = (e: React.PointerEvent<HTMLElement>) => {
-    if (reducedMotion || e.pointerType === 'touch') return;
-    const el = sectionRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    signalRef.current.pointerX = ((e.clientX - rect.left) / Math.max(1, rect.width) - 0.5) * 2;
-    signalRef.current.pointerY = ((e.clientY - rect.top) / Math.max(1, rect.height) - 0.5) * 2;
-  };
-
-  const handleSectionPointerLeave = () => {
-    signalRef.current.pointerX = 0;
-    signalRef.current.pointerY = 0;
-  };
-
-  const handleLaunch3DWorld = () => {
-    const heroBtn = document.getElementById('hero-play-game-btn');
-    if (heroBtn) {
-      heroBtn.click();
-    } else {
-      launchGame();
-    }
-  };
+  const totalCount = projectUniverseItems.length;
 
   return (
-    <section
-      id="projects"
-      ref={sectionRef}
-      onPointerMove={handleSectionPointerMove}
-      onPointerLeave={handleSectionPointerLeave}
-      className="relative overflow-x-clip bg-[#080808] py-20 sm:py-28 text-white"
-    >
-      {/* Layer 1: Multi-Layer Parallax Atmospheric Environment */}
-      <ProjectParallaxBackdrop
-        signalRef={signalRef}
-        introVisible={introInView}
-        reducedMotion={reducedMotion}
-      />
+    <div id="projects" ref={containerRef} className="relative h-[340vh] w-full bg-[#000000]">
+      {/* Sticky 100vh Viewport */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between py-8 sm:py-12 z-10">
+        {/* Background Ambient Red Fog */}
+        <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-[#E62429]/10 blur-[120px] pointer-events-none" />
 
-      {/* Layer 2: Single Shared R3F WebGL Depth Canvas */}
-      <ProjectUniverseCanvas
-        signalRef={signalRef}
-        shouldMount={shouldMountCanvas}
-        sectionActive={sectionActive}
-        webglSupported={webglSupported}
-        reducedMotion={reducedMotion}
-      />
-
-      {/* Custom Magnetic Desktop Project Cursor HUD */}
-      <ProjectCursorHUD
-        scopeRef={sectionRef}
-        disabled={reducedMotion || Boolean(selectedProject)}
-      />
-
-      {/* Layer 3: Foreground Interactive Content */}
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Cinematic Section Intro Header */}
-        <div className="relative text-center">
-          {/* Horizontal Crimson Energy Laser Line */}
-          <div className="mx-auto mb-7 h-[2px] max-w-2xl overflow-hidden rounded-full bg-white/5">
-            <div
-              className={`h-full w-full bg-gradient-to-r from-transparent via-[#FF3038] to-transparent shadow-[0_0_16px_rgba(255,48,56,0.9)] ${
-                introInView ? 'pu-energy-line' : 'opacity-0'
-              }`}
-            />
-          </div>
-
-          {/* Character-by-character Reveal for "04. PROJECTS" */}
-          <p
-            aria-label={HEADING_EYEBROW}
-            className="font-orbitron text-xs sm:text-sm font-semibold tracking-[0.32em] text-[#FF3038]"
-          >
-            {HEADING_EYEBROW.split('').map((ch, idx) => (
-              <motion.span
-                key={`${ch}-${idx}`}
-                initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 10 }}
-                animate={introInView ? { opacity: 1, y: 0 } : undefined}
-                transition={{
-                  duration: 0.35,
-                  delay: reducedMotion ? 0 : idx * 0.032,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="inline-block"
-              >
-                {ch === ' ' ? '\u00A0' : ch}
-              </motion.span>
-            ))}
-          </p>
-
-          {/* Upward Cinematic Reveal for "Featured Work" */}
-          <div className="mt-3 overflow-hidden">
-            <motion.h2
-              initial={reducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 42 }}
-              animate={introInView ? { opacity: 1, y: 0 } : undefined}
-              transition={{
-                duration: 0.72,
-                delay: reducedMotion ? 0 : 0.22,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="font-orbitron text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl"
-            >
-              Featured{' '}
-              <span className="bg-gradient-to-r from-[#FF3038] to-[#C91520] bg-clip-text text-transparent">
-                Work
-              </span>
-            </motion.h2>
-          </div>
-
-          {/* Subtitle Fade-in */}
-          <motion.p
-            initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 14 }}
-            animate={introInView ? { opacity: 1, y: 0 } : undefined}
-            transition={{
-              duration: 0.65,
-              delay: reducedMotion ? 0 : 0.38,
-            }}
-            className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#A0A0A0] sm:text-base"
-          >
-            Production web applications, tax engines, AI knowledge hubs, and enterprise SaaS
-            systems engineered for speed, scalability, and crisp user interaction.
-          </motion.p>
-        </div>
-
-        {/* Center-Expanding Pinned Horizontal Showcase Container */}
-        <motion.div
-          initial={
-            reducedMotion
-              ? { opacity: 1, scaleX: 1 }
-              : { opacity: 0, scaleX: 0.9, scaleY: 0.96 }
-          }
-          animate={
-            introInView
-              ? { opacity: 1, scaleX: 1, scaleY: 1 }
-              : undefined
-          }
-          transition={{
-            duration: 0.78,
-            delay: reducedMotion ? 0 : 0.3,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          className="mt-8 origin-center"
-        >
-          <PinnedProjectGallery
-            projects={projectUniverseItems}
-            onSelectProject={setSelectedProject}
-            reducedMotion={reducedMotion}
-            signalRef={signalRef}
-          />
-        </motion.div>
-
-        {/* Individual 3D Floating Project Cards Grid Below Showcase */}
-        <div className="mt-16 sm:mt-20">
-          <div className="flex flex-col items-start justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-end">
+        {/* Section Header Bar */}
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-4">
             <div>
-              <p className="inline-flex items-center gap-2 font-mono text-[11px] font-semibold tracking-[0.22em] text-[#FF3038]">
-                <Layers className="h-3.5 w-3.5" />
-                SYSTEMS MATRIX
-              </p>
-              <h3 className="mt-1 font-orbitron text-xl font-bold text-white sm:text-2xl">
-                Interactive Project Cards
-              </h3>
+              <div className="inline-flex items-center gap-2 mb-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#FF2D2D] animate-ping" />
+                <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.28em] text-[#E62429] uppercase">
+                  04 // THE SHOWPIECE
+                </span>
+              </div>
+              <h2 className="font-orbitron text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+                FEATURED <span className="text-[#E62429] drop-shadow-[0_0_18px_rgba(230,36,41,0.6)]">WORK</span>
+              </h2>
             </div>
 
-            {/* Category Filter Pills (Strictly Preserved Real Project Categories) */}
-            <div className="flex flex-wrap gap-2">
-              {uniqueCategories.map((cat) => {
-                const active = selectedCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`rounded-lg border px-3 py-1.5 font-mono text-[11px] transition-all ${
-                      active
-                        ? 'border-[#FF3038] bg-[#FF3038]/20 text-white shadow-[0_0_14px_rgba(255,48,56,0.28)]'
-                        : 'border-white/12 bg-white/[0.025] text-[#A0A0A0] hover:border-[#FF3038]/45 hover:text-white'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredGridProjects.map((project, idx) => (
-              <motion.div
-                key={project.id}
-                initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{
-                  duration: 0.52,
-                  delay: reducedMotion ? 0 : Math.min(idx * 0.06, 0.36),
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="h-full"
-              >
-                <ProjectHoloCard
-                  project={project}
-                  onSelect={setSelectedProject}
-                  reducedMotion={reducedMotion}
-                  variant="grid"
+            {/* Horizontal Scroll Progress Prompt */}
+            <div className="hidden sm:flex items-center gap-3">
+              <span className="font-bangers text-sm tracking-wider text-neutral-400">
+                SCROLL DOWN TO TRAVEL HORIZONTALLY
+              </span>
+              <div className="h-1.5 w-24 rounded-full bg-neutral-900 border border-white/10 overflow-hidden">
+                <motion.div
+                  style={{ scaleX: scrollYProgress }}
+                  className="h-full bg-gradient-to-r from-[#8B0000] via-[#E62429] to-[#FF2D2D] origin-left"
                 />
-              </motion.div>
-            ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Preserved 3D Driving World Launch CTA */}
-        <motion.div
-          initial={reducedMotion ? { opacity: 1 } : { opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.6 }}
-          className="mt-16 sm:mt-20 rounded-2xl border border-[#FF3038]/30 bg-gradient-to-r from-[#FF3038]/12 via-[#100a0b] to-[#C91520]/12 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-md"
-        >
-          <div className="text-center md:text-left">
-            <h4 className="font-orbitron text-xl sm:text-2xl font-bold text-white">
-              Drive Through Every Project Zone in 3D
-            </h4>
-            <p className="mt-1.5 text-sm text-[#A0A0A0] max-w-xl">
-              Enter the interactive 3D world to physically drive up to each project building,
-              explore the AI Intelligence Factory, and unlock live architecture panels.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleLaunch3DWorld}
-            className="shrink-0 inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#FF3038] to-[#C91520] px-6 py-3.5 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-white shadow-lg shadow-red-600/30 transition-all hover:scale-[1.03] hover:shadow-red-500/45"
+        {/* Horizontal Project Track */}
+        <div className="relative w-full my-auto overflow-visible">
+          <motion.div
+            style={{ x: trackX }}
+            className="flex items-center gap-6 sm:gap-8 pl-4 sm:pl-12 pr-32 select-none"
           >
-            <Gamepad2 className="h-4 w-4" />
-            ▶ LAUNCH 3D WORLD
-          </button>
-        </motion.div>
+            {projectUniverseItems.map((project, idx) => {
+              const isHovered = hoveredCardId === project.id;
+              const hasHoveredCard = Boolean(hoveredCardId);
+              const isDimmed = hasHoveredCard && !isHovered;
+              const isPriorityBuild = project.id === 'knowledger' || project.id === 'ceretax';
+
+              return (
+                <div
+                  key={project.id}
+                  data-project-card="true"
+                  onMouseEnter={() => setHoveredCardId(project.id)}
+                  onMouseLeave={() => setHoveredCardId(null)}
+                  onClick={() => setSelectedProject(project)}
+                  className={`group relative shrink-0 w-[86vw] sm:w-[480px] md:w-[540px] rounded-2xl bg-[#0c0c0e]/95 border transition-all duration-300 cursor-pointer overflow-hidden backdrop-blur-xl ${
+                    isHovered
+                      ? 'scale-[1.03] border-[#FF2D2D] shadow-[0_0_40px_rgba(230,36,41,0.7)] z-30'
+                      : isDimmed
+                      ? 'scale-[0.97] opacity-45 border-white/10 blur-[1px]'
+                      : isPriorityBuild
+                      ? 'border-[#FF2D2D]/70 shadow-[0_0_30px_rgba(230,36,41,0.35)] ring-1 ring-[#FF2D2D]/40'
+                      : 'border-white/10 shadow-2xl'
+                  }`}
+                >
+                  {/* Top Glowing Red Accent for Priority Builds */}
+                  {isPriorityBuild && (
+                    <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-[#FF2D2D] to-transparent shadow-[0_0_15px_#FF2D2D] z-30" />
+                  )}
+
+                  {/* Top Screenshot Window with Parallax Inner Image */}
+                  <div className="relative h-56 sm:h-64 w-full overflow-hidden bg-neutral-950">
+                    <motion.img
+                      style={{ x: innerImageX }}
+                      src={project.backdropImage}
+                      alt={project.name}
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-[125%] -left-[12.5%] object-cover object-center brightness-[0.6] contrast-125 transition-transform duration-700 ease-out group-hover:scale-108 group-hover:brightness-[0.75]"
+                    />
+
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0e] via-black/40 to-transparent" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-lg bg-black/85 border border-[#E62429]/50 px-2.5 py-1 font-orbitron text-xs font-bold text-[#FF2D2D] shadow-sm">
+                          {String(idx + 1).padStart(2, '0')} / {String(totalCount).padStart(2, '0')}
+                        </span>
+                        {isPriorityBuild && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-black/90 border border-[#FF2D2D] px-2.5 py-1 font-orbitron text-[10px] sm:text-xs font-black text-[#FF2D2D] shadow-[0_0_12px_rgba(255,45,45,0.7)]">
+                            <span className="animate-bounce">🔥</span>
+                            <span>PRIORITY BUILD</span>
+                          </span>
+                        )}
+                      </div>
+                      <span className="rounded-lg bg-black/80 border border-white/10 px-2 py-0.5 font-mono text-[10px] text-neutral-300 uppercase shrink-0">
+                        {project.category}
+                      </span>
+                    </div>
+
+                    {/* Floating Center View Prompt */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="rounded-full bg-[#E62429] px-4 py-2 font-bangers text-sm tracking-widest text-white shadow-[0_0_20px_#FF2D2D] flex items-center gap-1.5 transform group-hover:scale-105 transition-transform">
+                        <Eye className="h-4 w-4" />
+                        EXPLORE CASE STUDY
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="p-5 sm:p-6 text-left">
+                    {/* Standout Metric Badge */}
+                    {project.metrics && (
+                      <div className="mb-2.5 inline-flex items-center gap-1.5 rounded-md border border-[#E62429]/40 bg-[#E62429]/15 px-2.5 py-1 text-[11px] font-orbitron font-bold text-white shadow-sm">
+                        <span className="text-[#FF2D2D]">⚡</span>
+                        <span>{project.metrics.badge}:</span>
+                        <span className="text-[#FF2D2D] font-mono">{project.metrics.stat}</span>
+                      </div>
+                    )}
+
+                    <h3 className="font-orbitron text-xl sm:text-2xl font-black text-white group-hover:text-[#FF2D2D] transition-colors">
+                      {project.name}
+                    </h3>
+                    <p className="mt-1 font-inter text-xs sm:text-sm text-neutral-400 line-clamp-2">
+                      {project.description}
+                    </p>
+
+                    {/* Tech Badges */}
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {project.tech.slice(0, 5).map((t) => (
+                        <span
+                          key={t}
+                          className="rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 font-mono text-[10px] text-neutral-300 group-hover:border-[#E62429]/40 group-hover:text-white"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {project.tech.length > 5 && (
+                        <span className="rounded-md border border-white/10 bg-white/[0.02] px-2 py-0.5 font-mono text-[10px] text-neutral-400">
+                          +{project.tech.length - 5}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action Bar */}
+                    <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProject(project);
+                        }}
+                        className="inline-flex items-center gap-1.5 font-orbitron text-xs font-bold text-white hover:text-[#FF2D2D] transition-colors cursor-pointer"
+                      >
+                        <Layers className="h-3.5 w-3.5 text-[#E62429]" />
+                        CASE STUDY & TRADE-OFFS
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        {project.github && (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="p-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-neutral-300 hover:text-white hover:border-[#E62429] transition-all"
+                            aria-label={`GitHub repo for ${project.name}`}
+                          >
+                            <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                              <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                            </svg>
+                          </a>
+                        )}
+                        {project.liveDemo && (
+                          <a
+                            href={project.liveDemo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1 rounded-lg border border-[#E62429]/60 bg-[#E62429]/20 px-3 py-1 font-mono text-xs font-bold text-white hover:bg-[#E62429] hover:shadow-[0_0_12px_#FF2D2D] transition-all"
+                            aria-label={`Live demo for ${project.name}`}
+                          >
+                            LIVE
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </motion.div>
+        </div>
+
+        {/* Bottom Status Ticker */}
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 shrink-0 flex items-center justify-between text-xs font-mono text-neutral-400 border-t border-white/10 pt-3">
+          <span className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#E62429]" />
+            HOVER CARDS TO INSPECT · CLICK TO READ ARCHITECTURAL CASE STUDY
+          </span>
+          <span className="hidden sm:inline text-[#FF2D2D] font-bangers text-sm">
+            Total Projects: {totalCount} Shipped Systems
+          </span>
+        </div>
       </div>
 
-      {/* Effect Five & Six: Cinematic Project Case Study Modal + Prev/Next Switching */}
+      {/* Cinematic Case Study Modal */}
       <CinematicProjectModal
         project={selectedProject}
         projects={projectUniverseItems}
         onClose={() => setSelectedProject(null)}
         onSelectProject={setSelectedProject}
-        onLaunch3DWorld={handleLaunch3DWorld}
-        reducedMotion={reducedMotion}
+        onLaunch3DWorld={() => {
+          setSelectedProject(null);
+          document.getElementById('nav-play-game-btn')?.click();
+        }}
+        reducedMotion={false}
       />
-    </section>
+    </div>
   );
 };

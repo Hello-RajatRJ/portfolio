@@ -141,9 +141,30 @@ export const ProjectHoloCard: React.FC<ProjectHoloCardProps> = ({
 
           <p className="mt-1 text-xs font-medium text-red-200/80">{project.tagline}</p>
 
-          <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-[#A0A0A0] sm:text-[13px]">
-            {project.description}
-          </p>
+          {/* Proof Metric Callout Badge (Item 2 Requirement) */}
+          {project.metrics && (
+            <div className="mt-2.5 flex items-center justify-between rounded-lg border border-[#FF3038]/35 bg-gradient-to-r from-[#FF3038]/15 via-red-950/30 to-black/50 px-2.5 py-1.5 shadow-sm">
+              <span className="font-orbitron text-[10px] sm:text-[11px] font-extrabold tracking-wide text-white flex items-center gap-1.5">
+                <span className="text-[#FF3038]">⚡</span>
+                {project.metrics.badge}
+              </span>
+              <span className="font-mono text-[10px] text-neutral-300">
+                {project.metrics.stat} {project.metrics.statLabel}
+              </span>
+            </div>
+          )}
+
+          {/* Problem & Owned Breakdown (Item 2 Requirement) */}
+          <div className="mt-2.5 space-y-1.5 text-left">
+            <p className="line-clamp-2 text-[11px] sm:text-[12px] leading-relaxed text-neutral-300">
+              <span className="text-red-400 font-bold font-mono text-[10px] uppercase tracking-wider mr-1">Problem:</span>
+              {project.problem || project.description}
+            </p>
+            <p className="line-clamp-2 text-[11px] sm:text-[12px] leading-relaxed text-neutral-400">
+              <span className="text-neutral-200 font-bold font-mono text-[10px] uppercase tracking-wider mr-1">Owned:</span>
+              {project.owned || project.role}
+            </p>
+          </div>
 
           {/* Tech Badges — Illuminate Crimson on Card Hover */}
           <div className="mt-3.5 flex flex-wrap gap-1.5">

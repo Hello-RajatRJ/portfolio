@@ -1,47 +1,56 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { Canvas } from '@react-three/fiber';
-import { Zap } from 'lucide-react';
-import { skills } from '../../data/personalInfo';
-import { findTechMeta, type TechMetadata } from '../../data/techRegistry';
-import { CanvasErrorBoundary } from '../../components/CanvasErrorBoundary';
-import { TechIconGroup } from '../../components/skills/TechIconGroup';
+import React, { useRef, useState } from 'react';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
+import { DeadpoolSkillOrb } from '../../components/skills/DeadpoolSkillOrb';
 import { TechDetailModal } from '../../components/skills/TechDetailPanel';
-import { TechCategory } from '../../components/skills/TechCategory';
-import { AmbientParticleField } from '../../components/skills/AmbientParticleField';
+import { findTechMeta, type TechMetadata } from '../../data/techRegistry';
+import { skills as allSkills } from '../../data/personalInfo';
 import type { PointerScreenState } from '../../components/skills/hoverMath';
-import '../../components/skills/skillsEffects.css';
 
-// Extract unique categories directly from the existing skills array
-const categories = Array.from(new Set(skills.map((s) => s.category)));
-
-function checkWebGLSupport(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    const c = document.createElement('canvas');
-    return Boolean(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
-
-/* ─── Animation Variants ─── */
-const sectionHeader = {
-  hidden: { opacity: 0, y: 40, filter: 'blur(6px)' },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+const SKILL_GROUPS = [
+  {
+    code: '01',
+    category: 'Frontend & UI Architecture',
+    label: '// MODULES: FRONTEND & UI ARCHITECTURE (8)',
   },
-};
+  {
+    code: '02',
+    category: 'Backend, APIs & AI Systems',
+    label: '// MODULES: BACKEND, APIS & AI SYSTEMS (5)',
+  },
+  {
+    code: '03',
+    category: 'Databases & Data Storage',
+    label: '// MODULES: DATABASES & DATA STORAGE (3)',
+  },
+  {
+    code: '04',
+    category: 'Cloud, DevOps & Engineering Tools',
+    label: '// MODULES: CLOUD, DEVOPS & ENGINEERING TOOLS (6)',
+  },
+  {
+    code: '05',
+    category: 'Core & Emerging Stack',
+    label: '// MODULES: CORE & EMERGING STACK (5)',
+  },
+];
 
-export const TechArsenalSection: React.FC = () => {
-  const ref = useRef<HTMLElement | null>(null);
-  const inView = useInView(ref, { once: true, margin: '-80px' });
+const ROW1_LOGOS = [
+  'React 19', 'TypeScript', 'Node.js', 'Next.js', 'Three.js', 'PostgreSQL', 'Docker', 'Tailwind',
+  'GSAP', 'WebGL', 'MongoDB', 'Vite',
+];
 
-  const slotElementsRef = useRef<Record<string, HTMLDivElement | null>>({});
-  const scanTimestampsRef = useRef<Record<string, number>>({});
+const ROW2_LOGOS = [
+  'Python', 'Spring Boot', 'GraphQL', 'Redis', 'Framer Motion', 'Linux', 'AWS', 'Git',
+  'Jest', 'Figma', 'Turborepo', 'WebSockets',
+];
+
+export const Skills: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: '-60px' });
+
+  const [selectedTech, setSelectedTech] = useState<TechMetadata | null>(null);
+  const [selectedSkillName, setSelectedSkillName] = useState<string | null>(null);
+
   const pointerRef = useRef<PointerScreenState>({
     x: 0,
     y: 0,
@@ -51,228 +60,186 @@ export const TechArsenalSection: React.FC = () => {
     isDragging: false,
   });
 
-  const [hoveredSkillName, setHoveredSkillName] = useState<string | null>(null);
-  const [selectedTech, setSelectedTech] = useState<TechMetadata | null>(null);
-  const [replayKey, setReplayKey] = useState(0);
-  const [shouldMountCanvas, setShouldMountCanvas] = useState(false);
-  const [sectionActive, setSectionActive] = useState(false);
-  const [webglReady, setWebglReady] = useState(false);
-  const [webglFailed, setWebglFailed] = useState(() => !checkWebGLSupport());
-  const [reducedMotion, setReducedMotion] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false
-  );
+  // Scroll speed-up for marquee
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  });
+  const marqueeOffset1 = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
+  const marqueeOffset2 = useTransform(scrollYProgress, [0, 1], ['-30%', '0%']);
 
-  // Respect OS prefers-reduced-motion live
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
-
-  // Pause 3D render loop & particle animation when scrolled outside viewport or tab hidden
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    let tabVisible = !document.hidden;
-    let inRange = false;
-
-    const syncActive = () => {
-      setSectionActive(tabVisible && inRange);
-    };
-
-    const mountObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setShouldMountCanvas(true);
-        }
-      },
-      { rootMargin: '550px 0px' }
-    );
-    mountObserver.observe(el);
-
-    const activeObserver = new IntersectionObserver(
-      (entries) => {
-        inRange = Boolean(entries[0]?.isIntersecting);
-        if (inRange) setShouldMountCanvas(true);
-        syncActive();
-      },
-      { rootMargin: '120px 0px' }
-    );
-    activeObserver.observe(el);
-
-    const onVisibility = () => {
-      tabVisible = !document.hidden;
-      syncActive();
-    };
-    document.addEventListener('visibilitychange', onVisibility);
-
-    return () => {
-      mountObserver.disconnect();
-      activeObserver.disconnect();
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, []);
-
-  // Shared lightweight pointer tracking (zero React re-renders during movement)
-  useEffect(() => {
-    if (!sectionActive && !selectedTech) return;
-
-    const handlePointerMove = (e: PointerEvent) => {
-      pointerRef.current.x = e.clientX;
-      pointerRef.current.y = e.clientY;
-      pointerRef.current.active = true;
-    };
-    const handlePointerLeave = () => {
-      pointerRef.current.active = false;
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    document.addEventListener('mouseleave', handlePointerLeave);
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      document.removeEventListener('mouseleave', handlePointerLeave);
-    };
-  }, [sectionActive, selectedTech]);
-
-  const handleHoverChange = (skillName: string, hovered: boolean) => {
-    if (hovered) {
-      setHoveredSkillName(skillName);
-    } else {
-      setHoveredSkillName((prev) => (prev === skillName ? null : prev));
-    }
+  const handleSelectModule = (skillName: string) => {
+    setSelectedSkillName(skillName);
+    const meta = findTechMeta(skillName);
+    setSelectedTech(meta);
   };
-
-  const handleSelectSkill = (skillName: string) => {
-    setShouldMountCanvas(true);
-    setSelectedTech(findTechMeta(skillName));
-  };
-
-  const showLiveWebGL = shouldMountCanvas && !webglFailed;
 
   return (
     <section
       id="skills"
-      ref={ref}
-      className="py-20 sm:py-32 bg-[#080808] relative overflow-hidden"
+      ref={sectionRef}
+      className="relative min-h-screen py-24 sm:py-32 bg-[#000000] overflow-hidden select-none"
     >
-      {/* Effect Five: Ambient Particle Universe strictly behind all categories & modules */}
-      <AmbientParticleField
-        sectionRef={ref}
-        pointerRef={pointerRef}
-        active={sectionActive}
-        reducedMotion={reducedMotion}
-      />
-
-      {/* Subtle ambient crimson glow behind command center header */}
-      <div
-        className="absolute top-0 right-0 w-96 h-96 rounded-full blur-3xl pointer-events-none"
-        style={{ background: 'radial-gradient(circle, rgba(255,48,56,0.06), transparent 70%)' }}
-      />
-
-      {/* Effect Three: Single Shared WebGL Canvas for all Floating 3D Technology Objects */}
-      {showLiveWebGL && (
-        <div
-          className={`fixed inset-0 pointer-events-none ${selectedTech ? 'z-[108]' : 'z-30'}`}
-          aria-hidden="true"
-        >
-          <CanvasErrorBoundary fallback={null}>
-            <Canvas
-              frameloop={sectionActive || selectedTech ? 'always' : 'demand'}
-              camera={{ position: [0, 0, 24], fov: 24, near: 0.1, far: 100 }}
-              dpr={[1, 1.5]}
-              gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
-              onCreated={({ gl }) => {
-                gl.setClearColor(0x000000, 0);
-                setWebglReady(true);
-                gl.domElement.addEventListener('webglcontextlost', (e) => {
-                  e.preventDefault();
-                  setWebglFailed(true);
-                  setWebglReady(false);
-                });
-              }}
-              style={{ width: '100%', height: '100%', background: 'transparent' }}
-            >
-              <TechIconGroup
-                skillsList={skills}
-                slotElementsRef={slotElementsRef}
-                scanTimestampsRef={scanTimestampsRef}
-                pointerRef={pointerRef}
-                hoveredSkillName={hoveredSkillName}
-                selectedTech={selectedTech}
-                sectionActive={sectionActive}
-                reducedMotion={reducedMotion}
-              />
-            </Canvas>
-          </CanvasErrorBoundary>
-        </div>
-      )}
+      {/* Background Ambience */}
+      <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#E62429]/10 blur-3xl pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div
-          variants={sectionHeader}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="text-center mb-14"
-        >
-          <p className="font-orbitron text-[#FF3038] text-sm tracking-[0.3em] mb-3">
-            02. SKILLS
-          </p>
-          <h2 className="font-orbitron text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4">
-            Tech{' '}
-            <span className="bg-gradient-to-r from-[#FF3038] to-[#C91520] bg-clip-text text-transparent">
-              Arsenal
+        {/* Section Header */}
+        <div className="text-center mb-10 sm:mb-14">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="h-[2px] w-8 bg-[#E62429]" />
+            <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.3em] text-[#E62429] uppercase">
+              02 // WEAPONS OF CHOICE
             </span>
-          </h2>
-
-          {/* Subtle command bar: self-assessed clarity + explicit recharge trigger */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <span className="font-inter text-xs text-[#A0A0A0]">
-              Self-assessed proficiency indicators &bull; Click any module to inspect in 3D
-            </span>
-            <button
-              type="button"
-              onClick={() => setReplayKey((k) => k + 1)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.025] border border-white/[0.12] hover:border-[#FF3038] text-[10px] font-orbitron tracking-wider text-[#A0A0A0] hover:text-white transition-colors"
-            >
-              <Zap size={11} className="text-[#FF3038]" />
-              <span>RECHARGE</span>
-            </button>
+            <span className="h-[2px] w-8 bg-[#E62429]" />
           </div>
-        </motion.div>
 
-        {categories.map((cat, catIdx) => (
-          <TechCategory
-            key={cat}
-            category={cat}
-            categoryIndex={catIdx}
-            skillsInCategory={skills.filter((s) => s.category === cat)}
-            replayKey={replayKey}
-            reducedMotion={reducedMotion}
-            webglReady={webglReady}
-            webglFailed={webglFailed}
-            hoveredSkillName={hoveredSkillName}
-            slotElementsRef={slotElementsRef}
-            scanTimestampsRef={scanTimestampsRef}
-            onHoverChange={handleHoverChange}
-            onSelectSkill={handleSelectSkill}
-          />
-        ))}
+          <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight">
+            TECH <span className="text-[#E62429] drop-shadow-[0_0_20px_rgba(230,36,41,0.6)]">ARSENAL</span>
+          </h2>
+          <p className="mt-3 max-w-xl mx-auto text-xs sm:text-sm font-mono text-neutral-400">
+            Click any module to inspect in 3D &bull; Self-assessed commercial proficiency
+          </p>
+        </div>
+
+        {/* 1. Interactive 3D Skill Orb / Tech Sphere */}
+        <div className="mb-14">
+          <DeadpoolSkillOrb />
+        </div>
+
+        {/* 2. Five Categorized Skill Blocks (// MODULES naming style) flying in from alternating sides */}
+        <div className="space-y-8 sm:space-y-10">
+          {SKILL_GROUPS.map((group, groupIdx) => {
+            const groupSkills = allSkills.filter((s) => s.category === group.category);
+            const isEven = groupIdx % 2 === 0;
+
+            return (
+              <motion.div
+                key={group.category}
+                initial={{ opacity: 0, x: isEven ? -60 : 60 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.15 + groupIdx * 0.1,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="dp-glow-box group relative rounded-2xl bg-[#0a0a0c]/90 p-5 sm:p-7 backdrop-blur-xl border border-white/10"
+              >
+                {/* Category Header */}
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 mb-5">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-orbitron text-sm font-black text-[#FF2D2D]">
+                      {group.code}
+                    </span>
+                    <h3 className="font-orbitron text-sm sm:text-base font-bold text-white tracking-wider">
+                      {group.label}
+                    </h3>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#9CA3AF] uppercase">
+                    CLICK TO INSPECT IN 3D
+                  </span>
+                </div>
+
+                {/* Modules Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                  {groupSkills.map((item) => {
+                    const isSelected = selectedSkillName === item.name;
+
+                    return (
+                      <div
+                        key={item.name}
+                        onClick={() => handleSelectModule(item.name)}
+                        className={`group/item relative rounded-xl p-3 bg-black/60 border cursor-pointer transition-all duration-200 ${
+                          isSelected
+                            ? 'border-[#FF2D2D] ring-2 ring-[#FF2D2D] shadow-[0_0_18px_rgba(255,45,45,0.6)]'
+                            : 'border-white/10 hover:border-[#E62429] hover:bg-[#E62429]/10'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="flex items-center gap-1.5 font-orbitron text-xs font-bold text-white group-hover/item:text-[#FF2D2D] transition-colors">
+                            <span>{item.icon}</span>
+                            <span>{item.name}</span>
+                          </span>
+                          <span className="font-mono text-xs font-bold text-[#FF2D2D]">
+                            {item.level}%
+                          </span>
+                        </div>
+
+                        {/* Animated Progress Bar */}
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-900 border border-white/5">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={inView ? { width: `${item.level}%` } : { width: 0 }}
+                            transition={{
+                              duration: 1.1,
+                              delay: 0.35 + groupIdx * 0.08,
+                              ease: [0.16, 1, 0.3, 1],
+                            }}
+                            className="h-full bg-gradient-to-r from-[#8B0000] via-[#E62429] to-[#FF2D2D] shadow-[0_0_8px_#FF2D2D]"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* 3. Dual-Row Tech Logo Marquee */}
+        <div className="mt-20 overflow-hidden py-4 border-y border-[#E62429]/25 bg-black/50 backdrop-blur-md">
+          {/* Row 1: Left */}
+          <motion.div
+            style={{ x: marqueeOffset1 }}
+            className="flex whitespace-nowrap gap-6 mb-3 select-none"
+          >
+            {[...ROW1_LOGOS, ...ROW1_LOGOS, ...ROW1_LOGOS].map((logo, i) => (
+              <span
+                key={`${logo}-${i}`}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] font-orbitron text-xs sm:text-sm font-semibold tracking-wider text-neutral-300 hover:border-[#E62429] hover:text-white transition-colors"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#E62429]" />
+                {logo}
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Row 2: Right */}
+          <motion.div
+            style={{ x: marqueeOffset2 }}
+            className="flex whitespace-nowrap gap-6 select-none"
+          >
+            {[...ROW2_LOGOS, ...ROW2_LOGOS, ...ROW2_LOGOS].map((logo, i) => (
+              <span
+                key={`${logo}-${i}`}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] font-orbitron text-xs sm:text-sm font-semibold tracking-wider text-neutral-300 hover:border-[#FF2D2D] hover:text-white transition-colors"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-[#FF2D2D]" />
+                {logo}
+              </span>
+            ))}
+          </motion.div>
+        </div>
       </div>
 
-      {/* Effect Four: Click-to-Expand Holographic Technology Details Modal */}
-      <TechDetailModal
-        tech={selectedTech}
-        pointerRef={pointerRef}
-        webglEnabled={!webglFailed && webglReady}
-        onSelectTech={(next) => setSelectedTech(next)}
-        onClose={() => setSelectedTech(null)}
-      />
+      {/* Tech 3D Inspection Detail Modal */}
+      {selectedTech && (
+        <TechDetailModal
+          tech={selectedTech}
+          pointerRef={pointerRef}
+          webglEnabled={true}
+          onSelectTech={(next) => {
+            setSelectedTech(next);
+            setSelectedSkillName(next.name);
+          }}
+          onClose={() => {
+            setSelectedTech(null);
+            setSelectedSkillName(null);
+          }}
+        />
+      )}
     </section>
   );
 };
-
-export { TechArsenalSection as Skills };

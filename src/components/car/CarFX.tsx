@@ -24,8 +24,9 @@ const _skidMatrix = new Matrix4();
 
 // ─── 1. TIRE SMOKE PARTICLES (Dense Billowing Smoke) ────────────────────────
 export const TireSmoke: React.FC<CarFXProps> = ({ physicsRef, visualRef }) => {
-  const particleCount = 120;
+  const particleCount = 60;
   const meshRef = useRef<InstancedMesh>(null);
+  const hadActiveParticles = useRef(false);
 
   const particles = useRef<
     { pos: Vector3; vel: Vector3; life: number; maxLife: number; scale: number; rot: number }[]
@@ -44,7 +45,7 @@ export const TireSmoke: React.FC<CarFXProps> = ({ physicsRef, visualRef }) => {
 
   const { geo, mat } = useMemo(
     () => ({
-      geo: new SphereGeometry(0.3, 8, 8),
+      geo: new SphereGeometry(0.3, 6, 6),
       mat: new MeshBasicMaterial({
         color: '#f8fafc',
         transparent: true,
@@ -61,10 +62,15 @@ export const TireSmoke: React.FC<CarFXProps> = ({ physicsRef, visualRef }) => {
     const p = physicsRef.current;
     const v = visualRef.current;
 
-    // Trigger smoke on hard braking or nitro boost launch
+    // Trigger smoke on hard braking or initial launch burnout (< 10 m/s)
     const isBraking = v.isBraking && Math.abs(p.speed) > 3.0;
-    const isBoosting = v.isBoosting;
-    const isSkidding = isBraking || isBoosting;
+    const isLaunchBurnout = v.isBoosting && Math.abs(p.speed) < 10.0;
+    const isSkidding = isBraking || isLaunchBurnout;
+
+    // Early out: if not skidding and no particles active, avoid touching GPU buffers at 120Hz
+    if (!isSkidding && !hadActiveParticles.current) return;
+
+    let anyAlive = false;
 
     particles.current.forEach((pt, i) => {
       // Spawn fresh smoke puffs from rear wheels
@@ -92,9 +98,11 @@ export const TireSmoke: React.FC<CarFXProps> = ({ physicsRef, visualRef }) => {
         pt.life = pt.maxLife;
         pt.scale = 0.35 + Math.random() * 0.2;
         pt.rot = Math.random() * Math.PI * 2;
+        anyAlive = true;
       }
 
       if (pt.life > 0) {
+        anyAlive = true;
         pt.life -= dt;
         pt.pos.addScaledVector(pt.vel, dt);
         // Expand rapidly as smoke billows into air
@@ -114,6 +122,7 @@ export const TireSmoke: React.FC<CarFXProps> = ({ physicsRef, visualRef }) => {
       }
     });
 
+    hadActiveParticles.current = anyAlive;
     meshRef.current.instanceMatrix.needsUpdate = true;
   });
 
@@ -256,8 +265,6 @@ export const NitroExhaustFlame: React.FC<{ visualRef: React.MutableRefObject<Car
           <mesh geometry={coreGeo} material={idx % 2 === 0 ? fireYellowMat : cyanNitroMat} position={[0, 0.2, 0]} />
         </group>
       ))}
-      {/* Dynamic Fiery Exhaust PointLight */}
-      <pointLight position={[0, -0.1, -1.9]} color="#ff4d00" intensity={4.5} distance={5} />
     </group>
   );
 };

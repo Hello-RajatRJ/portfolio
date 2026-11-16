@@ -53,8 +53,8 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
       <Canvas
         key={recoveryAttempt}
         shadows={!isSafeMode}
-        dpr={isSafeMode ? 1 : [1, 1.5]}
-        camera={{ position: [0, 2.0, -8.7], fov: 60, near: 0.5, far: 560 }}
+        dpr={isSafeMode ? 1 : [1, 1.25]}
+        camera={{ position: [0, 2.0, -8.7], fov: 60, near: 0.5, far: 380 }}
         style={{ background: '#070a12' }}
         onCreated={({ gl }) => {
           cleanupListenersRef.current?.();
@@ -82,12 +82,16 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
                 powerPreference: 'default',
                 failIfMajorPerformanceCaveat: false,
                 precision: 'mediump',
+                stencil: false,
+                depth: true,
               }
             : {
-                antialias: true,
+                antialias: false,
                 powerPreference: 'high-performance',
                 failIfMajorPerformanceCaveat: false,
-                precision: 'highp',
+                precision: 'mediump',
+                stencil: false,
+                depth: true,
               }
         }
       >
@@ -103,14 +107,14 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
           position={[28, 48, 24]}
           color="#ffffff"
           intensity={2.2}
-          castShadow
+          castShadow={!isSafeMode}
           shadow-mapSize={[1024, 1024]}
           shadow-camera-near={1}
-          shadow-camera-far={140}
-          shadow-camera-left={-35}
-          shadow-camera-right={35}
-          shadow-camera-top={35}
-          shadow-camera-bottom={-35}
+          shadow-camera-far={110}
+          shadow-camera-left={-28}
+          shadow-camera-right={28}
+          shadow-camera-top={28}
+          shadow-camera-bottom={-28}
           shadow-bias={-0.0003}
           shadow-normalBias={0.04}
         />

@@ -25,9 +25,16 @@ initSkillCubes();
 // ─── 3D INTERACTIVE SKILL CUBES RENDERER ──────────────────────────────────────
 const InteractiveSkillCubes: React.FC = () => {
   const cubesGroupRef = useRef<Group>(null);
+  const wasMovingRef = useRef(true);
 
   useFrame(() => {
-    if (cubesGroupRef.current) {
+    if (!cubesGroupRef.current) return;
+    const isMoving = skillCubesList.some(
+      (c) => Math.abs(c.vel.x) > 0.01 || Math.abs(c.vel.y) > 0.01 || Math.abs(c.vel.z) > 0.01
+    );
+
+    // Only update transforms when cubes are moving or for one final frame after settling
+    if (isMoving || wasMovingRef.current) {
       skillCubesList.forEach((cube, i) => {
         const mesh = cubesGroupRef.current?.children[i] as Group;
         if (mesh) {
@@ -36,6 +43,7 @@ const InteractiveSkillCubes: React.FC = () => {
         }
       });
     }
+    wasMovingRef.current = isMoving;
   });
 
   return (
@@ -64,9 +72,9 @@ const InteractiveSkillCubes: React.FC = () => {
             {/* Text on Front (+Z) */}
             <Text
               position={[0, 0, half + 0.02]}
-              fontSize={0.24}
+              fontSize={0.34}
               color="#ffffff"
-              outlineWidth={0.038}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"
@@ -79,9 +87,9 @@ const InteractiveSkillCubes: React.FC = () => {
             <Text
               position={[0, 0, -half - 0.02]}
               rotation={[0, Math.PI, 0]}
-              fontSize={0.24}
+              fontSize={0.34}
               color="#ffffff"
-              outlineWidth={0.038}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"
@@ -94,9 +102,9 @@ const InteractiveSkillCubes: React.FC = () => {
             <Text
               position={[half + 0.02, 0, 0]}
               rotation={[0, Math.PI / 2, 0]}
-              fontSize={0.24}
+              fontSize={0.34}
               color="#ffffff"
-              outlineWidth={0.038}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"
@@ -109,9 +117,9 @@ const InteractiveSkillCubes: React.FC = () => {
             <Text
               position={[-half - 0.02, 0, 0]}
               rotation={[0, -Math.PI / 2, 0]}
-              fontSize={0.24}
+              fontSize={0.34}
               color="#ffffff"
-              outlineWidth={0.038}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"
@@ -124,9 +132,9 @@ const InteractiveSkillCubes: React.FC = () => {
             <Text
               position={[0, half + 0.02, 0]}
               rotation={[-Math.PI / 2, 0, 0]}
-              fontSize={0.24}
+              fontSize={0.34}
               color="#fde047"
-              outlineWidth={0.038}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"
@@ -157,6 +165,11 @@ export const World: React.FC<WorldProps> = ({
 }) => {
   // Global skill cubes physics simulation loop
   useFrame((_state, delta) => {
+    const isMoving = skillCubesList.some(
+      (c) => Math.abs(c.vel.x) > 0.005 || Math.abs(c.vel.y) > 0.005 || Math.abs(c.vel.z) > 0.005
+    );
+    if (!isMoving) return;
+
     const dt = Math.min(delta, 0.08);
 
     skillCubesList.forEach((cube: SkillCubeState) => {

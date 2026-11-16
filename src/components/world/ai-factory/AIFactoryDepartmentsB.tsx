@@ -4,6 +4,7 @@ import { Group } from 'three';
 import { Text } from '@react-three/drei';
 import { runLiveQuerySimulation } from '../../../data/aiFactoryData';
 import { FactoryArchitectureShell } from './FactoryArchitectureShell';
+import { carGlobalPosition } from '../../CarState';
 import type { FactoryOutputFormat } from '../../../types';
 
 interface DeptsBProps {
@@ -29,7 +30,15 @@ export const AIFactoryDepartmentsB: React.FC<DeptsBProps> = ({
   const tokenCounterRef = useRef<number>(142840);
   const sim = useMemo(() => runLiveQuerySimulation(factoryQuery), [factoryQuery]);
 
+  const deptBFrame = useRef(0);
+
   useFrame((state, delta) => {
+    deptBFrame.current++;
+    // Distance cull: skip department animations when player is in City (> 95m)
+    const distToFactory = Math.hypot(carGlobalPosition.x - 130, carGlobalPosition.z);
+    if (distToFactory > 95) return;
+    if (deptBFrame.current % 2 !== 0) return;
+
     const t = state.clock.elapsedTime;
     tokenCounterRef.current += delta * 142;
 

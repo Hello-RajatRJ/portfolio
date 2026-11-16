@@ -31,6 +31,7 @@ const useEngineAudio = (speedRef: React.MutableRefObject<number>, enabled: boole
   const startRoar = useRef<HTMLAudioElement | null>(null);
   const engineSound = useRef<HTMLAudioElement | null>(null);
   const hasPlayedRoar = useRef(false);
+  const audioFrameCount = useRef(0);
 
   useEffect(() => {
     if (!startRoar.current) {
@@ -66,23 +67,28 @@ const useEngineAudio = (speedRef: React.MutableRefObject<number>, enabled: boole
   }, [enabled]);
 
   useFrame(() => {
-    if (enabled && engineSound.current) {
-      const absSpeed = Math.abs(speedRef.current);
-      const gearSize = Math.max(1, CAR_CONFIG.maxSpeed / 4);
-      const gear = Math.min(3, Math.floor(absSpeed / gearSize));
-      const speedInGear = absSpeed - gear * gearSize;
+    if (!enabled || !engineSound.current) return;
+    audioFrameCount.current++;
+    // Throttle audio property IPC updates to ~30Hz (every 4 frames at 120Hz) to prevent browser audio pipeline stalls
+    if (audioFrameCount.current % 4 !== 0) return;
 
-      const targetRate = Math.max(0.7, Math.min(2.5, 0.8 + (speedInGear / gearSize) * 0.85 + gear * 0.15));
-      const newRate = engineSound.current.playbackRate + (targetRate - engineSound.current.playbackRate) * 0.15;
-      if (Number.isFinite(newRate)) {
-        engineSound.current.playbackRate = Math.max(0.5, Math.min(2.5, newRate));
-      }
+    const absSpeed = Math.abs(speedRef.current);
+    const gearSize = Math.max(1, CAR_CONFIG.maxSpeed / 4);
+    const gear = Math.min(3, Math.floor(absSpeed / gearSize));
+    const speedInGear = absSpeed - gear * gearSize;
 
-      const targetVolume = Math.max(0.1, Math.min(0.65, 0.15 + Math.min(absSpeed / 30, 0.45)));
-      const newVol = engineSound.current.volume + (targetVolume - engineSound.current.volume) * 0.1;
-      if (Number.isFinite(newVol)) {
-        engineSound.current.volume = Math.max(0, Math.min(1, newVol));
-      }
+    const targetRate = Math.max(0.7, Math.min(2.5, 0.8 + (speedInGear / gearSize) * 0.85 + gear * 0.15));
+    const curRate = engineSound.current.playbackRate;
+    const newRate = curRate + (targetRate - curRate) * 0.3;
+    if (Number.isFinite(newRate) && Math.abs(newRate - curRate) > 0.02) {
+      engineSound.current.playbackRate = Math.max(0.5, Math.min(2.5, newRate));
+    }
+
+    const targetVolume = Math.max(0.1, Math.min(0.65, 0.15 + Math.min(absSpeed / 30, 0.45)));
+    const curVol = engineSound.current.volume;
+    const newVol = curVol + (targetVolume - curVol) * 0.25;
+    if (Number.isFinite(newVol) && Math.abs(newVol - curVol) > 0.02) {
+      engineSound.current.volume = Math.max(0, Math.min(1, newVol));
     }
   });
 };
@@ -112,8 +118,9 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
   const stuntMsgRef = useRef<string | null>(null);
   const cameraShake = useRef(0);
 
-  // Distance & Miles-based Fuel Tracking
+  // Distance & Miles-based Fuel Tracking & Nitro State
   const fuelRef = useRef(100);
+  const nitroRef = useRef(100);
   const milesRef = useRef(0);
   const prevFuelPosRef = useRef<{ x: number; z: number } | null>(null);
 
@@ -202,9 +209,10 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
     }
   }, [gameState.gameMode, resetCarToSpawn]);
 
-  // Refill fuel to 100% whenever player switches vehicles
+  // Refill fuel and nitro to 100% whenever player switches vehicles
   useEffect(() => {
     fuelRef.current = 100;
+    nitroRef.current = 100;
   }, [gameState.selectedCar]);
 
   // Guided AI Factory Tour state & GSAP cinematic camera rig
@@ -251,6 +259,7 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
   }, [gameState.tourActive, gameState.tourStepIndex]);
 
   const frameCounter = useRef(0);
+  const lastStateSyncTime = useRef(0);
   const damp = (rate: number, dt: number) => 1 - Math.exp(-rate * dt);
 
   useFrame((state, delta) => {
@@ -311,9 +320,9 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
 
     // ── RESPAWN / RESTART CHECK ──
     if (inputs.reset || p.posY < -5.0) {
-      if (inputs.reset && fuelRef.current <= 0) {
-        fuelRef.current = 25;
-        setGameState((s) => ({ ...s, fuel: 25, isRefueling: false }));
+      if (inputs.reset && fuelRef.current < 50) {
+        fuelRef.current = 50;
+        setGameState((s) => ({ ...s, fuel: 50, isRefueling: false }));
       }
       resetCarToSpawn(gameState.gameMode);
       return;
@@ -446,7 +455,7 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
       fuelSyncRequest.targetFuel = null;
     }
     const hasFuel = fuelRef.current > 0 || gameState.tourActive;
-    const wantBoost = hasFuel && inputs.wheelie && (gameState.nitroAmount > 3 || Math.abs(p.speed) > 0.5);
+    const wantBoost = hasFuel && inputs.wheelie && (nitroRef.current > 3 || Math.abs(p.speed) > 0.5);
     v.isBoosting = wantBoost;
     v.isBraking = false;
 
@@ -470,8 +479,9 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
         : Math.min(0, p.speed + CAR_CONFIG.brakeForce * dt);
     } else if (inputs.forward || autoThrottle) {
       if (hasFuel) {
-        const topSpeed = wantBoost ? CAR_CONFIG.maxBoostSpeed : autoThrottle ? 21.0 : CAR_CONFIG.maxSpeed;
-        const accelRate = wantBoost ? CAR_CONFIG.boostAccel : autoThrottle ? 22.0 : CAR_CONFIG.accel;
+        const isLimpMode = fuelRef.current <= 3 && !gameState.tourActive;
+        const topSpeed = wantBoost ? CAR_CONFIG.maxBoostSpeed : autoThrottle ? 21.0 : isLimpMode ? 8.0 : CAR_CONFIG.maxSpeed;
+        const accelRate = wantBoost ? CAR_CONFIG.boostAccel : autoThrottle ? 22.0 : isLimpMode ? 8.0 : CAR_CONFIG.accel;
         p.speed = Math.min(topSpeed, p.speed + accelRate * dt);
       } else {
         const friction = CAR_CONFIG.friction * 1.4 * dt;
@@ -516,11 +526,14 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
       p.speed = Math.min(CAR_CONFIG.maxBoostSpeed, p.speed + hw.boostSpeed);
       v.isBoosting = true;
       cameraShake.current = 0.22;
-      stuntMsgRef.current = '⚡ SLIPSTREAM BOOST! ⚡';
-      setGameState((s) => ({ ...s, stuntMessage: '⚡ SLIPSTREAM BOOST! ⚡' }));
-      setTimeout(() => {
-        setGameState((s) => ({ ...s, stuntMessage: null }));
-      }, 1500);
+      if (stuntMsgRef.current !== '⚡ SLIPSTREAM BOOST! ⚡') {
+        stuntMsgRef.current = '⚡ SLIPSTREAM BOOST! ⚡';
+        setGameState((s) => ({ ...s, stuntMessage: '⚡ SLIPSTREAM BOOST! ⚡' }));
+        setTimeout(() => {
+          stuntMsgRef.current = null;
+          setGameState((s) => ({ ...s, stuntMessage: null }));
+        }, 1500);
+      }
     }
 
     if (hw.launchVelY > 0 && p.posY <= hw.groundY + 0.3) {
@@ -676,10 +689,11 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
     const refuelingNow = inFuelZoneNow && (inputs.interact || gameState.isRefueling) && fuelRef.current < 100;
 
     if (refuelingNow) {
-      fuelRef.current = Math.min(100, fuelRef.current + dt * 42);
+      fuelRef.current = Math.min(100, fuelRef.current + dt * 60);
+      nitroRef.current = Math.min(100, nitroRef.current + dt * 60);
     } else if (stepMiles > 0) {
-      // Drains strictly per mile driven: 4.5% / mi cruise, 7.5% / mi under Shift Nitro boost
-      const percentPerMile = wantBoost ? 7.5 : 4.5;
+      // Long-range endurance touring: 0.35% / mi cruise (lasts ~285 mi / 15-20 min), 0.85% / mi under Shift Nitro boost (~118 mi)
+      const percentPerMile = wantBoost ? 0.85 : 0.35;
       fuelRef.current = Math.max(0, fuelRef.current - stepMiles * percentPerMile);
     }
 
@@ -781,6 +795,16 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
       currentLookAt.current.z += (lookAtZ - currentLookAt.current.z) * lookDamp;
     }
 
+    // Smooth camera FOV warp during nitro boost for cinematic high-speed sensation
+    const pCam = state.camera as import('three').PerspectiveCamera;
+    if (pCam.isPerspectiveCamera) {
+      const targetFov = wantBoost ? 55 : 50;
+      if (Math.abs(pCam.fov - targetFov) > 0.05) {
+        pCam.fov += (targetFov - pCam.fov) * damp(6.0, dt);
+        pCam.updateProjectionMatrix();
+      }
+    }
+
     // Aim camera at smoothed lookAt point - rock solid 90fps tracking with zero jitter
     state.camera.lookAt(currentLookAt.current.x, currentLookAt.current.y, currentLookAt.current.z);
 
@@ -835,20 +859,21 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
       }
     }
 
-    // Nitro Regen / Drain
-    let nextNitro = gameState.nitroAmount;
+    // Nitro Regen / Drain (decoupled in nitroRef for 120 FPS stability)
     if (wantBoost) {
-      nextNitro = Math.max(0, nextNitro - dt * 32);
+      nitroRef.current = Math.max(0, nitroRef.current - dt * 26);
     } else {
-      nextNitro = Math.min(100, nextNitro + dt * 14);
+      nitroRef.current = Math.min(100, nitroRef.current + dt * 16);
     }
+    let nextNitro = nitroRef.current;
 
     // Fuel Consumption (synchronized from miles-driven ref) & Refuel State
     const nextFuel = fuelRef.current <= 0 ? 0 : Math.min(100, Math.ceil(fuelRef.current));
     const isRefueling = isAtGasStation && (inputs.interact || gameState.isRefueling) && nextFuel < 100;
 
     if (isRefueling) {
-      nextNitro = Math.min(100, nextNitro + dt * 4 * 50);
+      nitroRef.current = Math.min(100, nitroRef.current + dt * 4 * 50);
+      nextNitro = nitroRef.current;
     }
 
     // Calculate current Gear
@@ -862,94 +887,117 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
 
     speedRef.current = p.speed;
 
-    setGameState((prev) => {
-      let newActiveProject = prev.activeProject;
-      let newShowContact = prev.showContact;
-      let newShowGarage = prev.showGarageModal;
-      let newActiveFactoryDept = prev.activeFactoryDeptId;
-      const visited = [...prev.visitedProjects];
-      const visitedFactory = [...prev.visitedFactoryDepts];
+    // ── HIGH REFRESH RATE (120Hz) THROTTLED STATE DISPATCH ──
+    // Determine whether an immediate critical modal/interaction event occurred
+    const garageToggled = Boolean(inputs.garage || (isAtGarage && inputs.interact));
+    const interactionTriggered = Boolean(
+      inputs.interact &&
+      !gameState.activeProject &&
+      !gameState.activeFactoryDeptId &&
+      !gameState.showGarageModal &&
+      !gameState.showContact &&
+      (nearbyFactoryDept || activeProjZone || detectedZone === 'contact')
+    );
+    const zoneTransitioned =
+      gameState.currentZone !== detectedZone ||
+      gameState.activeProjectZoneId !== activeProjZone ||
+      gameState.nearbyFactoryDeptId !== nearbyFactoryDept;
 
-      // Handle Garage toggle with 'G' key or interact at Garage
-      if (inputs.garage || (isAtGarage && inputs.interact)) {
-        newShowGarage = true;
-      }
+    const isCritical = garageToggled || interactionTriggered || zoneTransitioned;
+    const now = performance.now();
+    const shouldSyncContinuous = now - lastStateSyncTime.current >= 60; // Max 16-20Hz React HUD updates at 120Hz
 
-      if (
-        inputs.interact &&
-        !prev.activeProject &&
-        !prev.activeFactoryDeptId &&
-        !prev.showGarageModal &&
-        !prev.showContact
-      ) {
-        if (nearbyFactoryDept) {
-          newActiveFactoryDept = nearbyFactoryDept;
-          inputs.interact = false;
-          if (!visitedFactory.includes(nearbyFactoryDept)) visitedFactory.push(nearbyFactoryDept);
-        } else if (activeProjZone) {
-          const project = projects.find((pr) => pr.id === activeProjZone);
-          if (project) {
-            newActiveProject = project;
-            inputs.interact = false;
-            if (!visited.includes(activeProjZone)) visited.push(activeProjZone);
-          }
-        } else if (detectedZone === 'contact') {
-          newShowContact = true;
-          inputs.interact = false;
+    if (isCritical || shouldSyncContinuous) {
+      lastStateSyncTime.current = now;
+      setGameState((prev) => {
+        let newActiveProject = prev.activeProject;
+        let newShowContact = prev.showContact;
+        let newShowGarage = prev.showGarageModal;
+        let newActiveFactoryDept = prev.activeFactoryDeptId;
+        const visited = [...prev.visitedProjects];
+        const visitedFactory = [...prev.visitedFactoryDepts];
+
+        // Handle Garage toggle with 'G' key or interact at Garage
+        if (inputs.garage || (isAtGarage && inputs.interact)) {
+          newShowGarage = true;
         }
-      }
 
-      const roundedFuel = Math.round(nextFuel);
-      const roundedNitro = Math.round(nextNitro);
-      const roundedMiles = Number(milesRef.current.toFixed(2));
-      const skillsDisplaced = skillCubesList.some(
-        (cube) => cube.pos.distanceToSquared(cube.initialPos) > 0.12 || cube.vel.lengthSq() > 0.05
-      );
+        if (
+          inputs.interact &&
+          !prev.activeProject &&
+          !prev.activeFactoryDeptId &&
+          !prev.showGarageModal &&
+          !prev.showContact
+        ) {
+          if (nearbyFactoryDept) {
+            newActiveFactoryDept = nearbyFactoryDept;
+            inputs.interact = false;
+            if (!visitedFactory.includes(nearbyFactoryDept)) visitedFactory.push(nearbyFactoryDept);
+          } else if (activeProjZone) {
+            const project = projects.find((pr) => pr.id === activeProjZone);
+            if (project) {
+              newActiveProject = project;
+              inputs.interact = false;
+              if (!visited.includes(activeProjZone)) visited.push(activeProjZone);
+            }
+          } else if (detectedZone === 'contact') {
+            newShowContact = true;
+            inputs.interact = false;
+          }
+        }
 
-      // Bail out if nothing meaningful changed to prevent excessive re-renders
-      if (
-        prev.speed === absKmh &&
-        prev.gear === gear &&
-        prev.fuel === roundedFuel &&
-        Math.abs(prev.milesDriven - roundedMiles) < 0.01 &&
-        prev.isRefueling === isRefueling &&
-        prev.skillsDisplaced === skillsDisplaced &&
-        prev.showGarageModal === newShowGarage &&
-        prev.nearbyFactoryDeptId === nearbyFactoryDept &&
-        prev.activeFactoryDeptId === newActiveFactoryDept &&
-        Math.abs(prev.nitroAmount - roundedNitro) < 2 &&
-        prev.currentZone === detectedZone &&
-        prev.activeProjectZoneId === activeProjZone &&
-        prev.activeProject === newActiveProject &&
-        prev.showContact === newShowContact &&
-        prev.stuntScore === stuntScoreRef.current &&
-        prev.stuntMessage === stuntMsgRef.current
-      ) {
-        return prev;
-      }
+        const roundedFuel = Math.round(nextFuel);
+        const roundedNitro = Math.round(nextNitro);
+        const roundedMiles = Number(milesRef.current.toFixed(2));
+        const skillsDisplaced = skillCubesList.some(
+          (cube) => cube.pos.distanceToSquared(cube.initialPos) > 0.12 || cube.vel.lengthSq() > 0.05
+        );
 
-      return {
-        ...prev,
-        speed: absKmh,
-        gear,
-        fuel: roundedFuel,
-        isRefueling,
-        skillsDisplaced,
-        showGarageModal: newShowGarage,
-        nearbyFactoryDeptId: nearbyFactoryDept,
-        activeFactoryDeptId: newActiveFactoryDept,
-        visitedFactoryDepts: visitedFactory,
-        nitroAmount: roundedNitro,
-        currentZone: detectedZone,
-        activeProjectZoneId: activeProjZone,
-        activeProject: newActiveProject,
-        showContact: newShowContact,
-        visitedProjects: visited,
-        milesDriven: roundedMiles,
-        stuntScore: stuntScoreRef.current,
-        stuntMessage: stuntMsgRef.current,
-      };
-    });
+        // Bail out if nothing meaningful changed to prevent excessive re-renders
+        if (
+          prev.speed === absKmh &&
+          prev.gear === gear &&
+          prev.fuel === roundedFuel &&
+          Math.abs(prev.milesDriven - roundedMiles) < 0.01 &&
+          prev.isRefueling === isRefueling &&
+          prev.skillsDisplaced === skillsDisplaced &&
+          prev.showGarageModal === newShowGarage &&
+          prev.nearbyFactoryDeptId === nearbyFactoryDept &&
+          prev.activeFactoryDeptId === newActiveFactoryDept &&
+          Math.abs(prev.nitroAmount - roundedNitro) < 2 &&
+          prev.currentZone === detectedZone &&
+          prev.activeProjectZoneId === activeProjZone &&
+          prev.activeProject === newActiveProject &&
+          prev.showContact === newShowContact &&
+          prev.stuntScore === stuntScoreRef.current &&
+          prev.stuntMessage === stuntMsgRef.current
+        ) {
+          return prev;
+        }
+
+        return {
+          ...prev,
+          speed: absKmh,
+          gear,
+          fuel: roundedFuel,
+          isRefueling,
+          skillsDisplaced,
+          showGarageModal: newShowGarage,
+          nearbyFactoryDeptId: nearbyFactoryDept,
+          activeFactoryDeptId: newActiveFactoryDept,
+          visitedFactoryDepts: visitedFactory,
+          nitroAmount: roundedNitro,
+          currentZone: detectedZone,
+          activeProjectZoneId: activeProjZone,
+          activeProject: newActiveProject,
+          showContact: newShowContact,
+          visitedProjects: visited,
+          milesDriven: roundedMiles,
+          stuntScore: stuntScoreRef.current,
+          stuntMessage: stuntMsgRef.current,
+        };
+      });
+    }
   });
 
   const sportsFallback = <SportsCarModel physicsRef={physics} visualRef={visual} />;

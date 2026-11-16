@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Group, InstancedMesh, Object3D, Color } from 'three';
 import { Text } from '@react-three/drei';
 import { FactoryArchitectureShell } from './FactoryArchitectureShell';
+import { carGlobalPosition } from '../../CarState';
 
 const _dummy = new Object3D();
 const _col = new Color();
@@ -86,7 +87,15 @@ export const AIFactoryDepartmentsA: React.FC<{ activeDeptId: string | null }> = 
     }
   }, [embedPoints, serverCubeData]);
 
+  const deptAFrame = useRef(0);
+
   useFrame((state, delta) => {
+    deptAFrame.current++;
+    // Distance cull: skip animations when player is in the City (> 95m)
+    const distToFactory = Math.hypot(carGlobalPosition.x - 130, carGlobalPosition.z);
+    if (distToFactory > 95) return;
+    if (deptAFrame.current % 2 !== 0) return;
+
     const t = state.clock.elapsedTime;
     if (startBeaconRef.current) {
       startBeaconRef.current.rotation.y += delta * 1.4;

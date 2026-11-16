@@ -135,24 +135,24 @@ export const PortfolioLandmarks: React.FC = () => {
         </group>
 
         {/* High-Visibility Camera-Facing Executive Plaque Billboard */}
-        <Billboard position={[0, 2.65, 0]} follow lockX={false} lockY={false} lockZ={false}>
+        <Billboard position={[0, 2.75, 0]} follow lockX={false} lockY={false} lockZ={false}>
           {/* Cyan Perimeter Border */}
           <mesh position={[0, 0, 0]}>
-            <planeGeometry args={[4.3, 1.6]} />
+            <planeGeometry args={[5.2, 2.0]} />
             <meshBasicMaterial color="#38bdf8" toneMapped={false} />
           </mesh>
           {/* Inner Dark Obsidian Board */}
           <mesh position={[0, 0, 0.025]}>
-            <planeGeometry args={[4.15, 1.45]} />
+            <planeGeometry args={[5.0, 1.82]} />
             <meshBasicMaterial color="#080c16" />
           </mesh>
 
           {/* Header */}
           <Text
-            position={[0, 0.48, 0.05]}
-            fontSize={0.34}
+            position={[0, 0.58, 0.05]}
+            fontSize={0.46}
             color="#ffffff"
-            outlineWidth={0.038}
+            outlineWidth={0.055}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -162,26 +162,26 @@ export const PortfolioLandmarks: React.FC = () => {
           </Text>
           {/* Subtitle */}
           <Text
-            position={[0, 0.22, 0.05]}
-            fontSize={0.18}
+            position={[0, 0.25, 0.05]}
+            fontSize={0.24}
             color="#38bdf8"
-            outlineWidth={0.025}
+            outlineWidth={0.032}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
             anchorY="middle"
           >
-            FULL-STACK & 3D CREATIVE DEVELOPER
+            FULL-STACK DEVELOPER
           </Text>
           {/* Bio text */}
           <Text
-            position={[0, -0.08, 0.05]}
-            fontSize={0.16}
+            position={[0, -0.10, 0.05]}
+            fontSize={0.20}
             color="#cbd5e1"
-            outlineWidth={0.022}
+            outlineWidth={0.026}
             outlineColor="#000000"
             outlineOpacity={1}
-            maxWidth={3.8}
+            maxWidth={4.6}
             lineHeight={1.25}
             anchorX="center"
             anchorY="middle"
@@ -190,10 +190,10 @@ export const PortfolioLandmarks: React.FC = () => {
           </Text>
           {/* Details */}
           <Text
-            position={[0, -0.42, 0.05]}
-            fontSize={0.15}
+            position={[0, -0.52, 0.05]}
+            fontSize={0.18}
             color="#94a3b8"
-            outlineWidth={0.022}
+            outlineWidth={0.025}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -204,14 +204,14 @@ export const PortfolioLandmarks: React.FC = () => {
         </Billboard>
       </group>
 
-      {/* ── 3. CORE TECHNICAL ARSENAL OVERHEAD MARKER (Pie & Pedestal Pillars Removed for Clean Road) ── */}
+      {/* ── 3. CORE TECHNICAL ARSENAL OVERHEAD MARKER ── */}
       <group position={[18, 0, 0]}>
-        <Billboard position={[0, 4.4, 0]} follow lockX={false} lockY={false} lockZ={false}>
+        <Billboard position={[0, 4.6, 0]} follow lockX={false} lockY={false} lockZ={false}>
           <Text
-            position={[0, 0.22, 0]}
-            fontSize={0.46}
+            position={[0, 0.26, 0]}
+            fontSize={0.56}
             color="#ffffff"
-            outlineWidth={0.048}
+            outlineWidth={0.065}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -220,10 +220,10 @@ export const PortfolioLandmarks: React.FC = () => {
             CORE TECHNICAL ARSENAL
           </Text>
           <Text
-            position={[0, -0.22, 0]}
-            fontSize={0.22}
+            position={[0, -0.26, 0]}
+            fontSize={0.26}
             color="#38bdf8"
-            outlineWidth={0.03}
+            outlineWidth={0.035}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -287,10 +287,10 @@ export const PortfolioLandmarks: React.FC = () => {
 
                 {/* Bold Bright Company Name with Black Shadow Outline */}
                 <Text
-                  position={[0, 0.18, 0.05]}
-                  fontSize={0.42}
+                  position={[0, 0.20, 0.05]}
+                  fontSize={0.48}
                   color="#ffffff"
-                  outlineWidth={0.045}
+                  outlineWidth={0.055}
                   outlineColor="#000000"
                   outlineOpacity={1}
                   anchorX="center"
@@ -302,9 +302,9 @@ export const PortfolioLandmarks: React.FC = () => {
                 {/* Role and Period in Bright Cyan */}
                 <Text
                   position={[0, -0.22, 0.05]}
-                  fontSize={0.18}
+                  fontSize={0.24}
                   color="#38bdf8"
-                  outlineWidth={0.028}
+                  outlineWidth={0.032}
                   outlineColor="#000000"
                   outlineOpacity={1}
                   anchorX="center"
@@ -351,10 +351,10 @@ export const PortfolioLandmarks: React.FC = () => {
 
         {/* Clean Finish Line Banner with Black Outline */}
         <Text
-          position={[0, 4.42, 0.35]}
-          fontSize={0.48}
+          position={[0, 4.45, 0.35]}
+          fontSize={0.54}
           color="#ffffff"
-          outlineWidth={0.045}
+          outlineWidth={0.06}
           outlineColor="#000000"
           outlineOpacity={1}
           anchorX="center"
@@ -363,10 +363,10 @@ export const PortfolioLandmarks: React.FC = () => {
           CIRCUIT FINISH LINE
         </Text>
         <Text
-          position={[0, 3.96, 0.35]}
-          fontSize={0.22}
+          position={[0, 3.92, 0.35]}
+          fontSize={0.26}
           color="#38bdf8"
-          outlineWidth={0.028}
+          outlineWidth={0.032}
           outlineColor="#000000"
           outlineOpacity={1}
           anchorX="center"
@@ -377,17 +377,30 @@ export const PortfolioLandmarks: React.FC = () => {
 
         {/* Reverse Side Text */}
         <Text
-          position={[0, 4.42, -0.35]}
+          position={[0, 4.45, -0.35]}
           rotation={[0, Math.PI, 0]}
-          fontSize={0.48}
+          fontSize={0.54}
           color="#ffffff"
-          outlineWidth={0.045}
+          outlineWidth={0.06}
           outlineColor="#000000"
           outlineOpacity={1}
           anchorX="center"
           anchorY="middle"
         >
           CIRCUIT FINISH LINE
+        </Text>
+        <Text
+          position={[0, 3.92, -0.35]}
+          rotation={[0, Math.PI, 0]}
+          fontSize={0.26}
+          color="#38bdf8"
+          outlineWidth={0.032}
+          outlineColor="#000000"
+          outlineOpacity={1}
+          anchorX="center"
+          anchorY="middle"
+        >
+          CONNECT WITH RAJAT · rajatgautam179@gmail.com
         </Text>
       </group>
     </group>

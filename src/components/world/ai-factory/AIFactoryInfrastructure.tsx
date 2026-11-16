@@ -12,6 +12,7 @@ import {
 } from 'three';
 import { Text, Billboard } from '@react-three/drei';
 import { AI_DEPARTMENTS, AI_PIPELINE_CONDUITS } from '../../../data/aiFactoryData';
+import { carGlobalPosition } from '../../CarState';
 
 const _dummy = new Object3D();
 const _tmpPos = new Vector3();
@@ -189,7 +190,17 @@ export const AIFactoryInfrastructure: React.FC<{
     }
   }, [totalParticles, cargoSlots]);
 
+  const infraFrameRef = useRef(0);
+
   useFrame((state, delta) => {
+    infraFrameRef.current++;
+    // Distance cull: skip particle recalculations if player is far away in City (> 95m)
+    const distToFactory = Math.hypot(carGlobalPosition.x - 130, carGlobalPosition.z);
+    if (distToFactory > 95) return;
+
+    // Throttle complex particle matrix calculations to every 2nd frame (60Hz on 120Hz displays)
+    if (infraFrameRef.current % 2 !== 0) return;
+
     const t = state.clock.elapsedTime;
 
     if (particleMeshRef.current) {

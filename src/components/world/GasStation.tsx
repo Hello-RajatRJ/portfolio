@@ -118,10 +118,10 @@ export const GasStation: React.FC<GasStationProps> = ({
         </mesh>
 
         <Text
-          position={[0, 0.38, 0.06]}
-          fontSize={0.78}
+          position={[0, 0.40, 0.06]}
+          fontSize={0.92}
           color="#4ade80"
-          outlineWidth={0.055}
+          outlineWidth={0.075}
           outlineColor="#000000"
           outlineOpacity={1}
           anchorX="center"
@@ -132,9 +132,9 @@ export const GasStation: React.FC<GasStationProps> = ({
 
         <Text
           position={[0, -0.42, 0.06]}
-          fontSize={0.36}
+          fontSize={0.44}
           color="#a7f3d0"
-          outlineWidth={0.032}
+          outlineWidth={0.045}
           outlineColor="#000000"
           outlineOpacity={1}
           anchorX="center"

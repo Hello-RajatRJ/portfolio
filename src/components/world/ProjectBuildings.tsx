@@ -134,10 +134,10 @@ export const ProjectBuildings: React.FC<ProjectBuildingsProps> = ({
           <meshBasicMaterial color="#f97316" toneMapped={false} />
         </mesh>
         <Text
-          position={[0, 6.02, 0.38]}
-          fontSize={0.34}
-          color="#fff7ed"
-          outlineWidth={0.03}
+          position={[0, 6.05, 0.38]}
+          fontSize={0.48}
+          color="#ffffff"
+          outlineWidth={0.055}
           outlineColor="#000000"
           anchorX="center"
           anchorY="middle"
@@ -145,10 +145,10 @@ export const ProjectBuildings: React.FC<ProjectBuildingsProps> = ({
           PRODUCTION PROJECTS CAMPUS
         </Text>
         <Text
-          position={[0, 5.68, 0.38]}
-          fontSize={0.18}
+          position={[0, 5.62, 0.38]}
+          fontSize={0.24}
           color="#fb923c"
-          outlineWidth={0.02}
+          outlineWidth={0.032}
           outlineColor="#000000"
           anchorX="center"
           anchorY="middle"
@@ -295,21 +295,21 @@ export const ProjectBuildings: React.FC<ProjectBuildingsProps> = ({
               ))}
             </group>
 
-            {/* AI-Factory-Style Floating Project Telemetry Billboard */}
+            {/* AI-Factory-Style High-Visibility Floating Project Billboard */}
             <Billboard position={[loc.x, billboardY, loc.z]} follow>
               <mesh position={[0, 0, 0]}>
-                <planeGeometry args={[5.8, 1.62]} />
+                <planeGeometry args={[6.8, 2.15]} />
                 <meshBasicMaterial color={accentColor} toneMapped={false} />
               </mesh>
               <mesh position={[0, 0, 0.02]}>
-                <planeGeometry args={[5.54, 1.38]} />
-                <meshBasicMaterial color="#090a0f" />
+                <planeGeometry args={[6.55, 1.92]} />
+                <meshBasicMaterial color="#05060b" />
               </mesh>
               <Text
-                position={[0, 0.44, 0.05]}
-                fontSize={0.2}
+                position={[0, 0.58, 0.05]}
+                fontSize={0.28}
                 color="#fb923c"
-                outlineWidth={0.025}
+                outlineWidth={0.035}
                 outlineColor="#000000"
                 outlineOpacity={1}
                 anchorX="center"
@@ -318,10 +318,10 @@ export const ProjectBuildings: React.FC<ProjectBuildingsProps> = ({
                 {`${code} · ${project.category.toUpperCase()}`}
               </Text>
               <Text
-                position={[0, 0.02, 0.05]}
-                fontSize={0.34}
-                color="#fff7ed"
-                outlineWidth={0.035}
+                position={[0, 0.08, 0.05]}
+                fontSize={0.52}
+                color="#ffffff"
+                outlineWidth={0.065}
                 outlineColor="#000000"
                 outlineOpacity={1}
                 anchorX="center"
@@ -330,10 +330,10 @@ export const ProjectBuildings: React.FC<ProjectBuildingsProps> = ({
                 {project.name.toUpperCase()}
               </Text>
               <Text
-                position={[0, -0.44, 0.05]}
-                fontSize={0.2}
-                color={isActive ? '#fde047' : '#fca5a5'}
-                outlineWidth={0.025}
+                position={[0, -0.52, 0.05]}
+                fontSize={0.28}
+                color={isActive ? '#fde047' : '#94a3b8'}
+                outlineWidth={0.035}
                 outlineColor="#000000"
                 outlineOpacity={1}
                 anchorX="center"

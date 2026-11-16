@@ -21,18 +21,18 @@ const ModernNightBuilding: React.FC<{
       {name && (
         <Billboard position={[0, 13.4, 0]}>
           <mesh position={[0, 0, 0]}>
-            <planeGeometry args={[4.12, 0.8]} />
+            <planeGeometry args={[4.8, 1.05]} />
             <meshBasicMaterial color="#ef4444" toneMapped={false} />
           </mesh>
           <mesh position={[0, 0, 0.025]}>
-            <planeGeometry args={[3.95, 0.65]} />
+            <planeGeometry args={[4.6, 0.9]} />
             <meshBasicMaterial color="#050508" />
           </mesh>
           <Text
             position={[0, 0, 0.055]}
-            fontSize={0.32}
+            fontSize={0.44}
             color="#ffffff"
-            outlineWidth={0.035}
+            outlineWidth={0.055}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -64,18 +64,18 @@ const OfficeBuildingModel: React.FC<{
       {name && (
         <Billboard position={[0, 3.8, 0]}>
           <mesh position={[0, 0, 0]}>
-            <planeGeometry args={[4.3, 0.8]} />
+            <planeGeometry args={[5.0, 1.05]} />
             <meshBasicMaterial color="#38bdf8" toneMapped={false} />
           </mesh>
           <mesh position={[0, 0, 0.025]}>
-            <planeGeometry args={[4.15, 0.65]} />
+            <planeGeometry args={[4.8, 0.9]} />
             <meshBasicMaterial color="#080c16" />
           </mesh>
           <Text
             position={[0, 0, 0.055]}
-            fontSize={0.32}
+            fontSize={0.44}
             color="#ffffff"
-            outlineWidth={0.035}
+            outlineWidth={0.055}
             outlineColor="#000000"
             outlineOpacity={1}
             anchorX="center"
@@ -346,23 +346,23 @@ const RealSkyscraper: React.FC<{ b: BuildingSpec }> = ({ b }) => {
 
         {/* ── HIGH-VISIBILITY ROOFTOP CORPORATE SIGNBOARD ── */}
         {b.name && (
-          <Billboard position={[0, 1.15, 0]} follow lockX={false} lockY={false} lockZ={false}>
+          <Billboard position={[0, 1.25, 0]} follow lockX={false} lockY={false} lockZ={false}>
             {/* Neon Accent Border */}
             <mesh position={[0, 0, 0]}>
-              <planeGeometry args={[3.7, 0.78]} />
+              <planeGeometry args={[4.6, 1.05]} />
               <meshBasicMaterial color="#ef4444" toneMapped={false} />
             </mesh>
             {/* Dark Backing Board */}
             <mesh position={[0, 0, 0.025]}>
-              <planeGeometry args={[3.55, 0.64]} />
+              <planeGeometry args={[4.4, 0.9]} />
               <meshBasicMaterial color="#0a0306" />
             </mesh>
             {/* Bold Bright Building Name with Heavy Black Outline */}
             <Text
               position={[0, 0, 0.055]}
-              fontSize={0.34}
+              fontSize={0.46}
               color="#fde047"
-              outlineWidth={0.04}
+              outlineWidth={0.055}
               outlineColor="#000000"
               outlineOpacity={1}
               anchorX="center"

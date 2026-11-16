@@ -23,14 +23,14 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
   const rearRightWheel = useRef<Group>(null);
   const brakeLightMatRef = useRef<MeshBasicMaterial>(null);
 
-  // High-Gloss Automotive Red Paint (Image 1 reference)
+  // High-Gloss Automotive Red Paint (Crisp, vibrant, visible in all lighting)
   const redPaintMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#dc2626',
-        metalness: 0.85,
-        roughness: 0.14,
-        envMapIntensity: 2.5,
+        color: '#f43f5e',
+        metalness: 0.38,
+        roughness: 0.16,
+        envMapIntensity: 2.2,
       }),
     []
   );
@@ -38,9 +38,9 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
   const blackStripeMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#09090b',
-        roughness: 0.3,
-        metalness: 0.5,
+        color: '#18181b',
+        roughness: 0.35,
+        metalness: 0.3,
       }),
     []
   );
@@ -48,9 +48,9 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
   const carbonMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#18181b',
-        roughness: 0.6,
-        metalness: 0.4,
+        color: '#27272a',
+        roughness: 0.5,
+        metalness: 0.25,
       }),
     []
   );
@@ -58,11 +58,11 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
   const glassMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#020617',
+        color: '#0f172a',
         roughness: 0.1,
-        metalness: 0.9,
+        metalness: 0.6,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.75,
       }),
     []
   );
@@ -71,7 +71,7 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
     () =>
       new MeshStandardMaterial({
         color: '#f8fafc',
-        metalness: 0.98,
+        metalness: 0.95,
         roughness: 0.08,
       }),
     []
@@ -80,8 +80,8 @@ export const SportsCarModel: React.FC<SportsCarModelProps> = ({
   const tireMat = useMemo(
     () =>
       new MeshStandardMaterial({
-        color: '#18181b',
-        roughness: 0.7,
+        color: '#27272a',
+        roughness: 0.65,
       }),
     []
   );

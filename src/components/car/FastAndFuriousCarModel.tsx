@@ -40,9 +40,9 @@ export const FastAndFuriousCarModel: React.FC<FastAndFuriousModelProps> = ({
             mats.forEach((m) => {
               if (m && 'roughness' in m) {
                 const mat = m as MeshStandardMaterial;
-                mat.roughness = Math.min(mat.roughness || 0.4, 0.35);
-                mat.metalness = Math.max(mat.metalness || 0.5, 0.75);
-                mat.envMapIntensity = 2.5;
+                mat.roughness = 0.28;
+                mat.metalness = Math.min(mat.metalness ?? 0.35, 0.45);
+                mat.envMapIntensity = 2.0;
               }
             });
           }

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useCallback, useState, Suspense, lazy } from 'react';
-import type { GameState, GameMode, Project } from '../types';
+import type { GameState, GameMode, Project, CameraPerspective } from '../types';
 import { carGlobalPosition, carGlobalAngle, fuelSyncRequest, resetSkillCubes, tourJumpRequest, ZONES } from './CarState';
 import { PROJECT_LOCATIONS } from '../data/projectLocations';
 import { resetBowlingPins } from './world/GameModesManager';
@@ -8,6 +8,7 @@ import { PortfolioDrawer } from './PortfolioDrawer';
 import {
   Volume2,
   VolumeX,
+  Camera,
   HelpCircle,
   Folder,
   Flag,
@@ -185,6 +186,33 @@ export const HUD: React.FC<HUDProps> = ({
     }, 2000);
   }, [setGameState]);
 
+  const prevCamRef = useRef(gameState.cameraPerspective);
+  useEffect(() => {
+    if (prevCamRef.current !== gameState.cameraPerspective) {
+      prevCamRef.current = gameState.cameraPerspective;
+      const labels: Record<CameraPerspective, string> = {
+        'tpp': 'CAMERA: CHASE (TPP)',
+        'tpp-close': 'CAMERA: CLOSE CHASE',
+        'hood': 'CAMERA: HOOD / DASHBOARD',
+        'front': 'CAMERA: FRONT ACTION (FRONT OF CAR)',
+        'bumper': 'CAMERA: FRONT BUMPER NOSE CAM',
+        'drone': 'CAMERA: AERIAL DRONE',
+      };
+      setCarToast(labels[gameState.cameraPerspective]);
+      const timer = setTimeout(() => setCarToast(null), 1800);
+      return () => clearTimeout(timer);
+    }
+  }, [gameState.cameraPerspective]);
+
+  const handleToggleCamera = useCallback(() => {
+    const modes: CameraPerspective[] = ['tpp', 'tpp-close', 'hood', 'front', 'bumper', 'drone'];
+    setGameState((s) => {
+      const curIdx = modes.indexOf(s.cameraPerspective);
+      const nextMode = modes[(curIdx + 1) % modes.length];
+      return { ...s, cameraPerspective: nextMode };
+    });
+  }, [setGameState]);
+
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
@@ -210,7 +238,7 @@ export const HUD: React.FC<HUDProps> = ({
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [handleSelectCar, setGameState]);
+  }, [handleSelectCar, handleToggleCamera, setGameState]);
 
   useEffect(() => {
     let interval: number | undefined;
@@ -763,6 +791,14 @@ export const HUD: React.FC<HUDProps> = ({
           <span>GARAGE [G]</span>
         </button>
         <button
+          onClick={handleToggleCamera}
+          className="hud-action-btn"
+          title="Cycle Camera Perspective (Hotkey: C)"
+        >
+          <Camera size={14} className="text-amber-400" />
+          <span>CAM [C]</span>
+        </button>
+        <button
           onClick={() => setShowControlsHint((prev) => !prev)}
           className="hud-action-btn"
           title="Controls Guide"
@@ -1150,7 +1186,7 @@ export const HUD: React.FC<HUDProps> = ({
           <div><b className="text-white">Shift</b> : Nitro Overdrive & Wheelie</div>
           <div><b className="text-white">1, 2, 3, 4</b> : Hotkey Quick Vehicle Switch</div>
           <div><b className="text-white">G</b> : Performance Motorworks Garage</div>
-          <div><b className="text-white">C</b> : Orbit / Chase Camera Perspective</div>
+          <div><b className="text-white">C</b> : Camera Perspectives (Chase, Close, Hood, Front View, Front Bumper, Drone)</div>
           <div><b className="text-white">E / Enter</b> : Explore AI Factory Dept / Refuel / Case Study</div>
           <div><b className="text-white">R</b> : Recalibrate Vehicle Orientation</div>
         </div>

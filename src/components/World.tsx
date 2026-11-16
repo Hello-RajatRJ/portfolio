@@ -213,10 +213,10 @@ export const World: React.FC<WorldProps> = ({
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[85, -0.05, 0]} receiveShadow>
         <planeGeometry args={[520, 380]} />
         <meshStandardMaterial
-          color="#080b12"
-          roughness={0.72}
-          metalness={0.2}
-          envMapIntensity={1.1}
+          color="#111625"
+          roughness={0.65}
+          metalness={0.16}
+          envMapIntensity={1.25}
         />
       </mesh>
 

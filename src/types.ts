@@ -27,7 +27,7 @@ export interface Project {
 
 export type MiniGameType = 'none' | 'coins' | 'race';
 export type GameMode = 'free-roam' | 'racing' | 'bowling' | 'stunt' | 'ai-factory';
-export type CameraPerspective = 'tpp' | 'tpp-close' | 'hood' | 'drone';
+export type CameraPerspective = 'tpp' | 'tpp-close' | 'hood' | 'front' | 'bumper' | 'drone';
 export type CarChoice = 'mustang' | 'charger' | 'cyberpunk' | 'beetle';
 export type FactoryOutputFormat = 'text' | 'json' | 'code' | 'summary' | 'audio';
 

@@ -12,9 +12,9 @@ const RoadSegment: React.FC<{
       <mesh receiveShadow>
         <planeGeometry args={args} />
         <meshStandardMaterial
-          color="#131622"
-          roughness={0.78}
-          metalness={0.18}
+          color="#1a2236"
+          roughness={0.68}
+          metalness={0.16}
           polygonOffset
           polygonOffsetFactor={1}
           polygonOffsetUnits={1}
@@ -23,10 +23,10 @@ const RoadSegment: React.FC<{
 
       {/* Cyber neon cyan center lane marking */}
       <mesh position={[0, 0, 0.008]}>
-        <planeGeometry args={isVertical ? [0.12, args[1]] : [args[0], 0.12]} />
+        <planeGeometry args={isVertical ? [0.14, args[1]] : [args[0], 0.14]} />
         <meshBasicMaterial
           color="#38bdf8"
-          opacity={0.35}
+          opacity={0.65}
           transparent
           depthWrite={false}
           polygonOffset
@@ -43,7 +43,7 @@ const RoadSegment: React.FC<{
             <planeGeometry args={[0.08, args[1]]} />
             <meshBasicMaterial
               color="#c084fc"
-              opacity={0.4}
+              opacity={0.6}
               transparent
               depthWrite={false}
               polygonOffset
@@ -56,7 +56,7 @@ const RoadSegment: React.FC<{
             <planeGeometry args={[0.08, args[1]]} />
             <meshBasicMaterial
               color="#c084fc"
-              opacity={0.4}
+              opacity={0.6}
               transparent
               depthWrite={false}
               polygonOffset
@@ -72,7 +72,7 @@ const RoadSegment: React.FC<{
             <planeGeometry args={[args[0], 0.08]} />
             <meshBasicMaterial
               color="#c084fc"
-              opacity={0.4}
+              opacity={0.6}
               transparent
               depthWrite={false}
               polygonOffset
@@ -85,7 +85,7 @@ const RoadSegment: React.FC<{
             <planeGeometry args={[args[0], 0.08]} />
             <meshBasicMaterial
               color="#c084fc"
-              opacity={0.4}
+              opacity={0.6}
               transparent
               depthWrite={false}
               polygonOffset

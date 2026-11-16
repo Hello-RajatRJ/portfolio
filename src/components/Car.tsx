@@ -331,7 +331,7 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
     // ── CAMERA PERSPECTIVE TOGGLE ('C' KEY) ──
     if (inputs.cameraToggle && !wasCameraToggled.current) {
       wasCameraToggled.current = true;
-      const modes: CameraPerspective[] = ['tpp', 'tpp-close', 'hood', 'drone'];
+      const modes: CameraPerspective[] = ['tpp', 'tpp-close', 'hood', 'front', 'bumper', 'drone'];
       const curIdx = modes.indexOf(gameState.cameraPerspective);
       const nextMode = modes[(curIdx + 1) % modes.length];
       setGameState((s) => ({ ...s, cameraPerspective: nextMode }));
@@ -455,18 +455,24 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
       fuelSyncRequest.targetFuel = null;
     }
     const hasFuel = fuelRef.current > 0 || gameState.tourActive;
-    const wantBoost = hasFuel && inputs.wheelie && (nitroRef.current > 3 || Math.abs(p.speed) > 0.5);
+    const isReversing = inputs.backward || p.speed < -0.15;
+    // Nitro boost & wheelie only engage in forward motion, never in reverse
+    const wantBoost = hasFuel && inputs.wheelie && !isReversing && (nitroRef.current > 3 || p.speed > 0.5);
     v.isBoosting = wantBoost;
     v.isBraking = false;
 
-    // ── WHEELIE POP MECHANIC (Pops front wheels into the air on Shift boost) ──
+    // ── WHEELIE POP MECHANIC (Pops front wheels on forward boost only; disabled in reverse) ──
     let targetWheelie = 0;
-    if (wantBoost) {
-      // High Hot Wheels wheelie pop on nitro boost!
-      targetWheelie = Math.abs(p.speed) < 14 ? 0.36 : 0.24;
+    if (wantBoost && !isReversing && p.speed >= 0) {
+      // High Hot Wheels wheelie pop on forward nitro boost!
+      targetWheelie = p.speed < 14 ? 0.36 : 0.24;
     }
     const prevWheelie = v.wheelieAngle;
-    v.wheelieAngle += (targetWheelie - v.wheelieAngle) * damp(12.0, dt);
+    const wheelieDampRate = isReversing ? 24.0 : 12.0;
+    v.wheelieAngle += (targetWheelie - v.wheelieAngle) * damp(wheelieDampRate, dt);
+    if (isReversing && v.wheelieAngle < 0.01) {
+      v.wheelieAngle = 0;
+    }
     if (prevWheelie > 0.18 && v.wheelieAngle <= 0.05) {
       // Subtle camera landing bounce when front wheels slam back down
       cameraShake.current = 0.12;
@@ -744,6 +750,20 @@ export const Car: React.FC<CarProps> = ({ gameState, setGameState, projects }) =
           followHeight = 0.85;
           lookAheadDist = 4.0;
           lookAtHeight = 0.85;
+          break;
+        case 'front':
+          // Front-Facing Action Cam: 4.5m ahead of the car, looking directly back at front grille, headlights & body
+          followDist = -4.5;
+          followHeight = 1.35;
+          lookAheadDist = 0.2;
+          lookAtHeight = 0.85;
+          break;
+        case 'bumper':
+          // Front Bumper / Nose Cam: Mounted right on the front grille pointing forward down the road
+          followDist = -1.95;
+          followHeight = 0.45;
+          lookAheadDist = 6.0;
+          lookAtHeight = 0.45;
           break;
         case 'drone':
           followDist = 8.8;

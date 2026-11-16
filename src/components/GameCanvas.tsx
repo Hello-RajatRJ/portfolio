@@ -96,34 +96,41 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, setGameState,
         }
       >
         {/* Sleek midnight atmospheric depth fog (tuned for large City + AI Factory world) */}
-        <fog attach="fog" args={['#070a12', 110, 380]} />
+        <fog attach="fog" args={['#0a0f1d', 130, 420]} />
 
-        {/* Professional studio lighting (Neutral, clean, high-contrast, offline-safe) */}
-        <ambientLight color="#94a3b8" intensity={0.75} />
-        <hemisphereLight args={['#38bdf8', '#0f172a', 0.65]} />
+        {/* Studio ambient & hemisphere lighting (Boosted for crisp visibility of car & environment) */}
+        <ambientLight color="#cbd5e1" intensity={1.35} />
+        <hemisphereLight args={['#7dd3fc', '#1e293b', 1.15]} />
 
         {/* Main key spotlight casting crisp realistic vehicle & building shadows */}
         <directionalLight
-          position={[28, 48, 24]}
+          position={[28, 52, 24]}
           color="#ffffff"
-          intensity={2.2}
+          intensity={2.8}
           castShadow={!isSafeMode}
           shadow-mapSize={[1024, 1024]}
           shadow-camera-near={1}
-          shadow-camera-far={110}
-          shadow-camera-left={-28}
-          shadow-camera-right={28}
-          shadow-camera-top={28}
-          shadow-camera-bottom={-28}
+          shadow-camera-far={120}
+          shadow-camera-left={-32}
+          shadow-camera-right={32}
+          shadow-camera-top={32}
+          shadow-camera-bottom={-32}
           shadow-bias={-0.0003}
           shadow-normalBias={0.04}
         />
 
         {/* Architectural cyan/azure rim fill light from opposite quadrant */}
         <directionalLight
-          position={[-32, 24, -30]}
+          position={[-32, 28, -30]}
           color="#38bdf8"
-          intensity={1.2}
+          intensity={1.75}
+        />
+
+        {/* Front-top roadway & hood fill light (illuminates front of car and road details) */}
+        <directionalLight
+          position={[0, 38, -42]}
+          color="#f8fafc"
+          intensity={1.3}
         />
 
         <Suspense fallback={null}>

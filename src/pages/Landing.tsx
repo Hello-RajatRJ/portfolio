@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { useLenisScroll } from '../hooks/useLenisScroll';
 import { DeadpoolPreloader } from '../components/ui/DeadpoolPreloader';
 import { DeadpoolCursor } from '../components/ui/DeadpoolCursor';
-import { ClickSparkDecal } from '../components/ui/ClickSparkDecal';
 import { ScrollProgressBar } from '../components/ui/ScrollProgressBar';
-import { DeadpoolEasterEggs } from '../components/ui/DeadpoolEasterEggs';
 import { Navbar } from './landing/Navbar';
 import { Hero } from './landing/Hero';
 import { About } from './landing/About';
 import { Skills } from './landing/Skills';
 import { Experience } from './landing/Experience';
 import { Projects } from './landing/Projects';
-import { LiveBackendDemo } from '../components/backend-demo/LiveBackendDemo';
 import { CredibilityAndEngineering } from '../components/credibility/CredibilityAndEngineering';
+import { LiveBackendDemo } from '../components/backend-demo/LiveBackendDemo';
 import { RacingWorldTeaser } from '../components/racing-teaser/RacingWorldTeaser';
 import { ResumeSection } from './landing/ResumeSection';
 import { Contact } from './landing/Contact';
@@ -25,18 +23,15 @@ export const Landing: React.FC = () => {
   const [preloaderDone, setPreloaderDone] = useState(false);
 
   return (
-    <div className="relative min-h-screen bg-[#000000] text-white overflow-x-clip selection:bg-[#E62429] selection:text-white">
+    <div className="relative min-h-screen bg-[#000000] text-white selection:bg-[#E62429] selection:text-white">
       {/* 0. Preloader with SVG "RJ" stroke draw and katana slash exit */}
       {!preloaderDone && <DeadpoolPreloader onComplete={() => setPreloaderDone(true)} />}
 
-      {/* Global Interactive Layers */}
+      {/* Global Interactive Layers (Restraint over spectacle) */}
       <DeadpoolCursor />
-      <ClickSparkDecal />
       <ScrollProgressBar />
-      <DeadpoolEasterEggs />
 
-      {/* Subtle Atmospheric Overlays: Film Grain & Crimson Vignette */}
-      <div className="dp-film-grain" aria-hidden="true" />
+      {/* Subtle Atmospheric Vignette */}
       <div className="dp-vignette" aria-hidden="true" />
 
       {/* Navigation */}
@@ -49,8 +44,9 @@ export const Landing: React.FC = () => {
         <Skills />
         <Experience />
         <Projects />
-        <LiveBackendDemo />
+        {/* Testimonials placed right after Projects as requested */}
         <CredibilityAndEngineering />
+        <LiveBackendDemo />
         <RacingWorldTeaser />
         <ResumeSection />
         <Contact />

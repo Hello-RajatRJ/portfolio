@@ -25,7 +25,7 @@ export const Navbar: React.FC = () => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 40);
 
-      const scrollPosition = window.scrollY + 220;
+      const scrollPosition = window.scrollY + 200;
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const id = sectionIds[i];
         const el = document.getElementById(id);
@@ -54,48 +54,49 @@ export const Navbar: React.FC = () => {
       <motion.nav
         initial={{ y: -80 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className={`fixed top-0 left-0 right-0 z-[1000] w-full transition-all duration-300 ${
           scrolled
-            ? 'h-14 bg-black/85 backdrop-blur-xl border-b border-[#E62429]/30 shadow-[0_4px_30px_rgba(0,0,0,0.9)]'
-            : 'h-16 bg-transparent border-b border-white/5'
+            ? 'bg-black/95 backdrop-blur-xl border-b border-[#E62429]/40 shadow-xl shadow-black/80 h-16'
+            : 'bg-black/80 backdrop-blur-md border-b border-white/10 h-16'
         }`}
       >
         <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-full gap-2 sm:gap-6">
-            {/* Brand Logo - Deadpool Theme Monogram */}
+            {/* Brand Logo - Red & Black Aesthetic */}
             <button
               onClick={() => scrollToTarget('#hero')}
               className="flex items-center gap-2.5 cursor-pointer group shrink-0 select-none text-left"
               title="Rajat Ambedkar - Back to top"
             >
-              {/* Deadpool Monogram Badge */}
-              <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-black border-2 border-[#E62429] flex items-center justify-center shadow-[0_0_15px_rgba(230,36,41,0.5)] group-hover:border-[#FF2D2D] group-hover:shadow-[0_0_22px_rgba(255,45,45,0.75)] transition-all duration-300">
-                <span className="font-orbitron text-sm sm:text-base font-black text-[#E62429] tracking-tighter drop-shadow-[0_0_6px_#FF2D2D] group-hover:scale-105 transition-transform">
-                  R<span className="text-white text-[11px]">J</span>
+              {/* Monogram Badge */}
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-black border-2 border-[#E62429]/80 flex items-center justify-center shadow-[0_0_18px_rgba(230,36,41,0.45)] group-hover:border-[#FF2D2D] group-hover:shadow-[0_0_24px_rgba(255,45,45,0.7)] transition-all duration-300">
+                <div className="absolute inset-0 rounded-xl bg-radial from-[#E62429]/25 via-transparent to-black pointer-events-none" />
+                <span className="font-orbitron text-base sm:text-lg font-black text-[#FF2D2D] tracking-tighter drop-shadow-[0_0_8px_rgba(255,45,45,0.85)] group-hover:scale-105 transition-transform duration-300">
+                  R<span className="text-white text-xs">J</span>
                 </span>
-                {/* Katana cross accent */}
-                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#FF2D2D] animate-ping" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#FF2D2D] animate-pulse shadow-[0_0_6px_#FF2D2D]" />
               </div>
 
               {/* Text mark */}
               <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 font-orbitron text-sm sm:text-base font-black tracking-wide leading-none">
-                  <span className="bg-gradient-to-r from-white via-neutral-200 to-[#E62429] bg-clip-text text-transparent group-hover:drop-shadow-[0_0_8px_rgba(230,36,41,0.6)] transition-all">
+                <div className="flex items-center gap-1.5 font-orbitron text-base sm:text-lg font-black tracking-wide leading-none">
+                  <span className="bg-gradient-to-r from-white via-neutral-200 to-[#FF2D2D] bg-clip-text text-transparent group-hover:drop-shadow-[0_0_8px_rgba(230,36,41,0.5)] transition-all">
                     RAJAT
                   </span>
-                  <span className="bg-black text-[#FF2D2D] text-[9px] sm:text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border border-[#E62429]/60 shadow-[0_0_8px_rgba(230,36,41,0.4)]">
+                  <span className="bg-black text-[#FF2D2D] text-[10px] sm:text-xs font-mono font-bold px-1.5 py-0.5 rounded border border-[#E62429]/60 shadow-[0_0_10px_rgba(230,36,41,0.3)]">
                     .DEV
                   </span>
                 </div>
-                <span className="text-[8px] font-mono text-[#9CA3AF] tracking-widest uppercase mt-0.5 flex items-center gap-1">
-                  FULL STACK DEVELOPER
+                <span className="text-[9px] font-mono text-neutral-400 tracking-widest uppercase mt-0.5 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E62429] inline-block animate-ping" />
+                  FULL-STACK DEVELOPER
                 </span>
               </div>
             </button>
 
-            {/* Desktop Navigation Links (ScrollSpy) */}
-            <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-6 gap-1 lg:gap-2 xl:gap-3">
+            {/* Desktop Navigation Links (Center-aligned) */}
+            <div className="hidden md:flex items-center justify-center flex-1 mx-2 lg:mx-6 gap-1 lg:gap-3 xl:gap-4">
               {navSections.map((sec) => {
                 const IconComp = sec.icon;
                 const isActive = activeSection === sec.href.replace('#', '');
@@ -103,78 +104,75 @@ export const Navbar: React.FC = () => {
                   <button
                     key={sec.label}
                     onClick={() => handleNavClick(sec.href)}
-                    className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${
+                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs lg:text-sm font-orbitron font-semibold tracking-wider transition-all duration-200 cursor-pointer ${
                       isActive
-                        ? 'text-white bg-[#E62429]/20 border border-[#E62429]/60 shadow-[0_0_12px_rgba(230,36,41,0.35)]'
-                        : 'text-[#9CA3AF] hover:text-white hover:bg-white/[0.04]'
+                        ? 'bg-[#E62429]/20 text-white font-bold border border-[#E62429] shadow-[0_0_14px_rgba(230,36,41,0.45)]'
+                        : 'text-neutral-300 hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <IconComp size={13} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-500'} />
+                    <IconComp size={15} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-400 group-hover:text-[#FF2D2D]'} />
                     <span>{sec.label}</span>
-                    {isActive && (
-                      <motion.span
-                        layoutId="nav-active-indicator"
-                        className="absolute bottom-0 left-2 right-2 h-[2px] bg-[#FF2D2D] shadow-[0_0_8px_#FF2D2D]"
-                      />
-                    )}
                   </button>
                 );
               })}
             </div>
 
-            {/* Right side: 3D Racing World CTA + Mobile Toggle */}
+            {/* Right side: 3D Racing World Button + Mobile Toggle */}
             <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
               <button
                 id="nav-play-game-btn"
                 onClick={launchGame}
-                className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-orbitron text-[11px] tracking-wider font-bold text-white transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg border border-[#FF2D2D]/40"
+                className="hidden sm:flex items-center gap-2 px-5 py-2 rounded-full font-orbitron text-xs tracking-wider font-bold text-white transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg border border-[#FF2D2D]"
                 style={{
                   background: 'linear-gradient(135deg, #E62429 0%, #8B0000 100%)',
-                  boxShadow: '0 0 16px rgba(230,36,41,0.5)',
+                  boxShadow: '0 0 20px rgba(230,36,41,0.6)',
                 }}
               >
-                <Gamepad2 size={14} className="text-white" />
+                <Gamepad2 size={15} />
                 3D RACING WORLD
               </button>
 
               {/* Mobile menu toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-1.5 text-neutral-300 hover:text-white rounded-lg bg-neutral-900 border border-neutral-800 transition-all"
+                className="md:hidden p-2 text-neutral-300 hover:text-white rounded-lg bg-neutral-900 border border-neutral-800 transition-all"
                 aria-label="Toggle menu"
               >
-                {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+                {mobileOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile dropdown menu */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-14 left-0 right-0 z-[99] bg-black/95 backdrop-blur-2xl border-b border-[#E62429]/30 p-4 flex flex-col gap-2 md:hidden shadow-2xl"
+            className="fixed top-16 left-0 right-0 z-[999] bg-black/98 backdrop-blur-2xl border-b border-[#E62429]/30 p-4 flex flex-col gap-2 md:hidden shadow-2xl"
           >
-            {navSections.map((sec) => {
+            {navSections.map((sec, idx) => {
               const IconComp = sec.icon;
               const isActive = activeSection === sec.href.replace('#', '');
               return (
-                <button
+                <motion.button
                   key={sec.label}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.05, duration: 0.25 }}
                   onClick={() => handleNavClick(sec.href)}
-                  className={`flex items-center gap-3 font-orbitron text-xs font-semibold px-4 py-2.5 rounded-xl transition-all text-left ${
+                  className={`flex items-center gap-3 font-orbitron font-semibold text-left px-4 py-3 rounded-xl transition-all text-xs ${
                     isActive
-                      ? 'bg-[#E62429]/25 text-white border border-[#E62429]/50'
-                      : 'text-[#9CA3AF] hover:text-white hover:bg-white/5'
+                      ? 'bg-[#E62429]/25 text-white border border-[#E62429]/50 shadow-md'
+                      : 'text-neutral-300 hover:text-[#FF2D2D] hover:bg-white/5'
                   }`}
                 >
-                  <IconComp size={15} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-500'} />
+                  <IconComp size={16} className={isActive ? 'text-[#FF2D2D]' : 'text-neutral-500'} />
                   <span>{sec.label}</span>
-                </button>
+                </motion.button>
               );
             })}
             <button
@@ -182,10 +180,10 @@ export const Navbar: React.FC = () => {
                 setMobileOpen(false);
                 launchGame();
               }}
-              className="flex items-center justify-center gap-2 mt-2 py-2.5 rounded-xl font-orbitron text-xs font-bold text-white shadow-lg cursor-pointer border border-[#FF2D2D]/50"
+              className="flex items-center justify-center gap-2 mt-2 py-3 rounded-xl font-orbitron text-xs font-bold text-white shadow-lg cursor-pointer border border-[#FF2D2D]/50"
               style={{ background: 'linear-gradient(135deg, #E62429, #8B0000)' }}
             >
-              <Gamepad2 size={15} /> ENTER 3D RACING WORLD
+              <Gamepad2 size={16} /> ENTER 3D RACING WORLD
             </button>
           </motion.div>
         )}

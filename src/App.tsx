@@ -21,7 +21,6 @@ import { OrientationGuard } from './components/OrientationGuard';
 import { ControlsModal } from './components/ControlsModal';
 import { SEO } from './components/SEO';
 import { AuthModal } from './components/AuthModal';
-import CursorAvatar from './components/CursorAvatar';
 
 const GameView: React.FC = () => {
   const gameState = useStore((s) => s.gameState);
@@ -242,7 +241,6 @@ export const App: React.FC = () => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35 }}
           >
-            <CursorAvatar />
             <Landing />
           </motion.div>
         ) : view === 'showcase' ? (

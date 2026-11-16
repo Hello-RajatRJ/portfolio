@@ -11,8 +11,19 @@ export const DeadpoolPreloader: React.FC<PreloaderProps> = ({ onComplete }) => {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
+    // Check if preloader has already been seen in this session
+    try {
+      if (sessionStorage.getItem('rj_preloader_seen') === 'true') {
+        setFinished(true);
+        onComplete();
+        return;
+      }
+    } catch {
+      // In case sessionStorage is restricted
+    }
+
     const startTime = Date.now();
-    const duration = 2100; // ~2.1s count, then 400ms slash reveal
+    const duration = 1800; // ~1.8s count, then 550ms katana slash reveal
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -23,11 +34,16 @@ export const DeadpoolPreloader: React.FC<PreloaderProps> = ({ onComplete }) => {
         clearInterval(interval);
         setSlashing(true);
         setTimeout(() => {
+          try {
+            sessionStorage.setItem('rj_preloader_seen', 'true');
+          } catch {
+            // In case sessionStorage is restricted
+          }
           setFinished(true);
           onComplete();
         }, 550);
       }
-    }, 28);
+    }, 25);
 
     return () => clearInterval(interval);
   }, [onComplete]);
@@ -137,13 +153,13 @@ export const DeadpoolPreloader: React.FC<PreloaderProps> = ({ onComplete }) => {
               <span className="text-[#E62429]">%</span>
             </div>
 
-            {/* Comic Microcopy */}
+            {/* Restrained Noir Microcopy */}
             <div className="mt-4 text-center">
-              <p className="font-bangers text-lg sm:text-xl tracking-wider text-[#FF2D2D] drop-shadow-[0_0_8px_rgba(230,36,41,0.5)]">
-                Loading awesomeness… (this is not a drill)
+              <p className="font-mono text-xs sm:text-sm tracking-widest text-[#FF2D2D] uppercase">
+                INITIALIZING PORTFOLIO · MOHALI, INDIA (IST)
               </p>
               <p className="mt-1 font-mono text-[11px] tracking-widest text-[#9CA3AF] uppercase">
-                RAJAT .DEV · MAXIMUM EFFORT EDITION
+                RAJAT AMBEDKAR · FULL-STACK DEVELOPER
               </p>
             </div>
 

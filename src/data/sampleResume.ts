@@ -94,20 +94,6 @@ export const sampleResumeData: ResumeData = {
         'Optimized client-side rendering performance, code splitting, and Web Vitals benchmarks across multi-jurisdictional modules.',
       ],
     },
-    {
-      id: 'exp-solitaire',
-      jobTitle: 'Software Engineer Trainee (6-Month Training)',
-      company: 'Solitaire Infosys',
-      location: 'Mohali, Punjab, India',
-      startDate: 'Nov 2021',
-      endDate: 'Apr 2022',
-      current: false,
-      highlights: [
-        'Completed 6 months of intensive industrial training in modern web development frameworks and full-stack architecture.',
-        'Developed interactive web interfaces using HTML5, CSS3, JavaScript, React, and REST API integrations.',
-        'Gained hands-on experience in database schema design, version control workflows with Git, and software testing practices.',
-      ],
-    },
   ],
   educations: [
     {

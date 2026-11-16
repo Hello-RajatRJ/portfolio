@@ -8,16 +8,20 @@ export default {
     extend: {
       fontFamily: {
         orbitron: ['Orbitron', 'monospace'],
+        rajdhani: ['Rajdhani', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
-        bangers: ['Bangers', 'cursive'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
         deadpool: {
-          black: '#000000',
-          dark: '#0A0A0A',
+          bg: '#050505',
+          surface: '#0D0D0D',
+          line: 'rgba(255,255,255,0.08)',
+          black: '#050505',
+          dark: '#0D0D0D',
           red: '#E62429',
           darkRed: '#8B0000',
-          glow: '#FF2D2D',
+          glow: 'rgba(230,36,41,0.35)',
           muted: '#9CA3AF',
         },
         primary: {

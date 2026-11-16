@@ -6,8 +6,8 @@ import { useStore } from '../../store/useStore';
 
 const HERO_ROLES = [
   'Full-Stack Developer',
-  'UI Architect',
   '3D Web Engineer',
+  'React Specialist',
   'Problem Slayer',
 ];
 
@@ -129,7 +129,8 @@ export const Hero: React.FC = () => {
           <div
             className="absolute inset-0 opacity-20 pointer-events-none"
             style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0px, rgba(0,0,0,0.6) 1px, transparent 1px, transparent 2px)',
+              backgroundImage:
+                'repeating-linear-gradient(0deg, rgba(0,0,0,0.6) 0px, rgba(0,0,0,0.6) 1px, transparent 1px, transparent 2px)',
               backgroundSize: '100% 2px',
             }}
           />
@@ -188,7 +189,7 @@ export const Hero: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="font-orbitron text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-tight"
+            className="font-orbitron text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-white leading-tight uppercase"
           >
             RAJAT{' '}
             <span className="text-[#E62429] drop-shadow-[0_0_25px_rgba(230,36,41,0.85)]">
@@ -209,7 +210,7 @@ export const Hero: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-2.5 max-w-2xl text-sm sm:text-base md:text-lg font-inter text-neutral-300 leading-relaxed"
+            className="mt-2.5 max-w-2xl text-sm sm:text-base md:text-lg font-inter text-neutral-300 leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
           >
             Building immersive web experiences that push boundaries.
           </motion.p>
@@ -308,7 +309,7 @@ export const Hero: React.FC = () => {
                 className="h-1.5 w-1 rounded-full bg-[#FF2D2D] shadow-[0_0_6px_#FF2D2D]"
               />
             </div>
-            <span className="font-bangers text-xs sm:text-sm tracking-wider text-neutral-400 group-hover:text-[#FF2D2D] transition-colors">
+            <span className="font-mono text-[11px] sm:text-xs tracking-wider text-neutral-400 group-hover:text-[#FF2D2D] transition-colors uppercase">
               Scroll, I dare you
             </span>
             <ArrowDown className="h-3 w-3 text-[#E62429] animate-bounce" />

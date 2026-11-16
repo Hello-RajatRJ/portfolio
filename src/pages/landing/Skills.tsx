@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { DeadpoolSkillOrb } from '../../components/skills/DeadpoolSkillOrb';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { RotateCcw, Sparkles } from 'lucide-react';
 import { TechDetailModal } from '../../components/skills/TechDetailPanel';
 import { findTechMeta, type TechMetadata } from '../../data/techRegistry';
 import { skills as allSkills } from '../../data/personalInfo';
@@ -9,47 +9,57 @@ import type { PointerScreenState } from '../../components/skills/hoverMath';
 const SKILL_GROUPS = [
   {
     code: '01',
-    category: 'Frontend & UI Architecture',
-    label: '// MODULES: FRONTEND & UI ARCHITECTURE (8)',
+    category: 'Frontend',
+    label: 'FRONTEND & UI ARCHITECTURE',
   },
   {
     code: '02',
-    category: 'Backend, APIs & AI Systems',
-    label: '// MODULES: BACKEND, APIS & AI SYSTEMS (5)',
+    category: 'Backend',
+    label: 'BACKEND & REST / GRAPHQL APIS',
   },
   {
     code: '03',
-    category: 'Databases & Data Storage',
-    label: '// MODULES: DATABASES & DATA STORAGE (3)',
+    category: 'Database',
+    label: 'DATABASES & DATA STORAGE',
   },
   {
     code: '04',
-    category: 'Cloud, DevOps & Engineering Tools',
-    label: '// MODULES: CLOUD, DEVOPS & ENGINEERING TOOLS (6)',
+    category: 'DevOps & Tools',
+    label: 'CLOUD, DEVOPS & TOOLING',
   },
   {
     code: '05',
-    category: 'Core & Emerging Stack',
-    label: '// MODULES: CORE & EMERGING STACK (5)',
+    category: '3D & Animation',
+    label: '3D WEB & INTERACTION DYNAMICS',
   },
 ];
 
-const ROW1_LOGOS = [
-  'React 19', 'TypeScript', 'Node.js', 'Next.js', 'Three.js', 'PostgreSQL', 'Docker', 'Tailwind',
-  'GSAP', 'WebGL', 'MongoDB', 'Vite',
+const MARQUEE_TECH = [
+  'React 19', 'Next.js', 'TypeScript', 'Node.js', 'React-Admin', 'PostgreSQL',
+  'Three.js', 'Tailwind CSS', 'Docker', 'AWS', 'GraphQL', 'MongoDB',
+  'GSAP', 'WebGL', 'Redis', 'CI/CD Pipelines',
 ];
 
-const ROW2_LOGOS = [
-  'Python', 'Spring Boot', 'GraphQL', 'Redis', 'Framer Motion', 'Linux', 'AWS', 'Git',
-  'Jest', 'Figma', 'Turborepo', 'WebSockets',
+const STICKER_CHIPS = [
+  { name: 'React 19', icon: '⚛️', color: 'border-cyan-500/70 bg-cyan-950/40 text-cyan-200', rot: -4 },
+  { name: 'TypeScript', icon: '🔷', color: 'border-blue-500/70 bg-blue-950/40 text-blue-200', rot: 3 },
+  { name: 'Node.js', icon: '🟢', color: 'border-emerald-500/70 bg-emerald-950/40 text-emerald-200', rot: -2 },
+  { name: 'Next.js', icon: '▲', color: 'border-neutral-400/70 bg-neutral-900/60 text-white', rot: 5 },
+  { name: 'React-Admin', icon: '⚡', color: 'border-amber-500/70 bg-amber-950/40 text-amber-200', rot: -3 },
+  { name: 'PostgreSQL', icon: '🐘', color: 'border-sky-500/70 bg-sky-950/40 text-sky-200', rot: 4 },
+  { name: 'Three.js', icon: '🧊', color: 'border-[#FF2D2D]/70 bg-red-950/40 text-red-200', rot: -5 },
+  { name: 'Docker', icon: '🐳', color: 'border-blue-400/70 bg-blue-950/30 text-blue-200', rot: 2 },
+  { name: 'Tailwind CSS', icon: '💨', color: 'border-teal-400/70 bg-teal-950/40 text-teal-200', rot: -6 },
+  { name: 'AWS Cloud', icon: '☁️', color: 'border-orange-500/70 bg-orange-950/40 text-orange-200', rot: 3 },
 ];
 
 export const Skills: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: '-60px' });
+  const stickerConstraintsRef = useRef<HTMLDivElement>(null);
 
   const [selectedTech, setSelectedTech] = useState<TechMetadata | null>(null);
   const [selectedSkillName, setSelectedSkillName] = useState<string | null>(null);
+  const [resetKey, setResetKey] = useState(0);
 
   const pointerRef = useRef<PointerScreenState>({
     x: 0,
@@ -60,13 +70,12 @@ export const Skills: React.FC = () => {
     isDragging: false,
   });
 
-  // Scroll speed-up for marquee
+  // Single slow, restrained marquee
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
-  const marqueeOffset1 = useTransform(scrollYProgress, [0, 1], ['0%', '-30%']);
-  const marqueeOffset2 = useTransform(scrollYProgress, [0, 1], ['-30%', '0%']);
+  const marqueeOffset = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
 
   const handleSelectModule = (skillName: string) => {
     setSelectedSkillName(skillName);
@@ -78,146 +87,140 @@ export const Skills: React.FC = () => {
     <section
       id="skills"
       ref={sectionRef}
-      className="relative min-h-screen py-24 sm:py-32 bg-[#000000] overflow-hidden select-none"
+      className="relative min-h-screen py-24 sm:py-32 bg-[#050505] overflow-hidden select-none border-t border-white/[0.04]"
     >
       {/* Background Ambience */}
-      <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#E62429]/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-[#E62429]/05 blur-3xl pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 mb-3">
-            <span className="h-[2px] w-8 bg-[#E62429]" />
-            <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.3em] text-[#E62429] uppercase">
-              02 // WEAPONS OF CHOICE
+            <span className="h-[1px] w-6 bg-[#E62429]" />
+            <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[#E62429] uppercase">
+              02 // TECHNICAL ARSENAL
             </span>
-            <span className="h-[2px] w-8 bg-[#E62429]" />
+            <span className="h-[1px] w-6 bg-[#E62429]" />
           </div>
 
-          <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight">
-            TECH <span className="text-[#E62429] drop-shadow-[0_0_20px_rgba(230,36,41,0.6)]">ARSENAL</span>
+          <h2 className="font-orbitron text-3xl sm:text-5xl font-black text-white tracking-tight uppercase">
+            PRODUCTION <span className="text-[#E62429]">TOOLKIT</span>
           </h2>
           <p className="mt-3 max-w-xl mx-auto text-xs sm:text-sm font-mono text-neutral-400">
-            Click any module to inspect in 3D &bull; Self-assessed commercial proficiency
+            Engineered with strict types, verified architectures, and zero vanity metrics.
           </p>
         </div>
 
-        {/* 1. Interactive 3D Skill Orb / Tech Sphere */}
-        <div className="mb-14">
-          <DeadpoolSkillOrb />
+        {/* 1. Draggable Sticker-Style Chips with Reset Button */}
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <span className="font-mono text-xs uppercase tracking-wider text-neutral-300 flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#FF2D2D] animate-ping" />
+              <span>INTERACTIVE STICKER BOARD</span>
+            </span>
+            <button
+              onClick={() => setResetKey((k) => k + 1)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-[#0D0D0D] px-2.5 py-1 font-mono text-[11px] text-neutral-400 hover:text-white hover:border-[#E62429] transition-colors cursor-pointer"
+              title="Reset sticker positions"
+            >
+              <RotateCcw className="h-3 w-3 text-[#FF2D2D]" />
+              <span>Reset</span>
+            </button>
+          </div>
+
+          <div
+            ref={stickerConstraintsRef}
+            key={resetKey}
+            className="relative min-h-[160px] sm:min-h-[180px] w-full rounded-xl border border-white/10 bg-[#0D0D0D]/90 p-5 sm:p-6 backdrop-blur-xl overflow-hidden flex flex-wrap items-center justify-center gap-3 sm:gap-4 select-none shadow-xl"
+          >
+            {STICKER_CHIPS.map((stk) => (
+              <motion.div
+                key={`${stk.name}-${resetKey}`}
+                drag
+                dragConstraints={stickerConstraintsRef}
+                dragElastic={0.15}
+                whileHover={{ scale: 1.06, zIndex: 30 }}
+                whileDrag={{ scale: 1.12, rotate: 0, zIndex: 50, cursor: 'grabbing' }}
+                onClick={() => handleSelectModule(stk.name)}
+                style={{ rotate: stk.rot }}
+                className={`inline-flex items-center gap-2 rounded-xl border px-3.5 py-1.5 font-mono text-xs sm:text-sm font-semibold shadow-md cursor-grab transition-shadow active:shadow-lg backdrop-blur-md ${stk.color}`}
+              >
+                <span>{stk.icon}</span>
+                <span>{stk.name}</span>
+              </motion.div>
+            ))}
+          </div>
         </div>
 
-        {/* 2. Five Categorized Skill Blocks (// MODULES naming style) flying in from alternating sides */}
-        <div className="space-y-8 sm:space-y-10">
-          {SKILL_GROUPS.map((group, groupIdx) => {
+        {/* 2. Five Categorized Skill Blocks (No Fake Percentages) */}
+        <div className="space-y-6 sm:space-y-8">
+          {SKILL_GROUPS.map((group) => {
             const groupSkills = allSkills.filter((s) => s.category === group.category);
-            const isEven = groupIdx % 2 === 0;
 
             return (
-              <motion.div
+              <div
                 key={group.category}
-                initial={{ opacity: 0, x: isEven ? -60 : 60 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{
-                  duration: 0.7,
-                  delay: 0.15 + groupIdx * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="dp-glow-box group relative rounded-2xl bg-[#0a0a0c]/90 p-5 sm:p-7 backdrop-blur-xl border border-white/10"
+                className="relative rounded-xl bg-[#0D0D0D] p-5 sm:p-6 border border-white/10"
               >
                 {/* Category Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 mb-5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 mb-4">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-orbitron text-sm font-black text-[#FF2D2D]">
+                    <span className="font-orbitron text-xs sm:text-sm font-black text-[#FF2D2D]">
                       {group.code}
                     </span>
-                    <h3 className="font-orbitron text-sm sm:text-base font-bold text-white tracking-wider">
+                    <h3 className="font-orbitron text-xs sm:text-sm font-bold text-white tracking-wider uppercase">
                       {group.label}
                     </h3>
                   </div>
-                  <span className="font-mono text-[10px] text-[#9CA3AF] uppercase">
-                    CLICK TO INSPECT IN 3D
+                  <span className="font-mono text-[10px] text-neutral-400 uppercase flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-[#FF2D2D]" />
+                    Click to inspect 3D node
                   </span>
                 </div>
 
                 {/* Modules Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {groupSkills.map((item) => {
                     const isSelected = selectedSkillName === item.name;
 
                     return (
-                      <div
+                      <button
                         key={item.name}
                         onClick={() => handleSelectModule(item.name)}
-                        className={`group/item relative rounded-xl p-3 bg-black/60 border cursor-pointer transition-all duration-200 ${
+                        className={`text-left rounded-lg p-3 bg-[#050505] border transition-all duration-200 cursor-pointer ${
                           isSelected
-                            ? 'border-[#FF2D2D] ring-2 ring-[#FF2D2D] shadow-[0_0_18px_rgba(255,45,45,0.6)]'
-                            : 'border-white/10 hover:border-[#E62429] hover:bg-[#E62429]/10'
+                            ? 'border-[#FF2D2D] ring-1 ring-[#FF2D2D] shadow-[0_0_12px_rgba(255,45,45,0.4)]'
+                            : 'border-white/10 hover:border-[#E62429] hover:bg-[#E62429]/05'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="flex items-center gap-1.5 font-orbitron text-xs font-bold text-white group-hover/item:text-[#FF2D2D] transition-colors">
-                            <span>{item.icon}</span>
-                            <span>{item.name}</span>
-                          </span>
-                          <span className="font-mono text-xs font-bold text-[#FF2D2D]">
-                            {item.level}%
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">{item.icon}</span>
+                          <span className="font-orbitron text-xs sm:text-sm font-semibold text-neutral-200 group-hover:text-white">
+                            {item.name}
                           </span>
                         </div>
-
-                        {/* Animated Progress Bar */}
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-neutral-900 border border-white/5">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={inView ? { width: `${item.level}%` } : { width: 0 }}
-                            transition={{
-                              duration: 1.1,
-                              delay: 0.35 + groupIdx * 0.08,
-                              ease: [0.16, 1, 0.3, 1],
-                            }}
-                            className="h-full bg-gradient-to-r from-[#8B0000] via-[#E62429] to-[#FF2D2D] shadow-[0_0_8px_#FF2D2D]"
-                          />
-                        </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {/* 3. Dual-Row Tech Logo Marquee */}
-        <div className="mt-20 overflow-hidden py-4 border-y border-[#E62429]/25 bg-black/50 backdrop-blur-md">
-          {/* Row 1: Left */}
+        {/* 4. Single Slow Elegant Tech Marquee */}
+        <div className="mt-16 overflow-hidden py-3.5 border-y border-white/10 bg-[#0D0D0D]/60 backdrop-blur-md">
           <motion.div
-            style={{ x: marqueeOffset1 }}
-            className="flex whitespace-nowrap gap-6 mb-3 select-none"
-          >
-            {[...ROW1_LOGOS, ...ROW1_LOGOS, ...ROW1_LOGOS].map((logo, i) => (
-              <span
-                key={`${logo}-${i}`}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] font-orbitron text-xs sm:text-sm font-semibold tracking-wider text-neutral-300 hover:border-[#E62429] hover:text-white transition-colors"
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-[#E62429]" />
-                {logo}
-              </span>
-            ))}
-          </motion.div>
-
-          {/* Row 2: Right */}
-          <motion.div
-            style={{ x: marqueeOffset2 }}
+            style={{ x: marqueeOffset }}
             className="flex whitespace-nowrap gap-6 select-none"
           >
-            {[...ROW2_LOGOS, ...ROW2_LOGOS, ...ROW2_LOGOS].map((logo, i) => (
+            {[...MARQUEE_TECH, ...MARQUEE_TECH, ...MARQUEE_TECH].map((tech, i) => (
               <span
-                key={`${logo}-${i}`}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-lg border border-white/10 bg-white/[0.03] font-orbitron text-xs sm:text-sm font-semibold tracking-wider text-neutral-300 hover:border-[#FF2D2D] hover:text-white transition-colors"
+                key={`${tech}-${i}`}
+                className="inline-flex items-center gap-2 px-3 py-1 font-mono text-xs sm:text-sm text-neutral-300 uppercase tracking-wider"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-[#FF2D2D]" />
-                {logo}
+                <span className="h-1.5 w-1.5 rounded-full bg-[#E62429]" />
+                {tech}
               </span>
             ))}
           </motion.div>

@@ -118,12 +118,12 @@ export const DeadpoolCursor: React.FC = () => {
         }`}
       >
         {isHoveringProject && (
-          <span className="font-bangers text-xs tracking-widest text-[#FF2D2D] drop-shadow-[0_0_6px_#E62429]">
+          <span className="font-orbitron text-[10px] font-black tracking-widest text-white drop-shadow-[0_0_6px_#FF2D2D]">
             VIEW
           </span>
         )}
         {isHoveringDrive && (
-          <span className="font-bangers text-xs tracking-widest text-[#FF2D2D] drop-shadow-[0_0_6px_#E62429]">
+          <span className="font-orbitron text-[10px] font-black tracking-widest text-white drop-shadow-[0_0_6px_#FF2D2D]">
             DRIVE
           </span>
         )}

@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -245,6 +245,24 @@ const SpeedwayScene: React.FC<{ scrollProgress: number }> = ({ scrollProgress })
 export const RacingWorldTeaser: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const launchGame = useStore((s) => s.launchGame);
+  const [isInView, setIsInView] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsInView(entry.isIntersecting);
+      },
+      { rootMargin: '200px' }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // Scroll progress for dynamic speedup
   const { scrollYProgress } = useScroll({
@@ -261,79 +279,93 @@ export const RacingWorldTeaser: React.FC = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[90vh] py-20 bg-[#000000] overflow-hidden flex flex-col justify-between select-none"
+      className="relative min-h-[85vh] py-20 bg-[#050505] overflow-hidden flex flex-col justify-between select-none border-t border-white/[0.04]"
     >
       {/* Background Ambience */}
-      <div className="absolute inset-0 bg-radial from-[#8B0000]/15 via-transparent to-black pointer-events-none" />
+      <div className="absolute inset-0 bg-radial from-[#8B0000]/10 via-transparent to-[#050505] pointer-events-none" />
 
       {/* Header Info */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
         <div className="inline-flex items-center gap-2 mb-3">
-          <span className="h-2 w-2 rounded-full bg-[#FF2D2D] animate-ping" />
-          <span className="font-orbitron text-xs sm:text-sm font-bold tracking-[0.3em] text-[#E62429] uppercase">
-            05 // INTERACTIVE 3D PLAYGROUND
+          <span className="h-[1px] w-6 bg-[#E62429]" />
+          <span className="font-mono text-xs font-semibold tracking-[0.25em] text-[#E62429] uppercase">
+            06 // INTERACTIVE 3D ENVIRONMENT
           </span>
+          <span className="h-[1px] w-6 bg-[#E62429]" />
         </div>
 
-        <h2 className="font-orbitron text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
-          DRIVE THROUGH EVERY{' '}
-          <span className="text-[#E62429] drop-shadow-[0_0_25px_rgba(230,36,41,0.8)]">
-            PROJECT ZONE IN 3D
-          </span>
+        <h2 className="font-orbitron text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight uppercase">
+          ENTER THE <span className="text-[#E62429] drop-shadow-[0_0_25px_rgba(230,36,41,0.6)]">3D RACING WORLD</span>
         </h2>
 
         <p className="mt-3 max-w-2xl mx-auto text-sm sm:text-base font-inter text-neutral-300">
-          Take the wheel in an interactive miniature cyberpunk metropolis. Navigate between project
+          Drive through an interactive miniature cyberpunk metropolis. Navigate between project
           districts, inspect systems in real-time 3D, and uncover hidden objectives.
         </p>
 
-        {/* Secret Side Quest Callout */}
-        <div className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-[#FF2D2D]/60 bg-black/85 px-5 py-2 font-mono text-xs text-neutral-200 shadow-[0_0_25px_rgba(230,36,41,0.4)] backdrop-blur-md">
-          <Trophy className="h-4 w-4 text-[#FFD700] animate-pulse" />
-          <span className="font-orbitron font-bold text-white">HIDDEN SIDE QUEST:</span>
+        {/* Side Quest Callout */}
+        <div className="mt-5 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-[#0D0D0D] px-5 py-2 font-mono text-xs text-neutral-200 shadow-lg">
+          <Trophy className="h-4 w-4 text-[#FFD700]" />
+          <span className="font-orbitron font-bold text-white">INTERACTIVE OBJECTIVE:</span>
           <span className="text-neutral-300">
-            Resume waits on a glowing pedestal in the <span className="text-[#FF2D2D] font-bold">Northwest Zone</span> of the 3D map!
+            Drive to the <span className="text-[#FF2D2D] font-bold">Northwest Zone</span> to uncover the 3D Resume Pedestal.
           </span>
         </div>
       </div>
 
-      {/* 3D Scene Viewport with Controls */}
+      {/* 3D Scene Viewport with Lazy-Mounting & DPR cap */}
       <div
         data-cursor-drive="true"
-        className="relative h-[380px] sm:h-[460px] w-full my-6 cursor-grab active:cursor-grabbing"
+        className="relative h-[360px] sm:h-[440px] w-full my-6 cursor-grab active:cursor-grabbing"
       >
-        <Canvas
-          camera={{ position: [0, 2.5, 6.8], fov: 48 }}
-          gl={{ alpha: true, antialias: true }}
-          style={{ background: 'transparent' }}
-        >
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 10, 5]} intensity={1.5} color="#FFFFFF" />
-          <pointLight position={[0, 4, 2]} intensity={2.5} color="#FF2D2D" />
-          <SpeedwayScene scrollProgress={scrollFactor} />
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            maxPolarAngle={Math.PI / 2.1}
-            minPolarAngle={Math.PI / 3.5}
-            maxAzimuthAngle={Math.PI / 4}
-            minAzimuthAngle={-Math.PI / 4}
-            dampingFactor={0.05}
-          />
-        </Canvas>
+        {isInView && !isMobile ? (
+          <Canvas
+            dpr={[1, 1.5]}
+            camera={{ position: [0, 2.5, 6.8], fov: 48 }}
+            gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+            style={{ background: 'transparent' }}
+          >
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 10, 5]} intensity={1.5} color="#FFFFFF" />
+            <pointLight position={[0, 4, 2]} intensity={2.5} color="#FF2D2D" />
+            <SpeedwayScene scrollProgress={scrollFactor} />
+            <OrbitControls
+              enableZoom={false}
+              enablePan={false}
+              maxPolarAngle={Math.PI / 2.1}
+              minPolarAngle={Math.PI / 3.5}
+              maxAzimuthAngle={Math.PI / 4}
+              minAzimuthAngle={-Math.PI / 4}
+              dampingFactor={0.05}
+            />
+          </Canvas>
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-[#0D0D0D] rounded-xl border border-white/10 mx-auto max-w-4xl p-6 text-center">
+            <div>
+              <Gauge className="h-10 w-10 text-[#FF2D2D] mx-auto mb-3" />
+              <p className="font-orbitron text-sm text-neutral-300 uppercase tracking-wider">
+                Interactive 3D Engine Ready
+              </p>
+              <p className="font-mono text-xs text-neutral-500 mt-1">
+                Tap 'START ENGINE' below to load the full 3D simulation
+              </p>
+            </div>
+          </div>
+        )}
 
-        {/* Drag to Look Around Hint */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/70 border border-white/10 px-4 py-1 font-mono text-[11px] text-neutral-400 backdrop-blur-sm pointer-events-none">
-          👆 DRAG TO LOOK AROUND · SCROLL TO ACCELERATE
-        </div>
+        {/* Drag Hint */}
+        {!isMobile && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/70 border border-white/10 px-4 py-1 font-mono text-[11px] text-neutral-400 backdrop-blur-sm pointer-events-none">
+            DRAG TO LOOK AROUND · SCROLL TO ACCELERATE
+          </div>
+        )}
 
         {/* Speedometer HUD Display */}
-        <div className="absolute top-4 right-4 sm:right-10 flex items-center gap-3 rounded-2xl bg-black/85 border border-[#E62429]/60 px-4 py-2.5 shadow-[0_0_20px_rgba(230,36,41,0.4)] backdrop-blur-md pointer-events-none">
-          <Gauge className="h-6 w-6 text-[#FF2D2D] animate-pulse" />
+        <div className="absolute top-4 right-4 sm:right-10 flex items-center gap-3 rounded-xl bg-[#0D0D0D]/90 border border-[#E62429]/50 px-4 py-2 shadow-lg backdrop-blur-md pointer-events-none">
+          <Gauge className="h-5 w-5 text-[#FF2D2D] animate-pulse" />
           <div className="text-left font-orbitron">
-            <span className="text-xl sm:text-2xl font-black text-white">{speedDisplay}</span>
+            <span className="text-lg sm:text-xl font-black text-white">{speedDisplay}</span>
             <span className="text-[10px] text-[#FF2D2D] font-mono ml-1 font-bold">MPH</span>
-            <div className="text-[9px] text-neutral-400 font-mono tracking-wider">SPEED ENGINE</div>
           </div>
         </div>
       </div>
@@ -341,21 +373,21 @@ export const RacingWorldTeaser: React.FC = () => {
       {/* CTA Button */}
       <div className="relative z-10 text-center">
         <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
           onClick={launchGame}
           id="teaser-start-engine-btn"
-          className="relative inline-flex items-center gap-3 rounded-2xl px-9 py-4 font-orbitron text-sm sm:text-base font-black tracking-widest text-white shadow-2xl cursor-pointer border-2 border-[#FF2D2D]"
+          className="relative inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 font-orbitron text-xs sm:text-sm font-bold tracking-wider text-white shadow-xl cursor-pointer border border-[#FF2D2D]/60"
           style={{
             background: 'linear-gradient(135deg, #E62429 0%, #8B0000 100%)',
-            boxShadow: '0 0 35px rgba(230,36,41,0.7), inset 0 0 15px rgba(255,255,255,0.25)',
+            boxShadow: '0 0 25px rgba(230,36,41,0.5)',
           }}
         >
-          <Play className="h-5 w-5 fill-white text-white" />
-          START ENGINE &amp; DRIVE
+          <Play className="h-4 w-4 fill-white text-white" />
+          START ENGINE
         </motion.button>
-        <span className="block mt-2 font-bangers text-xs sm:text-sm tracking-widest text-neutral-400">
-          (Warning: Highly Addictive 3D Physics)
+        <span className="block mt-2 font-mono text-[11px] tracking-wider text-neutral-400 uppercase">
+          Three.js · Cannon Physics · 60 FPS
         </span>
       </div>
     </section>

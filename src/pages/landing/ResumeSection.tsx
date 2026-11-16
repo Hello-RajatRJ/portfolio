@@ -72,7 +72,6 @@ export const ResumeSection: React.FC = () => {
       className="relative min-h-screen py-24 sm:py-32 bg-[#050505] overflow-hidden"
     >
       {/* Background Ambience */}
-      <div className="dp-halftone absolute inset-0 opacity-15 pointer-events-none" />
       <div className="absolute top-1/2 right-0 w-96 h-96 rounded-full bg-[#E62429]/10 blur-3xl pointer-events-none -translate-y-1/2" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -102,20 +101,16 @@ export const ResumeSection: React.FC = () => {
             onMouseLeave={() => setIsFlipped(false)}
             className="relative h-[320px] w-full [perspective:1200px] cursor-pointer"
           >
-            {/* Stamp Animation on Viewport Entry */}
+            {/* Verified Candidate Stamp */}
             <motion.div
-              initial={{ scale: 2.2, opacity: 0, rotate: -25 }}
-              animate={inView ? { scale: 1, opacity: 1, rotate: -12 } : {}}
-              transition={{ delay: 0.6, type: 'spring', stiffness: 450, damping: 15 }}
-              className="absolute -top-4 -right-4 z-30 pointer-events-none rounded-xl border-2 border-[#E62429] bg-black/90 px-3.5 py-1.5 shadow-[0_0_15px_#FF2D2D]"
+              initial={{ scale: 1.4, opacity: 0, rotate: -15 }}
+              animate={inView ? { scale: 1, opacity: 1, rotate: -6 } : {}}
+              transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute -top-3.5 -right-3.5 z-30 pointer-events-none rounded-xl border border-[#FF2D2D] bg-black/95 px-3.5 py-1.5 shadow-[0_0_15px_rgba(255,45,45,0.4)]"
             >
-              <div className="flex items-center gap-1.5">
-                {/* Bullet puncture hole inside stamp */}
-                <div className="h-2.5 w-2.5 rounded-full bg-black border border-[#FF2D2D] shadow-inner" />
-                <span className="font-bangers text-xs sm:text-sm tracking-wider text-[#FF2D2D]">
-                  TOP SECRET // VERIFIED CANDIDATE
-                </span>
-              </div>
+              <span className="font-mono text-[11px] font-bold tracking-wider text-[#FF2D2D] uppercase">
+                VERIFIED CREDENTIALS
+              </span>
             </motion.div>
 
             {/* Flipping Card Shell */}
@@ -147,16 +142,16 @@ export const ResumeSection: React.FC = () => {
 
                   <div className="mt-4 grid grid-cols-2 gap-2 text-xs font-mono text-neutral-400">
                     <div className="rounded bg-black/60 p-2 border border-white/5">
-                      <span className="block text-white font-bold">4+ Years</span> Commercial Exp
+                      <span className="block text-white font-bold">4 Years</span> Commercial Exp
                     </div>
                     <div className="rounded bg-black/60 p-2 border border-white/5">
-                      <span className="block text-white font-bold">18+ Live</span> Shipped Apps
+                      <span className="block text-white font-bold">8+ Shipped</span> Core Projects
                     </div>
                   </div>
                 </div>
 
-                <div className="text-center font-bangers text-xs tracking-widest text-[#FF2D2D]">
-                  🔄 HOVER TO FLIP DOSSIER
+                <div className="text-center font-mono text-[11px] uppercase tracking-wider text-[#FF2D2D]">
+                  HOVER TO FLIP DOSSIER
                 </div>
               </div>
 
@@ -170,20 +165,20 @@ export const ResumeSection: React.FC = () => {
                   <ul className="space-y-2 font-mono text-xs text-neutral-300">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
-                      <span>CereTax Flagship: 60% report query load time reduction</span>
+                      <span>CereTax Flagship: [METRIC] report query load time reduction</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
-                      <span>EBMCI Taiwan: 40% latency reduction across 12k medical records</span>
+                      <span>EBMCI Taiwan: [METRIC] latency reduction across medical compliance</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[#E62429]" />
-                      <span>Knowledger: 5x vector ingestion speedup with zero drops</span>
+                      <span>WeSellRestaurants: Sub-200ms spatial geo-search for 10k+ listings</span>
                     </li>
                   </ul>
                 </div>
 
-                <div className="text-center font-bangers text-xs tracking-widest text-neutral-400">
+                <div className="text-center font-mono text-[11px] uppercase tracking-wider text-neutral-400">
                   READY TO RECRUIT · OPEN TO FULL-TIME &amp; RELOCATION
                 </div>
               </div>

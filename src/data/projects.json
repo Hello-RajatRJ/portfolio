@@ -12,7 +12,7 @@
       "Rule engine for complex taxability configurations and custom exemptions",
       "Automated audit trail generation with statute references and compliance exports"
     ],
-    "role": "Full-Stack Developer — Built the high-volume analytics dashboard, designed ERP connector integration layers, and engineered the multi-jurisdiction tax rule matrix UI.",
+    "role": "Full-Stack Developer — Built the high-volume analytics dashboard, designed ERP connector integration layers, and engineered the multi-jurisdiction tax rule matrix UI under Senior Engineering Lead Andrew Rutter.",
     "challenges": "Designing a high-throughput calculation UI that renders thousands of jurisdiction-specific rules without frame drops or calculation delays during peak tax filing periods.",
     "problem": "High-volume e-commerce and ERP checkouts required real-time tax calculation across 10,000+ fluctuating US tax jurisdictions without introducing checkout delay or compliance audit risk.",
     "owned": "Architected the analytics dashboard, designed ERP connector interfaces, and built the multi-step tax rule configuration UI with client-side state caching.",

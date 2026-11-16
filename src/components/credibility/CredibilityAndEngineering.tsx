@@ -23,10 +23,10 @@ interface Testimonial {
 
 const TESTIMONIALS: Testimonial[] = [
   {
-    name: 'Harpreet S.',
+    name: 'Andrew Rutter',
     role: 'Senior Engineering Lead',
-    company: 'Seasia Infotech / CereTax FinTech',
-    avatarText: 'HS',
+    company: 'CereTax',
+    avatarText: 'AR',
     projectFocus: 'Enterprise Cloud-Native Tax Engine',
     quote:
       'Rajat owned critical segments of our CereTax enterprise calculation portal and client dashboards. He has an exceptional ability to turn complex multi-jurisdiction tax rules and high-frequency backend APIs into clean, performant React interfaces. Consistently disciplined with architecture and delivery.',
@@ -60,14 +60,64 @@ export const CredibilityAndEngineering: React.FC = () => {
     <section
       id="credibility"
       ref={ref}
-      className="relative overflow-hidden bg-[#07070a] py-20 sm:py-28 text-white border-t border-white/10"
+      className="relative overflow-hidden bg-[#050505] py-20 sm:py-28 text-white border-t border-white/[0.04]"
     >
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Quality Signals & Lighthouse Badge Bar (Item 4 Requirement) */}
+        {/* Section Heading: Client & Colleague Testimonials (Directly Following Projects) */}
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#FF2D2D]/40 bg-red-950/20 px-3.5 py-1.5 font-mono text-xs text-[#FF2D2D] mb-3.5">
+            <Award className="h-3.5 w-3.5 text-[#FF2D2D]" />
+            <span>05. CLIENT &amp; COLLEAGUE ENDORSEMENTS</span>
+          </div>
+          <h2 className="font-orbitron text-3xl sm:text-4xl lg:text-5xl font-black text-white">
+            CLIENT &amp; LEAD{' '}
+            <span className="text-[#FF2D2D] drop-shadow-[0_0_20px_rgba(230,36,41,0.6)]">
+              TESTIMONIALS
+            </span>
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base text-neutral-300">
+            Real feedback from engineering managers, international directors, and team leads on shipped production systems.
+          </p>
+        </div>
+
+        {/* Testimonials 3-Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          {TESTIMONIALS.map((t, idx) => (
+            <motion.div
+              key={t.name}
+              initial={{ opacity: 0, y: 24 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.8, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+              className="rounded-2xl border border-white/10 bg-[#0c0c0e]/95 p-6 flex flex-col justify-between hover:border-[#FF2D2D]/50 hover:shadow-[0_0_25px_rgba(230,36,41,0.25)] transition-all backdrop-blur-xl"
+            >
+              <div>
+                <Quote className="h-7 w-7 text-[#FF2D2D]/70 mb-4" />
+                <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed italic">
+                  "{t.quote}"
+                </p>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-red-950/80 border border-[#FF2D2D]/60 flex items-center justify-center font-orbitron text-xs font-bold text-[#FF2D2D] shrink-0">
+                  {t.avatarText}
+                </div>
+                <div className="truncate text-left">
+                  <p className="font-orbitron text-xs font-bold text-white truncate">{t.name}</p>
+                  <p className="font-mono text-[10px] text-neutral-400 truncate">{t.role}</p>
+                  <p className="font-mono text-[9px] text-[#FF2D2D] truncate font-semibold">
+                    {t.company}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Quality Signals & Lighthouse Badge Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mb-16 rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6 backdrop-blur-md"
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -109,56 +159,6 @@ export const CredibilityAndEngineering: React.FC = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Section Heading: Client & Colleague Testimonials (Item 5 Requirement) */}
-        <div className="text-center mb-12 sm:mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full border border-red-500/30 bg-red-950/20 px-3.5 py-1.5 font-mono text-xs text-red-400 mb-3.5">
-            <Award className="h-3.5 w-3.5 text-red-500" />
-            <span>06. CREDIBILITY &amp; SOCIAL PROOF</span>
-          </div>
-          <h2 className="font-orbitron text-3xl sm:text-4xl lg:text-5xl font-black text-white">
-            Colleague &amp; Client{' '}
-            <span className="bg-gradient-to-r from-[#FF3038] to-[#C91520] bg-clip-text text-transparent">
-              Endorsements
-            </span>
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm sm:text-base text-neutral-400">
-            Real feedback from engineering managers, international directors, and team leads.
-          </p>
-        </div>
-
-        {/* Testimonials 3-Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t, idx) => (
-            <motion.div
-              key={t.name}
-              initial={{ opacity: 0, y: 24 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="rounded-2xl border border-white/10 bg-white/[0.025] p-6 flex flex-col justify-between hover:border-red-500/40 hover:bg-white/[0.04] transition-all"
-            >
-              <div>
-                <Quote className="h-7 w-7 text-[#FF3038]/60 mb-4" />
-                <p className="text-xs sm:text-sm text-neutral-200 leading-relaxed italic">
-                  "{t.quote}"
-                </p>
-              </div>
-
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-950/60 border border-red-600/50 flex items-center justify-center font-orbitron text-xs font-bold text-red-300 shrink-0">
-                  {t.avatarText}
-                </div>
-                <div className="truncate">
-                  <p className="font-orbitron text-xs font-bold text-white truncate">{t.name}</p>
-                  <p className="font-mono text-[10px] text-neutral-400 truncate">{t.role}</p>
-                  <p className="font-mono text-[9px] text-red-400/80 truncate font-semibold">
-                    {t.company}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
 
         {/* Featured Technical Writing / Engineering Deep Dive (Item 5 Requirement) */}
         <div className="mt-16 sm:mt-24">

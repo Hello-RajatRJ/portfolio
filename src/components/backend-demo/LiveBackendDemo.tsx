@@ -265,7 +265,7 @@ export const LiveBackendDemo: React.FC = () => {
     <section
       id="backend-telemetry"
       ref={ref}
-      className="relative overflow-hidden bg-[#09090c] py-20 sm:py-28 text-white border-t border-white/10"
+      className="relative overflow-hidden bg-[#050505] py-20 sm:py-28 text-white border-t border-white/[0.04]"
     >
       {/* Background cyber grid & glow */}
       <div
